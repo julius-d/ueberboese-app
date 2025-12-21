@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/speaker.dart';
+import '../models/app_config.dart';
 import '../main.dart';
 import '../widgets/emoji_selector.dart';
 import '../services/speaker_api_service.dart';
@@ -87,6 +88,27 @@ class _AddSpeakerPageState extends State<AddSpeakerPage> {
       if (!mounted) return;
 
       final appState = context.read<MyAppState>();
+
+      // Auto-fill config if API URL and Account ID are not set
+      if (appState.config.apiUrl.isEmpty &&
+          appState.config.accountId.isEmpty &&
+          speakerInfo.margeUrl != null &&
+          speakerInfo.accountId != null) {
+
+        // Check if margeURL is not a Bose domain
+        final margeUrl = speakerInfo.margeUrl!;
+        final isBoseDomain = margeUrl.contains('bose.com');
+
+        if (!isBoseDomain) {
+          // Update config with values from speaker info
+          final newConfig = AppConfig(
+            apiUrl: margeUrl,
+            accountId: speakerInfo.accountId!,
+          );
+          appState.updateConfig(newConfig);
+        }
+      }
+
       final newSpeaker = Speaker(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         name: speakerInfo.name,

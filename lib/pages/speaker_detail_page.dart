@@ -19,77 +19,40 @@ class SpeakerDetailPage extends StatelessWidget {
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: theme.colorScheme.onPrimary,
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                speaker.emoji,
-                style: const TextStyle(fontSize: 120),
-              ),
-              const SizedBox(height: 32),
-              Text(
-                speaker.name,
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              Card(
-                color: theme.colorScheme.primaryContainer,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      Text(
-                        'IP Address',
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: theme.colorScheme.onPrimaryContainer,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        speaker.ipAddress,
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.onPrimaryContainer,
-                          fontFamily: 'monospace',
-                        ),
-                      ),
-                    ],
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Column(
+                children: [
+                  Text(
+                    speaker.emoji,
+                    style: const TextStyle(fontSize: 120),
                   ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Card(
-                color: theme.colorScheme.secondaryContainer,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Type',
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: theme.colorScheme.onSecondaryContainer,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        speaker.type,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.onSecondaryContainer,
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: 24),
+                  Text(
+                    speaker.name,
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${speaker.type} • ${speaker.ipAddress}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 32),
+            // Space for other features can be added here
+          ],
         ),
       ),
     );

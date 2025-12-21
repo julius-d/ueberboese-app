@@ -41,7 +41,32 @@ class SpeakerApiService {
       }
       final type = typeElements.first.innerText;
 
-      return SpeakerInfo(name: name, type: type);
+      // Find margeURL element (optional)
+      String? margeUrl;
+      final margeUrlElements = document.findAllElements('margeURL');
+      if (margeUrlElements.isNotEmpty) {
+        margeUrl = margeUrlElements.first.innerText;
+      }
+
+      // Find macAddress from networkInfo with type="SCM" (optional)
+      String? accountId;
+      final networkInfoElements = document.findAllElements('networkInfo');
+      for (final networkInfo in networkInfoElements) {
+        if (networkInfo.getAttribute('type') == 'SCM') {
+          final macAddressElements = networkInfo.findElements('macAddress');
+          if (macAddressElements.isNotEmpty) {
+            accountId = macAddressElements.first.innerText;
+            break;
+          }
+        }
+      }
+
+      return SpeakerInfo(
+        name: name,
+        type: type,
+        margeUrl: margeUrl,
+        accountId: accountId,
+      );
     } catch (e) {
       if (e is Exception) {
         rethrow;
