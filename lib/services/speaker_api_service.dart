@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart';
 import '../models/speaker_info.dart';
 import '../models/volume.dart';
+import '../models/now_playing.dart';
 
 class SpeakerApiService {
   final http.Client? httpClient;
@@ -203,6 +204,94 @@ class SpeakerApiService {
         rethrow;
       }
       throw Exception('Failed to set volume: $e');
+    } finally {
+      if (httpClient == null) {
+        client.close();
+      }
+    }
+  }
+
+  Future<NowPlaying> getNowPlaying(String ipAddress) async {
+    final url = Uri.parse('http://$ipAddress:8090/nowPlaying');
+    final client = httpClient ?? http.Client();
+
+    try {
+      final response = await client
+          .get(url)
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          'Failed to fetch now playing: HTTP ${response.statusCode}',
+        );
+      }
+
+      final bodyText = utf8.decode(response.bodyBytes);
+      final document = XmlDocument.parse(bodyText);
+
+      // Extract optional fields
+      String? track;
+      final trackElements = document.findAllElements('track');
+      if (trackElements.isNotEmpty) {
+        track = trackElements.first.innerText;
+      }
+
+      String? artist;
+      final artistElements = document.findAllElements('artist');
+      if (artistElements.isNotEmpty) {
+        artist = artistElements.first.innerText;
+      }
+
+      String? album;
+      final albumElements = document.findAllElements('album');
+      if (albumElements.isNotEmpty) {
+        album = albumElements.first.innerText;
+      }
+
+      String? art;
+      final artElements = document.findAllElements('art');
+      if (artElements.isNotEmpty) {
+        art = artElements.first.innerText;
+      }
+
+      String? artImageStatus;
+      if (artElements.isNotEmpty) {
+        artImageStatus = artElements.first.getAttribute('artImageStatus');
+      }
+
+      String? shuffleSetting;
+      final shuffleElements = document.findAllElements('shuffleSetting');
+      if (shuffleElements.isNotEmpty) {
+        shuffleSetting = shuffleElements.first.innerText;
+      }
+
+      String? repeatSetting;
+      final repeatElements = document.findAllElements('repeatSetting');
+      if (repeatElements.isNotEmpty) {
+        repeatSetting = repeatElements.first.innerText;
+      }
+
+      String? playStatus;
+      final playStatusElements = document.findAllElements('playStatus');
+      if (playStatusElements.isNotEmpty) {
+        playStatus = playStatusElements.first.innerText;
+      }
+
+      return NowPlaying(
+        track: track,
+        artist: artist,
+        album: album,
+        art: art,
+        artImageStatus: artImageStatus,
+        shuffleSetting: shuffleSetting,
+        repeatSetting: repeatSetting,
+        playStatus: playStatus,
+      );
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Failed to fetch now playing: $e');
     } finally {
       if (httpClient == null) {
         client.close();

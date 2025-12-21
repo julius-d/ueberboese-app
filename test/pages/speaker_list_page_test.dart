@@ -105,7 +105,8 @@ void main() {
       );
 
       await tester.tap(find.text('Test Speaker'));
-      await tester.pumpAndSettle();
+      await tester.pump(); // Trigger navigation
+      await tester.pump(const Duration(seconds: 1)); // Allow animation
 
       expect(find.byType(SpeakerDetailPage), findsOneWidget);
       expect(find.text('Speaker Details'), findsOneWidget);
