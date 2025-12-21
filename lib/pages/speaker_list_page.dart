@@ -41,7 +41,7 @@ class SpeakerListPage extends StatelessWidget {
                 ),
               ),
               subtitle: Text(
-                speaker.ipAddress,
+                speaker.type,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.secondary,
                   fontSize: 14,

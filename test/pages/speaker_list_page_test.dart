@@ -37,7 +37,7 @@ void main() {
       );
 
       expect(find.text('Test Speaker'), findsOneWidget);
-      expect(find.text('192.168.1.100'), findsOneWidget);
+      expect(find.text('SoundTouch 10'), findsOneWidget);
       expect(find.text('🔊'), findsOneWidget);
     });
 
