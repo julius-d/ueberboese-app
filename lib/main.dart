@@ -1,9 +1,10 @@
-import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'models/speaker.dart';
+import 'pages/home_page.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -14,58 +15,48 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
       child: MaterialApp(
-        title: 'Namer App',
+        title: 'Überböse App',
         theme: ThemeData(
+          useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         ),
-        home: MyHomePage(),
+        home: const HomePage(),
       ),
     );
   }
 }
 
 class MyAppState extends ChangeNotifier {
-  var current = WordPair.random();
-
-  void getNext() {
-    current = WordPair.random();
-    notifyListeners();
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-    var pair = appState.current;
-
-    return Scaffold(
-      body: Column(
-        children: [
-          Text('A random BAD idea:'),
-          BigCard(pair: pair),
-          ElevatedButton(
-            onPressed: () {
-              appState.getNext();
-            },
-            child: Text('Next'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class BigCard extends StatelessWidget {
-  const BigCard({
-    super.key,
-    required this.pair,
-  });
-
-  final WordPair pair;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(pair.asLowerCase);
-  }
+  final List<Speaker> speakers = [
+    const Speaker(
+      id: '1',
+      name: 'Living Room Speaker',
+      emoji: '🔊',
+      ipAddress: '192.168.1.101',
+    ),
+    const Speaker(
+      id: '2',
+      name: 'Bedroom Speaker',
+      emoji: '🎵',
+      ipAddress: '192.168.1.102',
+    ),
+    const Speaker(
+      id: '3',
+      name: 'Kitchen Speaker',
+      emoji: '🎶',
+      ipAddress: '192.168.1.103',
+    ),
+    const Speaker(
+      id: '4',
+      name: 'Office Speaker',
+      emoji: '🎧',
+      ipAddress: '192.168.1.104',
+    ),
+    const Speaker(
+      id: '5',
+      name: 'Garage Speaker',
+      emoji: '📻',
+      ipAddress: '192.168.1.105',
+    ),
+  ];
 }
