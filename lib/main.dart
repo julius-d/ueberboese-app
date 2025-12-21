@@ -2,18 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'models/speaker.dart';
 import 'pages/home_page.dart';
+import 'services/speaker_storage_service.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final appState = MyAppState();
+  await appState.initializeSpeakers();
+
+  runApp(MyApp(appState: appState));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final MyAppState appState;
+
+  const MyApp({super.key, required this.appState});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
+    return ChangeNotifierProvider.value(
+      value: appState,
       child: MaterialApp(
         title: 'Überböse App',
         theme: ThemeData(
@@ -27,46 +35,23 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  List<Speaker> speakers = [
-    const Speaker(
-      id: '1',
-      name: 'Living Room Speaker',
-      emoji: '🔊',
-      ipAddress: '192.168.1.101',
-      type: 'SoundTouch 10',
-    ),
-    const Speaker(
-      id: '2',
-      name: 'Bedroom Speaker',
-      emoji: '🎵',
-      ipAddress: '192.168.1.102',
-      type: 'SoundTouch 20',
-    ),
-    const Speaker(
-      id: '3',
-      name: 'Kitchen Speaker',
-      emoji: '🎶',
-      ipAddress: '192.168.1.103',
-      type: 'SoundTouch 30',
-    ),
-    const Speaker(
-      id: '4',
-      name: 'Office Speaker',
-      emoji: '🎧',
-      ipAddress: '192.168.1.104',
-      type: 'SoundTouch 10',
-    ),
-    const Speaker(
-      id: '5',
-      name: 'Garage Speaker',
-      emoji: '📻',
-      ipAddress: '192.168.1.105',
-      type: 'SoundTouch 300',
-    ),
-  ];
+  final SpeakerStorageService _storageService = SpeakerStorageService();
+  List<Speaker> speakers = [];
+
+  Future<void> initializeSpeakers() async {
+    speakers = await _storageService.loadSpeakers();
+    notifyListeners();
+  }
 
   void addSpeaker(Speaker speaker) {
     speakers.add(speaker);
+    _storageService.saveSpeakers(speakers);
+    notifyListeners();
+  }
+
+  void removeSpeaker(Speaker speaker) {
+    speakers.remove(speaker);
+    _storageService.saveSpeakers(speakers);
     notifyListeners();
   }
 }

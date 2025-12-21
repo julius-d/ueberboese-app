@@ -1,19 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ueberboese_app/main.dart';
 import 'package:ueberboese_app/pages/home_page.dart';
 
 void main() {
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
   testWidgets('App starts with home page', (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp());
+    final appState = MyAppState();
+    await appState.initializeSpeakers();
+
+    await tester.pumpWidget(MyApp(appState: appState));
 
     expect(find.byType(HomePage), findsOneWidget);
     expect(find.text('Speakers'), findsOneWidget);
-    expect(find.text('Living Room Speaker'), findsOneWidget);
   });
 
   testWidgets('Can navigate to Spotify page', (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp());
+    final appState = MyAppState();
+    await appState.initializeSpeakers();
+
+    await tester.pumpWidget(MyApp(appState: appState));
 
     // Tap on Spotify navigation item
     await tester.tap(find.text('Spotify'));

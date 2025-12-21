@@ -3,15 +3,31 @@ class Speaker {
   final String name;
   final String emoji;
   final String ipAddress;
-  final String? type;
+  final String type;
 
   const Speaker({
     required this.id,
     required this.name,
     required this.emoji,
     required this.ipAddress,
-    this.type,
+    required this.type,
   });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'emoji': emoji,
+        'ipAddress': ipAddress,
+        'type': type,
+      };
+
+  factory Speaker.fromJson(Map<String, dynamic> json) => Speaker(
+        id: json['id'] as String,
+        name: json['name'] as String,
+        emoji: json['emoji'] as String,
+        ipAddress: json['ipAddress'] as String,
+        type: json['type'] as String,
+      );
 
   @override
   bool operator ==(Object other) =>

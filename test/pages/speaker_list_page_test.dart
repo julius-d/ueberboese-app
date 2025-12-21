@@ -1,56 +1,110 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ueberboese_app/main.dart';
 import 'package:ueberboese_app/models/speaker.dart';
 import 'package:ueberboese_app/pages/speaker_list_page.dart';
 import 'package:ueberboese_app/pages/speaker_detail_page.dart';
 
 void main() {
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
   group('SpeakerListPage', () {
     testWidgets('displays list of speakers', (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initializeSpeakers();
+
+      // Add a test speaker
+      const testSpeaker = Speaker(
+        id: '1',
+        name: 'Test Speaker',
+        emoji: '🔊',
+        ipAddress: '192.168.1.100',
+        type: 'SoundTouch 10',
+      );
+      appState.addSpeaker(testSpeaker);
+
       await tester.pumpWidget(
-        ChangeNotifierProvider(
-          create: (_) => MyAppState(),
+        ChangeNotifierProvider.value(
+          value: appState,
           child: const MaterialApp(
             home: Scaffold(body: SpeakerListPage()),
           ),
         ),
       );
 
-      expect(find.text('Living Room Speaker'), findsOneWidget);
-      expect(find.text('192.168.1.101'), findsOneWidget);
+      expect(find.text('Test Speaker'), findsOneWidget);
+      expect(find.text('192.168.1.100'), findsOneWidget);
       expect(find.text('🔊'), findsOneWidget);
     });
 
     testWidgets('shows all speakers from state', (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initializeSpeakers();
+
+      // Add multiple test speakers
+      appState.addSpeaker(const Speaker(
+        id: '1',
+        name: 'Speaker 1',
+        emoji: '🔊',
+        ipAddress: '192.168.1.101',
+        type: 'SoundTouch 10',
+      ));
+      appState.addSpeaker(const Speaker(
+        id: '2',
+        name: 'Speaker 2',
+        emoji: '🎵',
+        ipAddress: '192.168.1.102',
+        type: 'SoundTouch 20',
+      ));
+      appState.addSpeaker(const Speaker(
+        id: '3',
+        name: 'Speaker 3',
+        emoji: '🎶',
+        ipAddress: '192.168.1.103',
+        type: 'SoundTouch 30',
+      ));
+
       await tester.pumpWidget(
-        ChangeNotifierProvider(
-          create: (_) => MyAppState(),
+        ChangeNotifierProvider.value(
+          value: appState,
           child: const MaterialApp(
             home: Scaffold(body: SpeakerListPage()),
           ),
         ),
       );
 
-      expect(find.text('Living Room Speaker'), findsOneWidget);
-      expect(find.text('Bedroom Speaker'), findsOneWidget);
-      expect(find.text('Kitchen Speaker'), findsOneWidget);
-      expect(find.text('Office Speaker'), findsOneWidget);
-      expect(find.text('Garage Speaker'), findsOneWidget);
+      expect(find.text('Speaker 1'), findsOneWidget);
+      expect(find.text('Speaker 2'), findsOneWidget);
+      expect(find.text('Speaker 3'), findsOneWidget);
     });
 
     testWidgets('navigates to detail page on tap', (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initializeSpeakers();
+
+      // Add a test speaker
+      appState.addSpeaker(const Speaker(
+        id: '1',
+        name: 'Test Speaker',
+        emoji: '🔊',
+        ipAddress: '192.168.1.100',
+        type: 'SoundTouch 10',
+      ));
+
       await tester.pumpWidget(
-        ChangeNotifierProvider(
-          create: (_) => MyAppState(),
+        ChangeNotifierProvider.value(
+          value: appState,
           child: const MaterialApp(
             home: Scaffold(body: SpeakerListPage()),
           ),
         ),
       );
 
-      await tester.tap(find.text('Living Room Speaker'));
+      await tester.tap(find.text('Test Speaker'));
       await tester.pumpAndSettle();
 
       expect(find.byType(SpeakerDetailPage), findsOneWidget);
@@ -59,9 +113,21 @@ void main() {
 
     testWidgets('displays speaker emoji with correct size',
         (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initializeSpeakers();
+
+      // Add a test speaker
+      appState.addSpeaker(const Speaker(
+        id: '1',
+        name: 'Test Speaker',
+        emoji: '🔊',
+        ipAddress: '192.168.1.100',
+        type: 'SoundTouch 10',
+      ));
+
       await tester.pumpWidget(
-        ChangeNotifierProvider(
-          create: (_) => MyAppState(),
+        ChangeNotifierProvider.value(
+          value: appState,
           child: const MaterialApp(
             home: Scaffold(body: SpeakerListPage()),
           ),

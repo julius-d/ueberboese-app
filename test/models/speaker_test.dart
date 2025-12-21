@@ -9,12 +9,14 @@ void main() {
         name: 'Test Speaker',
         emoji: '🔊',
         ipAddress: '192.168.1.100',
+        type: 'SoundTouch 10',
       );
 
       expect(speaker.id, '1');
       expect(speaker.name, 'Test Speaker');
       expect(speaker.emoji, '🔊');
       expect(speaker.ipAddress, '192.168.1.100');
+      expect(speaker.type, 'SoundTouch 10');
     });
 
     test('equality is based on id', () {
@@ -23,6 +25,7 @@ void main() {
         name: 'Speaker 1',
         emoji: '🔊',
         ipAddress: '192.168.1.100',
+        type: 'SoundTouch 10',
       );
 
       const speaker2 = Speaker(
@@ -30,6 +33,7 @@ void main() {
         name: 'Different Name',
         emoji: '🎵',
         ipAddress: '192.168.1.200',
+        type: 'SoundTouch 20',
       );
 
       const speaker3 = Speaker(
@@ -37,6 +41,7 @@ void main() {
         name: 'Speaker 1',
         emoji: '🔊',
         ipAddress: '192.168.1.100',
+        type: 'SoundTouch 10',
       );
 
       expect(speaker1, equals(speaker2));
@@ -49,6 +54,7 @@ void main() {
         name: 'Speaker 1',
         emoji: '🔊',
         ipAddress: '192.168.1.100',
+        type: 'SoundTouch 10',
       );
 
       const speaker2 = Speaker(
@@ -56,9 +62,65 @@ void main() {
         name: 'Different Name',
         emoji: '🎵',
         ipAddress: '192.168.1.200',
+        type: 'SoundTouch 20',
       );
 
       expect(speaker1.hashCode, equals(speaker2.hashCode));
+    });
+
+    test('toJson serializes speaker correctly', () {
+      const speaker = Speaker(
+        id: '1',
+        name: 'Test Speaker',
+        emoji: '🔊',
+        ipAddress: '192.168.1.100',
+        type: 'SoundTouch 10',
+      );
+
+      final json = speaker.toJson();
+
+      expect(json['id'], '1');
+      expect(json['name'], 'Test Speaker');
+      expect(json['emoji'], '🔊');
+      expect(json['ipAddress'], '192.168.1.100');
+      expect(json['type'], 'SoundTouch 10');
+    });
+
+    test('fromJson deserializes speaker correctly', () {
+      final json = {
+        'id': '1',
+        'name': 'Test Speaker',
+        'emoji': '🔊',
+        'ipAddress': '192.168.1.100',
+        'type': 'SoundTouch 10',
+      };
+
+      final speaker = Speaker.fromJson(json);
+
+      expect(speaker.id, '1');
+      expect(speaker.name, 'Test Speaker');
+      expect(speaker.emoji, '🔊');
+      expect(speaker.ipAddress, '192.168.1.100');
+      expect(speaker.type, 'SoundTouch 10');
+    });
+
+    test('roundtrip serialization preserves data', () {
+      const original = Speaker(
+        id: '1',
+        name: 'Test Speaker',
+        emoji: '🔊',
+        ipAddress: '192.168.1.100',
+        type: 'SoundTouch 10',
+      );
+
+      final json = original.toJson();
+      final deserialized = Speaker.fromJson(json);
+
+      expect(deserialized.id, original.id);
+      expect(deserialized.name, original.name);
+      expect(deserialized.emoji, original.emoji);
+      expect(deserialized.ipAddress, original.ipAddress);
+      expect(deserialized.type, original.type);
     });
   });
 }
