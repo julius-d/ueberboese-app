@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  final List<Speaker> speakers = [
+  List<Speaker> speakers = [
     const Speaker(
       id: '1',
       name: 'Living Room Speaker',
@@ -59,4 +59,9 @@ class MyAppState extends ChangeNotifier {
       ipAddress: '192.168.1.105',
     ),
   ];
+
+  void addSpeaker(Speaker speaker) {
+    speakers.add(speaker);
+    notifyListeners();
+  }
 }
