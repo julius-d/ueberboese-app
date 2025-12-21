@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../models/speaker.dart';
 import '../main.dart';
 import '../widgets/emoji_selector.dart';
+import '../services/speaker_api_service.dart';
 
 class AddSpeakerPage extends StatefulWidget {
   const AddSpeakerPage({Key? key}) : super(key: key);
@@ -13,14 +14,14 @@ class AddSpeakerPage extends StatefulWidget {
 
 class _AddSpeakerPageState extends State<AddSpeakerPage> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
   final _ipController = TextEditingController();
+  final _apiService = SpeakerApiService();
   String _selectedEmoji = '🔊';
   bool _showEmojiSelector = false;
+  bool _isLoading = false;
 
   @override
   void dispose() {
-    _nameController.dispose();
     _ipController.dispose();
     super.dispose();
   }
@@ -45,18 +46,54 @@ class _AddSpeakerPageState extends State<AddSpeakerPage> {
     return true;
   }
 
-  void _saveSpeaker() {
-    if (_formKey.currentState!.validate()) {
+  Future<void> _saveSpeaker() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final ipAddress = _ipController.text.trim();
+      final speakerInfo = await _apiService.fetchSpeakerInfo(ipAddress);
+
+      if (!mounted) return;
+
       final appState = context.read<MyAppState>();
       final newSpeaker = Speaker(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
-        name: _nameController.text.trim(),
+        name: speakerInfo.name,
         emoji: _selectedEmoji,
-        ipAddress: _ipController.text.trim(),
+        ipAddress: ipAddress,
+        type: speakerInfo.type,
       );
 
       appState.addSpeaker(newSpeaker);
       Navigator.pop(context);
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          content: Text(
+            'Failed to fetch speaker information.\n\n${e.toString()}',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     }
   }
 
@@ -70,98 +107,129 @@ class _AddSpeakerPageState extends State<AddSpeakerPage> {
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: theme.colorScheme.onPrimary,
       ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            const SizedBox(height: 16),
-            // Emoji Selector
-            Card(
-              child: InkWell(
-                onTap: () {
-                  setState(() {
-                    _showEmojiSelector = !_showEmojiSelector;
-                  });
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    children: [
-                      Text(
-                        _selectedEmoji,
-                        style: const TextStyle(fontSize: 64),
+      body: Stack(
+        children: [
+          Form(
+            key: _formKey,
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                const SizedBox(height: 16),
+                // Emoji Selector
+                Card(
+                  child: InkWell(
+                    onTap: _isLoading
+                        ? null
+                        : () {
+                            setState(() {
+                              _showEmojiSelector = !_showEmojiSelector;
+                            });
+                          },
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        children: [
+                          Text(
+                            _selectedEmoji,
+                            style: const TextStyle(fontSize: 64),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Tap to change emoji',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Tap to change emoji',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                // Emoji Grid
+                if (_showEmojiSelector)
+                  Card(
+                    child: EmojiSelector(
+                      selectedEmoji: _selectedEmoji,
+                      onEmojiSelected: (emoji) {
+                        setState(() {
+                          _selectedEmoji = emoji;
+                          _showEmojiSelector = false;
+                        });
+                      },
+                    ),
+                  ),
+                if (_showEmojiSelector) const SizedBox(height: 24),
+                // IP Address Field
+                TextFormField(
+                  controller: _ipController,
+                  decoration: const InputDecoration(
+                    labelText: 'IP Address',
+                    hintText: 'e.g., 192.168.1.100',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.router),
+                  ),
+                  keyboardType: TextInputType.number,
+                  enabled: !_isLoading,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please enter an IP address';
+                    }
+                    if (!_isValidIpAddress(value.trim())) {
+                      return 'Please enter a valid IP address';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                // Info text
+                Card(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          color: theme.colorScheme.primary,
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Speaker name and type will be fetched automatically',
+                            style: theme.textTheme.bodySmall,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (_isLoading)
+            Container(
+              color: Colors.black54,
+              child: const Center(
+                child: Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(24.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(height: 16),
+                        Text('Fetching speaker information...'),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 24),
-            // Emoji Grid
-            if (_showEmojiSelector)
-              Card(
-                child: EmojiSelector(
-                  selectedEmoji: _selectedEmoji,
-                  onEmojiSelected: (emoji) {
-                    setState(() {
-                      _selectedEmoji = emoji;
-                      _showEmojiSelector = false;
-                    });
-                  },
-                ),
-              ),
-            if (_showEmojiSelector) const SizedBox(height: 24),
-            // Name Field
-            TextFormField(
-              controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Speaker Name',
-                hintText: 'e.g., Living Room Speaker',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.label),
-              ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Please enter a speaker name';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-            // IP Address Field
-            TextFormField(
-              controller: _ipController,
-              decoration: const InputDecoration(
-                labelText: 'IP Address',
-                hintText: 'e.g., 192.168.1.100',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.router),
-              ),
-              keyboardType: TextInputType.number,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Please enter an IP address';
-                }
-                if (!_isValidIpAddress(value.trim())) {
-                  return 'Please enter a valid IP address';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 24),
-          ],
-        ),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _saveSpeaker,
+        onPressed: _isLoading ? null : _saveSpeaker,
         icon: const Icon(Icons.save),
         label: const Text('Save Speaker'),
       ),

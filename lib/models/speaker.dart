@@ -3,12 +3,14 @@ class Speaker {
   final String name;
   final String emoji;
   final String ipAddress;
+  final String? type;
 
   const Speaker({
     required this.id,
     required this.name,
     required this.emoji,
     required this.ipAddress,
+    this.type,
   });
 
   @override

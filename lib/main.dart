@@ -33,30 +33,35 @@ class MyAppState extends ChangeNotifier {
       name: 'Living Room Speaker',
       emoji: '🔊',
       ipAddress: '192.168.1.101',
+      type: 'SoundTouch 10',
     ),
     const Speaker(
       id: '2',
       name: 'Bedroom Speaker',
       emoji: '🎵',
       ipAddress: '192.168.1.102',
+      type: 'SoundTouch 20',
     ),
     const Speaker(
       id: '3',
       name: 'Kitchen Speaker',
       emoji: '🎶',
       ipAddress: '192.168.1.103',
+      type: 'SoundTouch 30',
     ),
     const Speaker(
       id: '4',
       name: 'Office Speaker',
       emoji: '🎧',
       ipAddress: '192.168.1.104',
+      type: 'SoundTouch 10',
     ),
     const Speaker(
       id: '5',
       name: 'Garage Speaker',
       emoji: '📻',
       ipAddress: '192.168.1.105',
+      type: 'SoundTouch 300',
     ),
   ];
 
