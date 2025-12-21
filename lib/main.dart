@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'models/speaker.dart';
+import 'models/app_config.dart';
 import 'pages/home_page.dart';
 import 'services/speaker_storage_service.dart';
+import 'services/config_storage_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final appState = MyAppState();
-  await appState.initializeSpeakers();
+  await appState.initialize();
 
   runApp(MyApp(appState: appState));
 }
@@ -36,11 +38,25 @@ class MyApp extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier {
   final SpeakerStorageService _storageService = SpeakerStorageService();
+  final ConfigStorageService _configStorageService = ConfigStorageService();
+
   List<Speaker> speakers = [];
+  AppConfig config = const AppConfig();
+
+  Future<void> initialize() async {
+    await Future.wait([
+      initializeSpeakers(),
+      initializeConfig(),
+    ]);
+    notifyListeners();
+  }
 
   Future<void> initializeSpeakers() async {
     speakers = await _storageService.loadSpeakers();
-    notifyListeners();
+  }
+
+  Future<void> initializeConfig() async {
+    config = await _configStorageService.loadConfig();
   }
 
   void addSpeaker(Speaker speaker) {
@@ -52,6 +68,12 @@ class MyAppState extends ChangeNotifier {
   void removeSpeaker(Speaker speaker) {
     speakers.remove(speaker);
     _storageService.saveSpeakers(speakers);
+    notifyListeners();
+  }
+
+  void updateConfig(AppConfig newConfig) {
+    config = newConfig;
+    _configStorageService.saveConfig(config);
     notifyListeners();
   }
 }

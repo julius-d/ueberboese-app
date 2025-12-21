@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'speaker_list_page.dart';
 import 'spotify_accounts_page.dart';
+import 'configuration_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -23,6 +24,9 @@ class _HomePageState extends State<HomePage> {
         break;
       case 1:
         page = const SpotifyAccountsPage();
+        break;
+      case 2:
+        page = const ConfigurationPage();
         break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
@@ -56,6 +60,10 @@ class _HomePageState extends State<HomePage> {
                         icon: Icon(Icons.music_note),
                         label: 'Spotify',
                       ),
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.settings),
+                        label: 'Configuration',
+                      ),
                     ],
                     currentIndex: selectedIndex,
                     onTap: (value) {
@@ -81,6 +89,10 @@ class _HomePageState extends State<HomePage> {
                       NavigationRailDestination(
                         icon: Icon(Icons.music_note),
                         label: Text('Spotify'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.settings),
+                        label: Text('Configuration'),
                       ),
                     ],
                     selectedIndex: selectedIndex,
