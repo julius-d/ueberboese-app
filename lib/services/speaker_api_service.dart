@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart';
 import '../models/speaker_info.dart';
+import '../models/volume.dart';
 
 class SpeakerApiService {
   final http.Client? httpClient;
@@ -72,6 +73,136 @@ class SpeakerApiService {
         rethrow;
       }
       throw Exception('Failed to connect to speaker: $e');
+    } finally {
+      if (httpClient == null) {
+        client.close();
+      }
+    }
+  }
+
+  Future<Volume> getVolume(String ipAddress) async {
+    final url = Uri.parse('http://$ipAddress:8090/volume');
+    final client = httpClient ?? http.Client();
+
+    try {
+      final response = await client
+          .get(url)
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          'Failed to fetch volume: HTTP ${response.statusCode}',
+        );
+      }
+
+      final bodyText = utf8.decode(response.bodyBytes);
+      final document = XmlDocument.parse(bodyText);
+
+      // Find targetvolume element
+      final targetVolumeElements = document.findAllElements('targetvolume');
+      if (targetVolumeElements.isEmpty) {
+        throw Exception('Target volume not found in response');
+      }
+      final targetVolume = int.parse(targetVolumeElements.first.innerText);
+
+      // Find actualvolume element
+      final actualVolumeElements = document.findAllElements('actualvolume');
+      if (actualVolumeElements.isEmpty) {
+        throw Exception('Actual volume not found in response');
+      }
+      final actualVolume = int.parse(actualVolumeElements.first.innerText);
+
+      // Find muteenabled element
+      final muteEnabledElements = document.findAllElements('muteenabled');
+      if (muteEnabledElements.isEmpty) {
+        throw Exception('Mute enabled not found in response');
+      }
+      final muteEnabled = muteEnabledElements.first.innerText.toLowerCase() == 'true';
+
+      return Volume(
+        targetVolume: targetVolume,
+        actualVolume: actualVolume,
+        muteEnabled: muteEnabled,
+      );
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Failed to fetch volume: $e');
+    } finally {
+      if (httpClient == null) {
+        client.close();
+      }
+    }
+  }
+
+  Future<Volume> setVolume(String ipAddress, int volume) async {
+    if (volume < 0 || volume > 100) {
+      throw ArgumentError('Volume must be between 0 and 100');
+    }
+
+    final url = Uri.parse('http://$ipAddress:8090/volume');
+    final client = httpClient ?? http.Client();
+
+    try {
+      final body = '<volume>$volume</volume>';
+      final response = await client
+          .post(
+            url,
+            headers: {'Content-Type': 'text/xml'},
+            body: body,
+          )
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          'Failed to set volume: HTTP ${response.statusCode}',
+        );
+      }
+
+      // Some speakers return empty body, so fetch the current volume instead
+      if (response.body.trim().isEmpty) {
+        return await getVolume(ipAddress);
+      }
+
+      final bodyText = utf8.decode(response.bodyBytes);
+      final document = XmlDocument.parse(bodyText);
+
+      // Try to parse response, if it fails, fetch volume
+      try {
+        final targetVolumeElements = document.findAllElements('targetvolume');
+        if (targetVolumeElements.isEmpty) {
+          // Response doesn't have volume info, fetch it
+          return await getVolume(ipAddress);
+        }
+        final targetVolume = int.parse(targetVolumeElements.first.innerText);
+
+        final actualVolumeElements = document.findAllElements('actualvolume');
+        if (actualVolumeElements.isEmpty) {
+          return await getVolume(ipAddress);
+        }
+        final actualVolume = int.parse(actualVolumeElements.first.innerText);
+
+        final muteEnabledElements = document.findAllElements('muteenabled');
+        if (muteEnabledElements.isEmpty) {
+          return await getVolume(ipAddress);
+        }
+        final muteEnabled = muteEnabledElements.first.innerText.toLowerCase() == 'true';
+
+        return Volume(
+          targetVolume: targetVolume,
+          actualVolume: actualVolume,
+          muteEnabled: muteEnabled,
+        );
+      } catch (e) {
+        // If parsing fails, fetch volume
+        return await getVolume(ipAddress);
+      }
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Failed to set volume: $e');
     } finally {
       if (httpClient == null) {
         client.close();

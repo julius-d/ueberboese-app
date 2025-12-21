@@ -164,5 +164,135 @@ void main() {
         throwsA(isA<Exception>()),
       );
     });
+
+    test('getVolume parses volume response correctly', () async {
+      const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
+<volume deviceID="1004567890AA">
+  <targetvolume>50</targetvolume>
+  <actualvolume>50</actualvolume>
+  <muteenabled>false</muteenabled>
+</volume>''';
+
+      when(mockClient.get(any)).thenAnswer(
+        (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+      );
+
+      final volume = await apiService.getVolume('192.168.1.100');
+
+      expect(volume.targetVolume, 50);
+      expect(volume.actualVolume, 50);
+      expect(volume.muteEnabled, false);
+    });
+
+    test('getVolume parses muted volume correctly', () async {
+      const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
+<volume deviceID="1004567890AA">
+  <targetvolume>0</targetvolume>
+  <actualvolume>0</actualvolume>
+  <muteenabled>true</muteenabled>
+</volume>''';
+
+      when(mockClient.get(any)).thenAnswer(
+        (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+      );
+
+      final volume = await apiService.getVolume('192.168.1.100');
+
+      expect(volume.targetVolume, 0);
+      expect(volume.actualVolume, 0);
+      expect(volume.muteEnabled, true);
+    });
+
+    test('setVolume sends correct XML and parses response', () async {
+      const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
+<volume deviceID="1004567890AA">
+  <targetvolume>75</targetvolume>
+  <actualvolume>75</actualvolume>
+  <muteenabled>false</muteenabled>
+</volume>''';
+
+      when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
+        (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+      );
+
+      final volume = await apiService.setVolume('192.168.1.100', 75);
+
+      expect(volume.targetVolume, 75);
+      expect(volume.actualVolume, 75);
+      expect(volume.muteEnabled, false);
+
+      // Verify the request was made with correct XML body
+      verify(mockClient.post(
+        any,
+        headers: {'Content-Type': 'text/xml'},
+        body: '<volume>75</volume>',
+      )).called(1);
+    });
+
+    test('setVolume throws ArgumentError for volume < 0', () async {
+      expect(
+        () => apiService.setVolume('192.168.1.100', -1),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
+
+    test('setVolume throws ArgumentError for volume > 100', () async {
+      expect(
+        () => apiService.setVolume('192.168.1.100', 101),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
+
+    test('setVolume accepts volume at boundaries (0 and 100)', () async {
+      const xmlResponse0 = '''<?xml version="1.0" encoding="UTF-8" ?>
+<volume deviceID="1004567890AA">
+  <targetvolume>0</targetvolume>
+  <actualvolume>0</actualvolume>
+  <muteenabled>false</muteenabled>
+</volume>''';
+
+      const xmlResponse100 = '''<?xml version="1.0" encoding="UTF-8" ?>
+<volume deviceID="1004567890AA">
+  <targetvolume>100</targetvolume>
+  <actualvolume>100</actualvolume>
+  <muteenabled>false</muteenabled>
+</volume>''';
+
+      when(mockClient.post(any, headers: anyNamed('headers'), body: '<volume>0</volume>')).thenAnswer(
+        (_) async => http.Response(xmlResponse0, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+      );
+
+      when(mockClient.post(any, headers: anyNamed('headers'), body: '<volume>100</volume>')).thenAnswer(
+        (_) async => http.Response(xmlResponse100, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+      );
+
+      final volume0 = await apiService.setVolume('192.168.1.100', 0);
+      expect(volume0.actualVolume, 0);
+
+      final volume100 = await apiService.setVolume('192.168.1.100', 100);
+      expect(volume100.actualVolume, 100);
+    });
+
+    test('getVolume throws exception on non-200 status code', () async {
+      when(mockClient.get(any)).thenAnswer(
+        (_) async => http.Response('Not Found', 404),
+      );
+
+      expect(
+        () => apiService.getVolume('192.168.1.100'),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test('setVolume throws exception on non-200 status code', () async {
+      when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
+        (_) async => http.Response('Not Found', 404),
+      );
+
+      expect(
+        () => apiService.setVolume('192.168.1.100', 50),
+        throwsA(isA<Exception>()),
+      );
+    });
   });
 }
