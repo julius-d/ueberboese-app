@@ -260,6 +260,15 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
     }
   }
 
+  Speaker? _getSpeakerByDeviceId(String deviceId) {
+    final appState = context.read<MyAppState>();
+    try {
+      return appState.speakers.firstWhere((s) => s.deviceId == deviceId);
+    } catch (e) {
+      return null;
+    }
+  }
+
   void _showZoneDialog(BuildContext context) {
     final appState = context.read<MyAppState>();
     final availableSpeakers = appState.speakers
@@ -313,6 +322,8 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
       ),
     );
   }
+
+
 
   void _deleteSpeaker(BuildContext context) {
     final appState = context.read<MyAppState>();
@@ -594,6 +605,8 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                           const SizedBox(height: 8),
                           ..._currentZone!.members.map((member) {
                             final isCurrentSpeaker = member.deviceId == widget.speaker.deviceId;
+                            final speaker = _getSpeakerByDeviceId(member.deviceId);
+
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 4.0),
                               child: Row(
@@ -607,10 +620,39 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
-                                    child: Text(
-                                      member.ipAddress,
-                                      style: theme.textTheme.bodyMedium,
-                                    ),
+                                    child: speaker != null
+                                        ? Row(
+                                            children: [
+                                              Text(
+                                                speaker.emoji,
+                                                style: const TextStyle(fontSize: 24),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      speaker.name,
+                                                      style: theme.textTheme.bodyMedium?.copyWith(
+                                                        fontWeight: FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      speaker.type,
+                                                      style: theme.textTheme.bodySmall?.copyWith(
+                                                        color: theme.colorScheme.onSurfaceVariant,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        : Text(
+                                            member.ipAddress,
+                                            style: theme.textTheme.bodyMedium,
+                                          ),
                                   ),
                                   if (!isCurrentSpeaker &&
                                       _currentZone!.isMaster(widget.speaker.deviceId))
