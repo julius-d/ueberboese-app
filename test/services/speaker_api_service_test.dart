@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:ueberboese_app/services/speaker_api_service.dart';
-import 'dart:convert';
 
 import 'speaker_api_service_test.mocks.dart';
 

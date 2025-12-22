@@ -8,9 +8,9 @@ class SpeakerDetailPage extends StatefulWidget {
   final Speaker speaker;
 
   const SpeakerDetailPage({
-    Key? key,
+    super.key,
     required this.speaker,
-  }) : super(key: key);
+  });
 
   @override
   State<SpeakerDetailPage> createState() => _SpeakerDetailPageState();

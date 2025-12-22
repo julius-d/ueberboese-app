@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class SpotifyAccountsPage extends StatelessWidget {
-  const SpotifyAccountsPage({Key? key}) : super(key: key);
+  const SpotifyAccountsPage({super.key});
 
   @override
   Widget build(BuildContext context) {

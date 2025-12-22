@@ -4,7 +4,7 @@ import '../models/app_config.dart';
 import '../main.dart';
 
 class ConfigurationPage extends StatefulWidget {
-  const ConfigurationPage({Key? key}) : super(key: key);
+  const ConfigurationPage({super.key});
 
   @override
   State<ConfigurationPage> createState() => _ConfigurationPageState();

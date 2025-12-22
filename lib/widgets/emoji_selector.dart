@@ -5,10 +5,10 @@ class EmojiSelector extends StatelessWidget {
   final Function(String) onEmojiSelected;
 
   const EmojiSelector({
-    Key? key,
+    super.key,
     required this.selectedEmoji,
     required this.onEmojiSelected,
-  }) : super(key: key);
+  });
 
   static const List<String> availableEmojis = [
     '🔊', // Speaker

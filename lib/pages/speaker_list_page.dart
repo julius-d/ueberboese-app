@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/speaker.dart';
 import '../main.dart';
 import 'speaker_detail_page.dart';
 import 'add_speaker_page.dart';
 
 class SpeakerListPage extends StatelessWidget {
-  const SpeakerListPage({Key? key}) : super(key: key);
+  const SpeakerListPage({super.key});
 
   @override
   Widget build(BuildContext context) {

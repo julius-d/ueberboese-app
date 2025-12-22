@@ -4,7 +4,7 @@ import 'spotify_accounts_page.dart';
 import 'configuration_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -21,13 +21,10 @@ class _HomePageState extends State<HomePage> {
     switch (selectedIndex) {
       case 0:
         page = const SpeakerListPage();
-        break;
       case 1:
         page = const SpotifyAccountsPage();
-        break;
       case 2:
         page = const ConfigurationPage();
-        break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }

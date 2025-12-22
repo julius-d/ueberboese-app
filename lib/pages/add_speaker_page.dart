@@ -8,7 +8,7 @@ import '../widgets/emoji_selector.dart';
 import '../services/speaker_api_service.dart';
 
 class AddSpeakerPage extends StatefulWidget {
-  const AddSpeakerPage({Key? key}) : super(key: key);
+  const AddSpeakerPage({super.key});
 
   @override
   State<AddSpeakerPage> createState() => _AddSpeakerPageState();
