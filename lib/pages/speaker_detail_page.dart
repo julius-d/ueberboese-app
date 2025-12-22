@@ -11,6 +11,7 @@ class SpeakerDetailPage extends StatefulWidget {
   final Speaker speaker;
 
 
+
   const SpeakerDetailPage({
     super.key,
     required this.speaker,
@@ -292,6 +293,47 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
     );
   }
 
+  void _showDeleteConfirmationDialog(BuildContext context) {
+    final theme = Theme.of(context);
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Speaker'),
+        content: Text(
+          'Are you sure you want to delete "${widget.speaker.name}"? This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _deleteSpeaker(context);
+            },
+            style: FilledButton.styleFrom(
+              backgroundColor: theme.colorScheme.error,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _deleteSpeaker(BuildContext context) {
+    final appState = context.read<MyAppState>();
+    appState.removeSpeaker(widget.speaker);
+
+    Navigator.of(context).pop();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${widget.speaker.name} deleted')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
@@ -301,6 +343,28 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
         title: const Text('Speaker Details'),
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: theme.colorScheme.onPrimary,
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            onSelected: (value) {
+              if (value == 'delete') {
+                _showDeleteConfirmationDialog(context);
+              }
+            },
+            itemBuilder: (BuildContext context) => [
+              const PopupMenuItem<String>(
+                value: 'delete',
+                child: Row(
+                  children: [
+                    Icon(Icons.delete, color: Colors.red),
+                    SizedBox(width: 8),
+                    Text('Delete speaker'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
