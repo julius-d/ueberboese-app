@@ -4,6 +4,7 @@ import 'package:xml/xml.dart';
 import '../models/speaker_info.dart';
 import '../models/volume.dart';
 import '../models/now_playing.dart';
+import '../models/zone.dart';
 
 class SpeakerApiService {
   final http.Client? httpClient;
@@ -292,6 +293,171 @@ class SpeakerApiService {
         rethrow;
       }
       throw Exception('Failed to fetch now playing: $e');
+    } finally {
+      if (httpClient == null) {
+        client.close();
+      }
+    }
+  }
+
+  Future<Zone?> getZone(String ipAddress) async {
+    final url = Uri.parse('http://$ipAddress:8090/getZone');
+    final client = httpClient ?? http.Client();
+
+    try {
+      final response = await client
+          .get(url)
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          'Failed to fetch zone: HTTP ${response.statusCode}',
+        );
+      }
+
+      final bodyText = utf8.decode(response.bodyBytes);
+      final document = XmlDocument.parse(bodyText);
+
+      // Find zone element
+      final zoneElements = document.findAllElements('zone');
+      if (zoneElements.isEmpty) {
+        return null;
+      }
+
+      final zoneElement = zoneElements.first;
+      final masterId = zoneElement.getAttribute('master');
+
+      // If no master attribute, the device is not part of a zone
+      if (masterId == null || masterId.isEmpty) {
+        return null;
+      }
+
+      // Parse members
+      final memberElements = zoneElement.findElements('member');
+      final members = memberElements
+          .map((element) => ZoneMember.fromXml(element))
+          .toList();
+
+      // Optional attributes
+      final senderIpAddress = zoneElement.getAttribute('senderIPAddress');
+      final senderIsMasterStr = zoneElement.getAttribute('senderIsMaster');
+      final senderIsMaster = senderIsMasterStr != null
+          ? senderIsMasterStr.toLowerCase() == 'true'
+          : null;
+
+      return Zone(
+        masterId: masterId,
+        members: members,
+        senderIpAddress: senderIpAddress,
+        senderIsMaster: senderIsMaster,
+      );
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Failed to fetch zone: $e');
+    } finally {
+      if (httpClient == null) {
+        client.close();
+      }
+    }
+  }
+
+  Future<void> createZone(String ipAddress, String masterId, List<ZoneMember> members) async {
+    final url = Uri.parse('http://$ipAddress:8090/setZone');
+    final client = httpClient ?? http.Client();
+
+    try {
+      // Build XML body
+      final membersXml = members.map((m) => m.toXml()).join('\n  ');
+      final body = '<zone master="$masterId">\n  $membersXml\n</zone>';
+
+      final response = await client
+          .post(
+            url,
+            headers: {'Content-Type': 'text/xml'},
+            body: body,
+          )
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          'Failed to create zone: HTTP ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Failed to create zone: $e');
+    } finally {
+      if (httpClient == null) {
+        client.close();
+      }
+    }
+  }
+
+  Future<void> addZoneMembers(String ipAddress, String masterId, List<ZoneMember> members) async {
+    final url = Uri.parse('http://$ipAddress:8090/addZoneSlave');
+    final client = httpClient ?? http.Client();
+
+    try {
+      // Build XML body
+      final membersXml = members.map((m) => m.toXml()).join('\n  ');
+      final body = '<zone master="$masterId">\n  $membersXml\n</zone>';
+
+      final response = await client
+          .post(
+            url,
+            headers: {'Content-Type': 'text/xml'},
+            body: body,
+          )
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          'Failed to add zone members: HTTP ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Failed to add zone members: $e');
+    } finally {
+      if (httpClient == null) {
+        client.close();
+      }
+    }
+  }
+
+  Future<void> removeZoneMembers(String ipAddress, String masterId, List<ZoneMember> members) async {
+    final url = Uri.parse('http://$ipAddress:8090/removeZoneSlave');
+    final client = httpClient ?? http.Client();
+
+    try {
+      // Build XML body
+      final membersXml = members.map((m) => m.toXml()).join('\n  ');
+      final body = '<zone master="$masterId">\n  $membersXml\n</zone>';
+
+      final response = await client
+          .post(
+            url,
+            headers: {'Content-Type': 'text/xml'},
+            body: body,
+          )
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          'Failed to remove zone members: HTTP ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Failed to remove zone members: $e');
     } finally {
       if (httpClient == null) {
         client.close();

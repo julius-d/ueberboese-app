@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:ueberboese_app/services/speaker_api_service.dart';
+import 'package:ueberboese_app/models/zone.dart';
 
 import 'speaker_api_service_test.mocks.dart';
 
@@ -292,6 +293,168 @@ void main() {
         () => apiService.setVolume('192.168.1.100', 50),
         throwsA(isA<Exception>()),
       );
+    });
+
+    group('Zone API', () {
+      test('getZone returns null for empty zone', () async {
+        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
+<zone />''';
+
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        final zone = await apiService.getZone('192.168.1.131');
+
+        expect(zone, isNull);
+      });
+
+      test('getZone parses master zone correctly', () async {
+        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
+<zone master="1004567890AA">
+  <member ipaddress="192.168.1.131">1004567890AA</member>
+  <member ipaddress="192.168.1.130">3004567890BB</member>
+</zone>''';
+
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        final zone = await apiService.getZone('192.168.1.131');
+
+        expect(zone, isNotNull);
+        expect(zone!.masterId, '1004567890AA');
+        expect(zone.members.length, 2);
+        expect(zone.members[0].deviceId, '1004567890AA');
+        expect(zone.members[0].ipAddress, '192.168.1.131');
+        expect(zone.members[1].deviceId, '3004567890BB');
+        expect(zone.members[1].ipAddress, '192.168.1.130');
+        expect(zone.senderIpAddress, isNull);
+        expect(zone.senderIsMaster, isNull);
+      });
+
+      test('getZone parses member zone correctly', () async {
+        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
+<zone master="1004567890AA" senderIPAddress="192.168.1.131" senderIsMaster="true">
+  <member ipaddress="192.168.1.130">3004567890BB</member>
+</zone>''';
+
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        final zone = await apiService.getZone('192.168.1.130');
+
+        expect(zone, isNotNull);
+        expect(zone!.masterId, '1004567890AA');
+        expect(zone.members.length, 1);
+        expect(zone.members[0].deviceId, '3004567890BB');
+        expect(zone.senderIpAddress, '192.168.1.131');
+        expect(zone.senderIsMaster, true);
+      });
+
+      test('createZone sends correct XML', () async {
+        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
+<status>/setZone</status>''';
+
+        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        final members = [
+          ZoneMember(deviceId: '1004567890AA', ipAddress: '192.168.1.131'),
+          ZoneMember(deviceId: '3004567890BB', ipAddress: '192.168.1.130'),
+        ];
+
+        await apiService.createZone('192.168.1.131', '1004567890AA', members);
+
+        final captured = verify(mockClient.post(
+          any,
+          headers: {'Content-Type': 'text/xml'},
+          body: captureAnyNamed('body'),
+        )).captured;
+
+        final body = captured[0] as String;
+        expect(body, contains('<zone master="1004567890AA">'));
+        expect(body, contains('<member ipaddress="192.168.1.131">1004567890AA</member>'));
+        expect(body, contains('<member ipaddress="192.168.1.130">3004567890BB</member>'));
+      });
+
+      test('addZoneMembers sends correct XML', () async {
+        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
+<status>/addZoneSlave</status>''';
+
+        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        final newMembers = [
+          ZoneMember(deviceId: 'F9BC35A6D825', ipAddress: '192.168.1.132'),
+        ];
+
+        await apiService.addZoneMembers('192.168.1.131', '1004567890AA', newMembers);
+
+        final captured = verify(mockClient.post(
+          any,
+          headers: {'Content-Type': 'text/xml'},
+          body: captureAnyNamed('body'),
+        )).captured;
+
+        final body = captured[0] as String;
+        expect(body, contains('<zone master="1004567890AA">'));
+        expect(body, contains('<member ipaddress="192.168.1.132">F9BC35A6D825</member>'));
+      });
+
+      test('removeZoneMembers sends correct XML', () async {
+        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
+<status>/removeZoneSlave</status>''';
+
+        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        final membersToRemove = [
+          ZoneMember(deviceId: '3004567890BB', ipAddress: '192.168.1.130'),
+        ];
+
+        await apiService.removeZoneMembers('192.168.1.131', '1004567890AA', membersToRemove);
+
+        final captured = verify(mockClient.post(
+          any,
+          headers: {'Content-Type': 'text/xml'},
+          body: captureAnyNamed('body'),
+        )).captured;
+
+        final body = captured[0] as String;
+        expect(body, contains('<zone master="1004567890AA">'));
+        expect(body, contains('<member ipaddress="192.168.1.130">3004567890BB</member>'));
+      });
+
+      test('getZone throws exception on non-200 status code', () async {
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response('Not Found', 404),
+        );
+
+        expect(
+          () => apiService.getZone('192.168.1.131'),
+          throwsA(isA<Exception>()),
+        );
+      });
+
+      test('createZone throws exception on non-200 status code', () async {
+        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
+          (_) async => http.Response('Not Found', 404),
+        );
+
+        final members = [
+          ZoneMember(deviceId: '1004567890AA', ipAddress: '192.168.1.131'),
+        ];
+
+        expect(
+          () => apiService.createZone('192.168.1.131', '1004567890AA', members),
+          throwsA(isA<Exception>()),
+        );
+      });
     });
   });
 }

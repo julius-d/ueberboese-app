@@ -4,6 +4,7 @@ class Speaker {
   final String emoji;
   final String ipAddress;
   final String type;
+  final String? deviceId;
 
   const Speaker({
     required this.id,
@@ -11,6 +12,7 @@ class Speaker {
     required this.emoji,
     required this.ipAddress,
     required this.type,
+    this.deviceId,
   });
 
   Map<String, dynamic> toJson() => {
@@ -19,6 +21,7 @@ class Speaker {
         'emoji': emoji,
         'ipAddress': ipAddress,
         'type': type,
+        if (deviceId != null) 'deviceId': deviceId,
       };
 
   factory Speaker.fromJson(Map<String, dynamic> json) => Speaker(
@@ -27,6 +30,7 @@ class Speaker {
         emoji: json['emoji'] as String,
         ipAddress: json['ipAddress'] as String,
         type: json['type'] as String,
+        deviceId: json['deviceId'] as String?,
       );
 
   @override
