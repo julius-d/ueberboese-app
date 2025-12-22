@@ -72,6 +72,15 @@ class MyAppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateSpeaker(Speaker updatedSpeaker) {
+    final index = speakers.indexWhere((s) => s.id == updatedSpeaker.id);
+    if (index != -1) {
+      speakers[index] = updatedSpeaker;
+      _storageService.saveSpeakers(speakers);
+      notifyListeners();
+    }
+  }
+
   void updateConfig(AppConfig newConfig) {
     config = newConfig;
     _configStorageService.saveConfig(config);

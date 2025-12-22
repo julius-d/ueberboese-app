@@ -6,9 +6,12 @@ import '../models/now_playing.dart';
 import '../models/zone.dart';
 import '../services/speaker_api_service.dart';
 import '../main.dart';
+import 'edit_speaker_page.dart';
 
 class SpeakerDetailPage extends StatefulWidget {
   final Speaker speaker;
+
+
 
   const SpeakerDetailPage({
     super.key,
@@ -345,11 +348,28 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert),
             onSelected: (value) {
-              if (value == 'delete') {
+              if (value == 'edit') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditSpeakerPage(speaker: widget.speaker),
+                  ),
+                );
+              } else if (value == 'delete') {
                 _showDeleteConfirmationDialog(context);
               }
             },
             itemBuilder: (BuildContext context) => [
+              const PopupMenuItem<String>(
+                value: 'edit',
+                child: Row(
+                  children: [
+                    Icon(Icons.edit),
+                    SizedBox(width: 8),
+                    Text('Edit speaker'),
+                  ],
+                ),
+              ),
               const PopupMenuItem<String>(
                 value: 'delete',
                 child: Row(
