@@ -20,6 +20,7 @@ void main() {
         emoji: '🎵',
         ipAddress: '192.168.1.200',
         type: 'SoundTouch 10',
+        deviceId: 'device-test',
       );
 
       appState.addSpeaker(newSpeaker);
@@ -43,6 +44,7 @@ void main() {
         emoji: '🎵',
         ipAddress: '192.168.1.200',
         type: 'SoundTouch 10',
+        deviceId: 'device-test',
       );
 
       appState.addSpeaker(newSpeaker);

@@ -24,6 +24,7 @@ void main() {
         emoji: '🔊',
         ipAddress: '192.168.1.100',
         type: 'SoundTouch 10',
+        deviceId: 'device-123',
       );
       appState.addSpeaker(testSpeaker);
 
@@ -52,6 +53,7 @@ void main() {
         emoji: '🔊',
         ipAddress: '192.168.1.101',
         type: 'SoundTouch 10',
+        deviceId: 'device-101',
       ));
       appState.addSpeaker(const Speaker(
         id: '2',
@@ -59,6 +61,7 @@ void main() {
         emoji: '🎵',
         ipAddress: '192.168.1.102',
         type: 'SoundTouch 20',
+        deviceId: 'device-102',
       ));
       appState.addSpeaker(const Speaker(
         id: '3',
@@ -66,6 +69,7 @@ void main() {
         emoji: '🎶',
         ipAddress: '192.168.1.103',
         type: 'SoundTouch 30',
+        deviceId: 'device-103',
       ));
 
       await tester.pumpWidget(
@@ -93,6 +97,7 @@ void main() {
         emoji: '🔊',
         ipAddress: '192.168.1.100',
         type: 'SoundTouch 10',
+        deviceId: 'device-123',
       ));
 
       await tester.pumpWidget(
@@ -124,6 +129,7 @@ void main() {
         emoji: '🔊',
         ipAddress: '192.168.1.100',
         type: 'SoundTouch 10',
+        deviceId: 'device-123',
       ));
 
       await tester.pumpWidget(

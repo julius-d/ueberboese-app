@@ -20,6 +20,7 @@ void main() {
           emoji: '🔊',
           ipAddress: '192.168.1.100',
           type: 'SoundTouch 10',
+          deviceId: 'device-100',
         ),
         Speaker(
           id: '2',
@@ -27,6 +28,7 @@ void main() {
           emoji: '🎵',
           ipAddress: '192.168.1.101',
           type: 'SoundTouch 20',
+          deviceId: 'device-101',
         ),
       ];
 
@@ -52,7 +54,7 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(
         'speakers',
-        '[{"id":"1","name":"Test Speaker","emoji":"🔊","ipAddress":"192.168.1.100","type":"SoundTouch 10"}]',
+        '[{"id":"1","name":"Test Speaker","emoji":"🔊","ipAddress":"192.168.1.100","type":"SoundTouch 10","deviceId":"device-123"}]',
       );
 
       final speakers = await service.loadSpeakers();
@@ -63,6 +65,7 @@ void main() {
       expect(speakers[0].emoji, '🔊');
       expect(speakers[0].ipAddress, '192.168.1.100');
       expect(speakers[0].type, 'SoundTouch 10');
+      expect(speakers[0].deviceId, 'device-123');
     });
 
 
@@ -92,6 +95,7 @@ void main() {
           emoji: '🔊',
           ipAddress: '192.168.1.100',
           type: 'SoundTouch 10',
+          deviceId: 'device-100',
         ),
         Speaker(
           id: '2',
@@ -99,6 +103,7 @@ void main() {
           emoji: '🎵',
           ipAddress: '192.168.1.101',
           type: 'SoundTouch 20',
+          deviceId: 'device-101',
         ),
       ];
 

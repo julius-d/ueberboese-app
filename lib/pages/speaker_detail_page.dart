@@ -134,14 +134,6 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
   }
 
   Future<void> _createZone(List<Speaker> selectedSpeakers) async {
-    if (widget.speaker.deviceId == null) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Speaker device ID not available')),
-      );
-      return;
-    }
-
     setState(() {
       _isLoadingZone = true;
       _zoneErrorMessage = null;
@@ -151,20 +143,20 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
       // Create members list including this speaker as master
       final members = <ZoneMember>[
         ZoneMember(
-          deviceId: widget.speaker.deviceId!,
+          deviceId: widget.speaker.deviceId,
           ipAddress: widget.speaker.ipAddress,
         ),
         ...selectedSpeakers
-            .where((s) => s.deviceId != null && s.id != widget.speaker.id)
+            .where((s) => s.id != widget.speaker.id)
             .map((s) => ZoneMember(
-                  deviceId: s.deviceId!,
+                  deviceId: s.deviceId,
                   ipAddress: s.ipAddress,
                 )),
       ];
 
       await _apiService.createZone(
         widget.speaker.ipAddress,
-        widget.speaker.deviceId!,
+        widget.speaker.deviceId,
         members,
       );
 
@@ -187,7 +179,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
   }
 
   Future<void> _addToZone(List<Speaker> selectedSpeakers) async {
-    if (_currentZone == null || widget.speaker.deviceId == null) return;
+    if (_currentZone == null) return;
 
     setState(() {
       _isLoadingZone = true;
@@ -197,10 +189,9 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
     try {
       final newMembers = selectedSpeakers
           .where((s) =>
-              s.deviceId != null &&
               !_currentZone!.members.any((m) => m.deviceId == s.deviceId))
           .map((s) => ZoneMember(
-                deviceId: s.deviceId!,
+                deviceId: s.deviceId,
                 ipAddress: s.ipAddress,
               ))
           .toList();
@@ -272,7 +263,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
   void _showZoneDialog(BuildContext context) {
     final appState = context.read<MyAppState>();
     final availableSpeakers = appState.speakers
-        .where((s) => s.id != widget.speaker.id && s.deviceId != null)
+        .where((s) => s.id != widget.speaker.id)
         .toList();
 
     if (availableSpeakers.isEmpty) {
@@ -584,7 +575,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                _currentZone!.isMaster(widget.speaker.deviceId ?? '')
+                                _currentZone!.isMaster(widget.speaker.deviceId)
                                     ? 'Master Speaker'
                                     : 'Zone Member',
                                 style: theme.textTheme.bodyLarge?.copyWith(
@@ -622,7 +613,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                                     ),
                                   ),
                                   if (!isCurrentSpeaker &&
-                                      _currentZone!.isMaster(widget.speaker.deviceId ?? ''))
+                                      _currentZone!.isMaster(widget.speaker.deviceId))
                                     IconButton(
                                       icon: const Icon(Icons.remove_circle_outline),
                                       iconSize: 20,
@@ -636,7 +627,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                             );
                           }),
                           const SizedBox(height: 16),
-                          if (_currentZone!.isMaster(widget.speaker.deviceId ?? ''))
+                          if (_currentZone!.isMaster(widget.speaker.deviceId))
                             FilledButton.icon(
                               onPressed: _isLoadingZone ? null : () => _showZoneDialog(context),
                               icon: const Icon(Icons.add),

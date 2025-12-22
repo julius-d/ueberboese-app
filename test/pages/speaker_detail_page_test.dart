@@ -18,6 +18,7 @@ void main() {
       emoji: '🔊',
       ipAddress: '192.168.1.100',
       type: 'SoundTouch 10',
+      deviceId: 'device-123',
     );
 
     testWidgets('displays speaker information', (WidgetTester tester) async {
