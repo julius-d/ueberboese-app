@@ -323,8 +323,6 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
     );
   }
 
-
-
   void _deleteSpeaker(BuildContext context) {
     final appState = context.read<MyAppState>();
     appState.removeSpeaker(widget.speaker);
@@ -375,27 +373,32 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
             Center(
-              child: Column(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     widget.speaker.emoji,
-                    style: const TextStyle(fontSize: 120),
+                    style: const TextStyle(fontSize: 48),
                   ),
-                  const SizedBox(height: 24),
-                  Text(
-                    widget.speaker.name,
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '${widget.speaker.type} • ${widget.speaker.ipAddress}',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                    textAlign: TextAlign.center,
+                  const SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.speaker.name,
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${widget.speaker.type} • ${widget.speaker.ipAddress}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
