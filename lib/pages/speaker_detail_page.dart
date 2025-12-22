@@ -10,8 +10,6 @@ import '../main.dart';
 class SpeakerDetailPage extends StatefulWidget {
   final Speaker speaker;
 
-
-
   const SpeakerDetailPage({
     super.key,
     required this.speaker,
@@ -600,24 +598,30 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'Zone Members (${_currentZone!.members.length})',
+                            'Zone Members (${_currentZone!.allMemberDeviceIds.length})',
                             style: theme.textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(height: 8),
-                          ..._currentZone!.members.map((member) {
-                            final isCurrentSpeaker = member.deviceId == widget.speaker.deviceId;
-                            final speaker = _getSpeakerByDeviceId(member.deviceId);
+                          ..._currentZone!.allMemberDeviceIds.map((deviceId) {
+                            final isCurrentSpeaker = deviceId == widget.speaker.deviceId;
+                            final isMaster = _currentZone!.isMaster(deviceId);
+                            final speaker = _getSpeakerByDeviceId(deviceId);
+
+                            // Find the member object for this device (null if it's the master)
+                            final member = _currentZone!.members
+                                .where((m) => m.deviceId == deviceId)
+                                .firstOrNull;
 
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 4.0),
                               child: Row(
                                 children: [
                                   Icon(
-                                    isCurrentSpeaker ? Icons.star : Icons.speaker,
+                                    isMaster ? Icons.star : Icons.speaker,
                                     size: 16,
-                                    color: isCurrentSpeaker
+                                    color: isMaster
                                         ? theme.colorScheme.primary
                                         : theme.colorScheme.onSurfaceVariant,
                                   ),
@@ -653,12 +657,14 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                                             ],
                                           )
                                         : Text(
-                                            member.ipAddress,
+                                            member?.ipAddress ?? deviceId,
                                             style: theme.textTheme.bodyMedium,
                                           ),
                                   ),
                                   if (!isCurrentSpeaker &&
-                                      _currentZone!.isMaster(widget.speaker.deviceId))
+                                      !isMaster &&
+                                      _currentZone!.isMaster(widget.speaker.deviceId) &&
+                                      member != null)
                                     IconButton(
                                       icon: const Icon(Icons.remove_circle_outline),
                                       iconSize: 20,

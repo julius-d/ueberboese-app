@@ -153,5 +153,86 @@ void main() {
       expect(zone.senderIpAddress, '192.168.1.131');
       expect(zone.senderIsMaster, true);
     });
+
+    test('allMemberDeviceIds returns master and all members', () {
+      final zone = Zone(
+        masterId: 'MASTER123ABC',
+        members: [
+          ZoneMember(deviceId: 'MEMBER456DEF', ipAddress: '192.168.1.101'),
+        ],
+      );
+
+      final allMembers = zone.allMemberDeviceIds;
+
+      expect(allMembers.length, 2);
+      expect(allMembers[0], 'MASTER123ABC'); // Master is first
+      expect(allMembers[1], 'MEMBER456DEF');
+    });
+
+    test('allMemberDeviceIds returns only master when no members', () {
+      final zone = Zone(
+        masterId: 'MASTER123ABC',
+        members: [],
+      );
+
+      final allMembers = zone.allMemberDeviceIds;
+
+      expect(allMembers.length, 1);
+      expect(allMembers[0], 'MASTER123ABC');
+    });
+
+    test('allMemberDeviceIds returns master first with multiple members', () {
+      final zone = Zone(
+        masterId: 'MASTER123',
+        members: [
+          ZoneMember(deviceId: 'MEMBER1', ipAddress: '192.168.1.1'),
+          ZoneMember(deviceId: 'MEMBER2', ipAddress: '192.168.1.2'),
+          ZoneMember(deviceId: 'MEMBER3', ipAddress: '192.168.1.3'),
+        ],
+      );
+
+      final allMembers = zone.allMemberDeviceIds;
+
+      expect(allMembers.length, 4);
+      expect(allMembers[0], 'MASTER123'); // Master is always first
+      expect(allMembers.contains('MEMBER1'), true);
+      expect(allMembers.contains('MEMBER2'), true);
+      expect(allMembers.contains('MEMBER3'), true);
+    });
+
+    test('isInZone identifies all devices in zone', () {
+      final zone = Zone(
+        masterId: 'MASTER123ABC',
+        members: [
+          ZoneMember(deviceId: 'MEMBER456DEF', ipAddress: '192.168.1.101'),
+        ],
+      );
+
+      expect(zone.isInZone('MASTER123ABC'), true); // Master
+      expect(zone.isInZone('MEMBER456DEF'), true); // Member
+      expect(zone.isInZone('UNKNOWN'), false); // Not in zone
+    });
+
+    test('allMemberDeviceIds does not duplicate master when it appears in members', () {
+      // This happens when querying a non-master device
+      // The API includes the master in the members list
+      final zone = Zone(
+        masterId: 'MASTER123ABC',
+        members: [
+          ZoneMember(deviceId: 'MASTER123ABC', ipAddress: '192.168.1.100'),
+          ZoneMember(deviceId: 'MEMBER456DEF', ipAddress: '192.168.1.101'),
+        ],
+      );
+
+      final allMembers = zone.allMemberDeviceIds;
+
+      // Should only contain 2 unique devices, not 3
+      expect(allMembers.length, 2);
+      expect(allMembers[0], 'MASTER123ABC'); // Master first
+      expect(allMembers[1], 'MEMBER456DEF'); // Member second
+
+      // Ensure no duplicates
+      expect(allMembers.toSet().length, 2);
+    });
   });
 }

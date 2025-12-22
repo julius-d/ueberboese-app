@@ -353,6 +353,73 @@ void main() {
         expect(zone.senderIsMaster, true);
       });
 
+      test('getZone correctly identifies master not in members list', () async {
+        // This happens when querying the master device
+        // The master is only in the "master" attribute, not in <member> elements
+        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
+<zone master="MASTER123ABC" senderIPAddress="192.168.1.100" senderIsMaster="true">
+  <member ipaddress="192.168.1.101">MEMBER456DEF</member>
+</zone>''';
+
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        final zone = await apiService.getZone('192.168.1.100');
+
+        expect(zone, isNotNull);
+        expect(zone!.masterId, 'MASTER123ABC');
+
+        // Only one member in the XML (not including master)
+        expect(zone.members.length, 1);
+        expect(zone.members[0].deviceId, 'MEMBER456DEF');
+
+        // But allMemberDeviceIds should include both master and member
+        expect(zone.allMemberDeviceIds.length, 2);
+        expect(zone.allMemberDeviceIds[0], 'MASTER123ABC'); // Master first
+        expect(zone.allMemberDeviceIds[1], 'MEMBER456DEF'); // Member second
+
+        // Check helper methods
+        expect(zone.isMaster('MASTER123ABC'), true);
+        expect(zone.isMaster('MEMBER456DEF'), false);
+        expect(zone.isInZone('MASTER123ABC'), true);
+        expect(zone.isInZone('MEMBER456DEF'), true);
+      });
+
+      test('getZone handles master appearing in members list', () async {
+        // This happens when querying a non-master device
+        // The API includes the master in the members list
+        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
+<zone master="MASTER123ABC">
+  <member ipaddress="192.168.1.100">MASTER123ABC</member>
+  <member ipaddress="192.168.1.101">MEMBER456DEF</member>
+</zone>''';
+
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        final zone = await apiService.getZone('192.168.1.101');
+
+        expect(zone, isNotNull);
+        expect(zone!.masterId, 'MASTER123ABC');
+
+        // Two members in the XML (including master)
+        expect(zone.members.length, 2);
+        expect(zone.members[0].deviceId, 'MASTER123ABC');
+        expect(zone.members[1].deviceId, 'MEMBER456DEF');
+
+        // allMemberDeviceIds should deduplicate and return only 2 unique devices
+        expect(zone.allMemberDeviceIds.length, 2);
+        expect(zone.allMemberDeviceIds[0], 'MASTER123ABC'); // Master first
+        expect(zone.allMemberDeviceIds[1], 'MEMBER456DEF'); // Member second
+        expect(zone.allMemberDeviceIds.toSet().length, 2); // No duplicates
+
+        // Both devices should be considered in the zone
+        expect(zone.isInZone('MASTER123ABC'), true);
+        expect(zone.isInZone('MEMBER456DEF'), true);
+      });
+
       test('createZone sends correct XML', () async {
         const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
 <status>/setZone</status>''';

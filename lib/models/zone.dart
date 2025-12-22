@@ -48,8 +48,20 @@ class Zone {
   bool get isEmpty => members.isEmpty;
   bool get isNotEmpty => members.isNotEmpty;
 
+  /// Returns all devices in the zone, including the master
+  /// The master is always listed first, followed by members (excluding duplicates)
+  List<String> get allMemberDeviceIds {
+    // Start with master, then add members that are not the master
+    final memberIds = members
+        .map((m) => m.deviceId)
+        .where((id) => id != masterId)
+        .toList();
+    return [masterId, ...memberIds];
+  }
+
   bool isMaster(String deviceId) => masterId == deviceId;
   bool isMember(String deviceId) => members.any((m) => m.deviceId == deviceId);
+  bool isInZone(String deviceId) => masterId == deviceId || isMember(deviceId);
 
   String toXml() {
     final membersXml = members.map((m) => m.toXml()).join('\n  ');
