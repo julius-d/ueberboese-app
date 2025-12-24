@@ -2,6 +2,18 @@
 
 This app is the companion for the [Überböse API](https://github.com/julius-d/ueberboese-api)
 
+## Features
+
+The app has to main purposes:
+
+1. Set up Spotify auth for yor self hosted Überböse API server
+2. Additionally, the app also allows controlling your speakers via the
+   [SoundTouch-WebServices-API](https://github.com/thlucas1/homeassistantcomponent_soundtouchplus/wiki/SoundTouch-WebServices-API) 
+   that is provided by each speaker.
+   - **Multi-Room Audio**: Control and view speaker zones for synchronized playback
+   - **Volume Control**: Adjust volume levels for individual speakers
+   - **Now Playing**: See what's currently playing on your speakers
+
 ## Installation
 
 ### Via Obtainium (Recommended)
