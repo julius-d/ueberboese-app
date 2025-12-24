@@ -342,8 +342,6 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Speaker Details'),
-        backgroundColor: theme.colorScheme.primary,
-        foregroundColor: theme.colorScheme.onPrimary,
         actions: [
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert),
@@ -370,13 +368,13 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                   ],
                 ),
               ),
-              const PopupMenuItem<String>(
+              PopupMenuItem<String>(
                 value: 'delete',
                 child: Row(
                   children: [
-                    Icon(Icons.delete, color: Colors.red),
-                    SizedBox(width: 8),
-                    Text('Delete speaker'),
+                    Icon(Icons.delete, color: theme.colorScheme.error),
+                    const SizedBox(width: 8),
+                    const Text('Delete speaker'),
                   ],
                 ),
               ),

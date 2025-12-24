@@ -154,8 +154,6 @@ class _AddSpeakerPageState extends State<AddSpeakerPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Speaker'),
-        backgroundColor: theme.colorScheme.primary,
-        foregroundColor: theme.colorScheme.onPrimary,
       ),
       body: Stack(
         children: [
@@ -259,7 +257,7 @@ class _AddSpeakerPageState extends State<AddSpeakerPage> {
           ),
           if (_isLoading)
             Container(
-              color: Colors.black54,
+              color: theme.colorScheme.scrim.withOpacity(0.6),
               child: const Center(
                 child: Card(
                   child: Padding(

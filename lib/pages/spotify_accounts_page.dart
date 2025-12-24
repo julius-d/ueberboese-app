@@ -298,13 +298,13 @@ class _SpotifyAccountsPageState extends State<SpotifyAccountsPage> {
       );
     } else {
       content = ListView.builder(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(16),
         itemCount: _accounts.length,
         itemBuilder: (context, index) {
           final account = _accounts[index];
           return Card(
             margin: const EdgeInsets.symmetric(
-              horizontal: 8,
+              horizontal: 16,
               vertical: 8,
             ),
             child: ListTile(
@@ -315,16 +315,14 @@ class _SpotifyAccountsPageState extends State<SpotifyAccountsPage> {
               ),
               title: Text(
                 account.displayName,
-                style: const TextStyle(
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
-                  fontSize: 18,
                 ),
               ),
               subtitle: Text(
                 _formatAccountDate(account.createdAt),
-                style: TextStyle(
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.secondary,
-                  fontSize: 14,
                 ),
               ),
             ),
@@ -339,7 +337,7 @@ class _SpotifyAccountsPageState extends State<SpotifyAccountsPage> {
           content,
           if (_isLoading)
             Container(
-              color: Colors.black54,
+              color: Theme.of(context).colorScheme.scrim.withOpacity(0.6),
               child: Center(
                 child: Card(
                   child: Padding(

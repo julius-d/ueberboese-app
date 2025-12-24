@@ -18,32 +18,30 @@ class SpeakerListPage extends StatelessWidget {
       );
     } else {
       content = ListView.builder(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(16),
         itemCount: appState.speakers.length,
         itemBuilder: (context, index) {
           final speaker = appState.speakers[index];
           return Card(
             margin: const EdgeInsets.symmetric(
-              horizontal: 8,
+              horizontal: 16,
               vertical: 8,
             ),
             child: ListTile(
               leading: Text(
                 speaker.emoji,
-                style: const TextStyle(fontSize: 32),
+                style: Theme.of(context).textTheme.headlineMedium,
               ),
               title: Text(
                 speaker.name,
-                style: const TextStyle(
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
-                  fontSize: 18,
                 ),
               ),
               subtitle: Text(
                 speaker.type,
-                style: TextStyle(
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Theme.of(context).colorScheme.secondary,
-                  fontSize: 14,
                 ),
               ),
               trailing: Icon(

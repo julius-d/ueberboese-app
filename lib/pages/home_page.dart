@@ -45,7 +45,12 @@ class _HomePageState extends State<HomePage> {
             // on narrow screens.
             return Column(
               children: [
-                Expanded(child: mainArea),
+                Expanded(
+                  child: SafeArea(
+                    bottom: false,
+                    child: mainArea,
+                  ),
+                ),
                 SafeArea(
                   child: BottomNavigationBar(
                     items: const [
@@ -100,7 +105,11 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
                 ),
-                Expanded(child: mainArea),
+                Expanded(
+                  child: SafeArea(
+                    child: mainArea,
+                  ),
+                ),
               ],
             );
           }

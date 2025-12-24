@@ -145,7 +145,8 @@ void main() {
         find.text('🔊').first,
       );
 
-      expect(emojiText.style?.fontSize, 32);
+      // Using theme typography now (headlineMedium) instead of explicit fontSize
+      expect(emojiText.style?.fontSize, 28);
     });
   });
 }

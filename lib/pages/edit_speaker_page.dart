@@ -49,8 +49,6 @@ class _EditSpeakerPageState extends State<EditSpeakerPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Speaker'),
-        backgroundColor: theme.colorScheme.primary,
-        foregroundColor: theme.colorScheme.onPrimary,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
