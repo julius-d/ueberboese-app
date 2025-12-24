@@ -90,10 +90,10 @@ jobs:
           storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
           keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
-          storeFile=app/upload-keystore.jks
+          storeFile=upload-keystore.jks
           EOF
           echo "key.properties created successfully"
-          echo "Keystore path: $(cat android/key.properties | grep storeFile)"
+          cat android/key.properties
 
       - name: Build APK
         run: flutter build apk --release
