@@ -1,6 +1,6 @@
 # Überböse App
 
-This app is the companion for the Überböse API
+This app is the companion for the [Überböse API](https://github.com/julius-d/ueberboese-api)
 
 ## Installation
 
