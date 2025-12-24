@@ -1,0 +1,174 @@
+name: Android Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  version:
+    name: Calculate Semantic Version
+    runs-on: ubuntu-latest
+    outputs:
+      new_version: ${{ steps.semver.outputs.new_tag }}
+      previous_version: ${{ steps.semver.outputs.tag }}
+      changelog: ${{ steps.semver.outputs.changelog }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Calculate semantic version
+        id: semver
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          dry_run: true
+          default_bump: false
+          release_branches: main
+          pre_release_branches: develop
+
+      - name: Display version info
+        run: |
+          echo "Previous version: ${{ steps.semver.outputs.tag }}"
+          echo "New version: ${{ steps.semver.outputs.new_tag }}"
+          echo "Version bump: ${{ steps.semver.outputs.part }}"
+
+  build:
+    name: Build Signed APK
+    needs: version
+    runs-on: ubuntu-latest
+    if: needs.version.outputs.new_version != ''
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Generate mock files
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Update version in pubspec.yaml
+        run: |
+          VERSION="${{ needs.version.outputs.new_version }}"
+          # Remove 'v' prefix if present
+          VERSION="${VERSION#v}"
+          # Update pubspec.yaml
+          sed -i "s/^version: .*/version: $VERSION/" pubspec.yaml
+          echo "Updated pubspec.yaml to version $VERSION"
+          cat pubspec.yaml | grep "^version:"
+
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-keystore.jks
+
+      - name: Create key.properties
+        run: |
+          cat > android/key.properties <<EOF
+          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          storeFile=upload-keystore.jks
+          EOF
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Rename APK
+        run: |
+          VERSION="${{ needs.version.outputs.new_version }}"
+          VERSION="${VERSION#v}"
+          mv build/app/outputs/flutter-apk/app-release.apk \
+             build/app/outputs/flutter-apk/ueberboese-app-$VERSION.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: build/app/outputs/flutter-apk/ueberboese-app-*.apk
+          retention-days: 90
+
+  release:
+    name: Create GitHub Release
+    needs: [version, build]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download APK artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-apk
+          path: ./artifacts
+
+      - name: Create Release Tag
+        id: create_tag
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          custom_tag: ${{ needs.version.outputs.new_version }}
+          tag_prefix: ''
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          VERSION="${{ needs.version.outputs.new_version }}"
+          PREV_VERSION="${{ needs.version.outputs.previous_version }}"
+
+          # If no previous version, get all commits
+          if [ -z "$PREV_VERSION" ] || [ "$PREV_VERSION" == "null" ]; then
+            COMMITS=$(git log --pretty=format:"- %s (%h)" --no-merges)
+          else
+            COMMITS=$(git log ${PREV_VERSION}..HEAD --pretty=format:"- %s (%h)" --no-merges)
+          fi
+
+          # Create changelog
+          CHANGELOG="## What's Changed
+
+          $COMMITS
+
+          **Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_VERSION}...${VERSION}"
+
+          # Save to file and environment
+          echo "$CHANGELOG" > changelog.md
+          echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.version.outputs.new_version }}
+          name: Release ${{ needs.version.outputs.new_version }}
+          body: ${{ steps.changelog.outputs.CHANGELOG }}
+          draft: false
+          prerelease: false
+          files: ./artifacts/ueberboese-app-*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release Summary
+        run: |
+          echo "✅ Release ${{ needs.version.outputs.new_version }} created successfully!"
+          echo "📦 APK uploaded to: https://github.com/${{ github.repository }}/releases/tag/${{ needs.version.outputs.new_version }}"
