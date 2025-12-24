@@ -131,6 +131,17 @@ Current version: **0.1.0**
 git commit --allow-empty -m "feat: trigger release"
 ```
 
+### First Release - No Previous Tags
+
+**Problem:** First release fails with "Analysis of 0 commits complete: no release"
+
+**Cause:** No existing git tags in the repository, and the action can't determine the starting version.
+
+**Solution:** The workflow is configured to start from version `0.1.0` automatically. Just make sure you have at least one `feat:` or `fix:` commit and re-run the workflow. The first release will be created based on your commits:
+- If you have `feat:` commits → Version 0.2.0
+- If you only have `fix:` commits → Version 0.1.1
+- If no conventional commits → Version 0.1.1 (default patch bump)
+
 ### Keystore Errors
 
 **Problem:** Build fails with signing errors.
