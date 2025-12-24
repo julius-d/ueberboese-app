@@ -50,6 +50,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Display build info
+        run: |
+          echo "========================================="
+          echo "Build Information"
+          echo "========================================="
+          echo "Git commit: $(git rev-parse HEAD)"
+          echo "Git commit (short): $(git rev-parse --short HEAD)"
+          echo "Git branch: $(git rev-parse --abbrev-ref HEAD)"
+          echo "Last commit message: $(git log -1 --pretty=%B)"
+          echo "Last commit author: $(git log -1 --pretty=format:'%an <%ae>')"
+          echo "Last commit date: $(git log -1 --pretty=format:'%cd')"
+          echo "Target version: ${{ needs.version.outputs.new_version }}"
+          echo "========================================="
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -83,6 +97,9 @@ jobs:
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/upload-keystore.jks
           ls -lh android/upload-keystore.jks
           echo "Keystore file size: $(stat -c%s android/upload-keystore.jks 2>/dev/null || stat -f%z android/upload-keystore.jks) bytes"
+          echo "Keystore file permissions: $(ls -l android/upload-keystore.jks)"
+          file android/upload-keystore.jks
+          echo "Keystore MD5: $(md5sum android/upload-keystore.jks 2>/dev/null || md5 android/upload-keystore.jks)"
 
       - name: Create key.properties
         run: |
@@ -93,7 +110,23 @@ jobs:
           storeFile=upload-keystore.jks
           EOF
           echo "key.properties created successfully"
-          cat android/key.properties
+          echo "key.properties content (with masked passwords):"
+          sed 's/Password=.*/Password=***MASKED***/g' android/key.properties
+
+      - name: Verify keystore
+        run: |
+          echo "Verifying keystore integrity..."
+          # Try to list keystore contents
+          keytool -list -v -keystore android/upload-keystore.jks \
+            -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
+            2>&1 | head -50 || echo "Failed to list keystore contents"
+
+          echo ""
+          echo "Checking if alias exists..."
+          keytool -list -keystore android/upload-keystore.jks \
+            -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
+            -alias "${{ secrets.ANDROID_KEY_ALIAS }}" \
+            2>&1 || echo "Alias check failed"
 
       - name: Build APK
         run: flutter build apk --release
