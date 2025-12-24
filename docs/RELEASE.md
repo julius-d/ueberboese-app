@@ -41,10 +41,16 @@ Go to: **Settings > Secrets and variables > Actions > New repository secret**
 
 | Secret Name                 | Description             | How to get                                                                                                                  |
 |-----------------------------|-------------------------|-----------------------------------------------------------------------------------------------------------------------------|
-| `ANDROID_KEYSTORE_BASE64`   | Base64-encoded keystore | Run: `base64 -i android/app/upload-keystore.jks \| pbcopy` (macOS) or `base64 -w 0 android/app/upload-keystore.jks` (Linux) |
-| `ANDROID_KEYSTORE_PASSWORD` | Keystore password       | Password you set when generating keystore                                                                                   |
-| `ANDROID_KEY_PASSWORD`      | Key password            | Key password you set (usually same as keystore password)                                                                    |
+| `ANDROID_KEYSTORE_BASE64`   | Base64-encoded keystore | Run: `base64 -i android/app/upload-keystore.jks` (macOS) or `base64 -w 0 android/app/upload-keystore.jks` (Linux). Copy the entire output without any line breaks. |
+| `ANDROID_KEYSTORE_PASSWORD` | Keystore password       | Password you set when generating keystore (must match exactly)                                                                                   |
+| `ANDROID_KEY_PASSWORD`      | Key password            | Key password you set (usually same as keystore password, must match exactly)                                                                    |
 | `ANDROID_KEY_ALIAS`         | Key alias               | Default: `upload`                                                                                                           |
+
+**Important:** When copying the base64-encoded keystore:
+- Make sure to copy the ENTIRE output
+- Remove any line breaks or whitespace
+- The value should be one continuous string
+- Verify the keystore passwords match exactly what you used when creating the keystore
 
 ## Creating a Release
 

@@ -81,6 +81,8 @@ jobs:
       - name: Decode keystore
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-keystore.jks
+          ls -lh android/app/upload-keystore.jks
+          echo "Keystore file size: $(stat -c%s android/app/upload-keystore.jks 2>/dev/null || stat -f%z android/app/upload-keystore.jks) bytes"
 
       - name: Create key.properties
         run: |
@@ -88,8 +90,10 @@ jobs:
           storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
           keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
-          storeFile=upload-keystore.jks
+          storeFile=app/upload-keystore.jks
           EOF
+          echo "key.properties created successfully"
+          echo "Keystore path: $(cat android/key.properties | grep storeFile)"
 
       - name: Build APK
         run: flutter build apk --release
