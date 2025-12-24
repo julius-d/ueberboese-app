@@ -257,7 +257,7 @@ class _AddSpeakerPageState extends State<AddSpeakerPage> {
           ),
           if (_isLoading)
             Container(
-              color: theme.colorScheme.scrim.withOpacity(0.6),
+              color: theme.colorScheme.scrim.withValues(alpha: 0.6),
               child: const Center(
                 child: Card(
                   child: Padding(

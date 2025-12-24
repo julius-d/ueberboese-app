@@ -337,7 +337,7 @@ class _SpotifyAccountsPageState extends State<SpotifyAccountsPage> {
           content,
           if (_isLoading)
             Container(
-              color: Theme.of(context).colorScheme.scrim.withOpacity(0.6),
+              color: Theme.of(context).colorScheme.scrim.withValues(alpha: 0.6),
               child: Center(
                 child: Card(
                   child: Padding(
