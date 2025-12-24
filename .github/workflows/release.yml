@@ -80,9 +80,9 @@ jobs:
 
       - name: Decode keystore
         run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/upload-keystore.jks
-          ls -lh android/app/upload-keystore.jks
-          echo "Keystore file size: $(stat -c%s android/app/upload-keystore.jks 2>/dev/null || stat -f%z android/app/upload-keystore.jks) bytes"
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/upload-keystore.jks
+          ls -lh android/upload-keystore.jks
+          echo "Keystore file size: $(stat -c%s android/upload-keystore.jks 2>/dev/null || stat -f%z android/upload-keystore.jks) bytes"
 
       - name: Create key.properties
         run: |
