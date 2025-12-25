@@ -23,6 +23,12 @@ class EmojiSelector extends StatelessWidget {
     '🛋️', // Couch
     '🛏️', // Bed
     '🍳', // Cooking
+    '📺', // TV
+    '🍿', // Popcorn
+    '🛁', // Bathtub
+    '🚿', // Shower
+    '🍽️', // Dining
+    '🧸', // Kids room
   ];
 
   @override
