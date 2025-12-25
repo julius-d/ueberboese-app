@@ -91,6 +91,38 @@ class _AddSpeakerPageState extends State<AddSpeakerPage> {
 
       final appState = context.read<MyAppState>();
 
+      // Check if a speaker with this IP already exists
+      final existingSpeaker = appState.speakers.cast<Speaker?>().firstWhere(
+        (speaker) => speaker?.ipAddress == ipAddress,
+        orElse: () => null,
+      );
+
+      if (existingSpeaker != null) {
+        setState(() {
+          _isLoading = false;
+        });
+
+        if (!mounted) return;
+
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Duplicate Speaker'),
+            content: Text(
+              'A speaker with IP address $ipAddress already exists:\n\n'
+              '${existingSpeaker.emoji} ${existingSpeaker.name}',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
+
       // Auto-fill config if API URL and Account ID are not set
       if (appState.config.apiUrl.isEmpty &&
           appState.config.accountId.isEmpty &&

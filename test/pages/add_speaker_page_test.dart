@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:ueberboese_app/main.dart';
+import 'package:ueberboese_app/models/speaker.dart';
 import 'package:ueberboese_app/pages/add_speaker_page.dart';
 
 void main() {
