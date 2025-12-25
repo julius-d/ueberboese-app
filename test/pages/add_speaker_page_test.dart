@@ -123,5 +123,45 @@ void main() {
       // Verify the large emoji display changed
       expect(find.text('🎵'), findsOneWidget);
     });
+
+    testWidgets('preselects unused emoji when speakers exist',
+        (WidgetTester tester) async {
+      // Create app state with existing speakers using first two emojis
+      final appState = MyAppState();
+
+      final speaker1 = Speaker(
+        id: '1',
+        name: 'Speaker 1',
+        emoji: '🔊', // First emoji
+        ipAddress: '192.168.1.100',
+        type: 'Bose SoundTouch',
+        deviceId: 'device1',
+      );
+
+      final speaker2 = Speaker(
+        id: '2',
+        name: 'Speaker 2',
+        emoji: '🎵', // Second emoji
+        ipAddress: '192.168.1.101',
+        type: 'Bose SoundTouch',
+        deviceId: 'device2',
+      );
+
+      appState.speakers.add(speaker1);
+      appState.speakers.add(speaker2);
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: const MaterialApp(
+            home: AddSpeakerPage(),
+          ),
+        ),
+      );
+
+      // Should preselect third emoji (🎶) since first two are used
+      expect(find.text('🎶'), findsOneWidget);
+      expect(find.text('🔊'), findsNothing); // First emoji should not be shown as selected
+    });
   });
 }

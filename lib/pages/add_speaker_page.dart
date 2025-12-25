@@ -15,14 +15,34 @@ class AddSpeakerPage extends StatefulWidget {
 }
 
 
-
 class _AddSpeakerPageState extends State<AddSpeakerPage> {
   final _formKey = GlobalKey<FormState>();
   final _ipController = TextEditingController();
   final _apiService = SpeakerApiService();
-  String _selectedEmoji = '🔊';
+  late String _selectedEmoji;
   bool _showEmojiSelector = false;
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedEmoji = _getNextAvailableEmoji();
+  }
+
+  String _getNextAvailableEmoji() {
+    final appState = context.read<MyAppState>();
+    final usedEmojis = appState.speakers.map((s) => s.emoji).toSet();
+
+    // Find first unused emoji
+    for (final emoji in EmojiSelector.availableEmojis) {
+      if (!usedEmojis.contains(emoji)) {
+        return emoji;
+      }
+    }
+
+    // If all emojis are used, return the first one
+    return EmojiSelector.availableEmojis.first;
+  }
 
   @override
   void dispose() {
