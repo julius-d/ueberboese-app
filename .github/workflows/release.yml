@@ -50,20 +50,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Display build info
-        run: |
-          echo "========================================="
-          echo "Build Information"
-          echo "========================================="
-          echo "Git commit: $(git rev-parse HEAD)"
-          echo "Git commit (short): $(git rev-parse --short HEAD)"
-          echo "Git branch: $(git rev-parse --abbrev-ref HEAD)"
-          echo "Last commit message: $(git log -1 --pretty=%B)"
-          echo "Last commit author: $(git log -1 --pretty=format:'%an <%ae>')"
-          echo "Last commit date: $(git log -1 --pretty=format:'%cd')"
-          echo "Target version: ${{ needs.version.outputs.new_version }}"
-          echo "========================================="
-
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -94,143 +80,16 @@ jobs:
 
       - name: Decode keystore
         run: |
-          echo "========================================="
-          echo "Decoding keystore from base64..."
-          echo "========================================="
-
-          # Check if secret is set
-          if [ -z "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" ]; then
-            echo "ERROR: ANDROID_KEYSTORE_BASE64 secret is not set!"
-            exit 1
-          fi
-
-          echo "ANDROID_KEYSTORE_BASE64 secret is set ✓"
-
-          # Decode the keystore
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/upload-keystore.jks
-
-          # Verify the file was created
-          if [ ! -f android/upload-keystore.jks ]; then
-            echo "ERROR: Keystore file was not created!"
-            exit 1
-          fi
-
-          # Check file details
-          echo "Keystore file created successfully:"
-          ls -lh android/upload-keystore.jks
-          FILE_SIZE=$(stat -c%s android/upload-keystore.jks 2>/dev/null || stat -f%z android/upload-keystore.jks)
-          echo "File size: $FILE_SIZE bytes"
-
-          # Keystore files should be at least 1KB
-          if [ "$FILE_SIZE" -lt 1000 ]; then
-            echo "WARNING: Keystore file seems too small ($FILE_SIZE bytes). It might be corrupted!"
-          fi
-
-          echo "File type: $(file android/upload-keystore.jks)"
-          echo "MD5 checksum: $(md5sum android/upload-keystore.jks 2>/dev/null || md5 android/upload-keystore.jks)"
 
       - name: Create key.properties
         run: |
-          echo "========================================="
-          echo "Creating key.properties..."
-          echo "========================================="
-
-          # Check if all required secrets are set
-          if [ -z "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" ]; then
-            echo "ERROR: ANDROID_KEYSTORE_PASSWORD secret is not set!"
-            exit 1
-          fi
-          if [ -z "${{ secrets.ANDROID_KEY_PASSWORD }}" ]; then
-            echo "ERROR: ANDROID_KEY_PASSWORD secret is not set!"
-            exit 1
-          fi
-          if [ -z "${{ secrets.ANDROID_KEY_ALIAS }}" ]; then
-            echo "ERROR: ANDROID_KEY_ALIAS secret is not set!"
-            exit 1
-          fi
-
           cat > android/key.properties <<EOF
           storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
           keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
           storeFile=upload-keystore.jks
           EOF
-          echo "key.properties created successfully"
-          echo ""
-          echo "Configuration (passwords masked):"
-          sed 's/Password=.*/Password=***MASKED***/g' android/key.properties
-
-      - name: Verify keystore
-        env:
-          STORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
-        run: |
-          echo "========================================="
-          echo "Verifying keystore integrity..."
-          echo "========================================="
-
-          # Test 1: Verify we can open the keystore with the password
-          echo "Test 1: Opening keystore with password..."
-          if ! keytool -list -keystore android/upload-keystore.jks \
-            -storepass:env STORE_PASS > /tmp/keystore_list.txt 2>&1; then
-            echo "❌ FAILED: Cannot open keystore with the provided password!"
-            echo ""
-            echo "Possible causes:"
-            echo "1. ANDROID_KEYSTORE_PASSWORD is incorrect"
-            echo "2. Keystore file is corrupted (check base64 encoding)"
-            echo "3. Base64 secret contains line breaks or extra characters"
-            echo ""
-            echo "To fix:"
-            echo "- Verify your keystore password is correct"
-            echo "- Re-encode your keystore: base64 -w 0 your-keystore.jks (Linux) or base64 -i your-keystore.jks (macOS)"
-            echo "- Make sure to copy the entire base64 output as a single line"
-            echo ""
-            echo "Note: Error details hidden to protect secrets"
-            exit 1
-          fi
-          echo "✅ SUCCESS: Keystore opened successfully!"
-          echo ""
-
-          # Show keystore contents (safe - no secrets in this output)
-          echo "Keystore contents:"
-          cat /tmp/keystore_list.txt
-          echo ""
-
-          # Test 2: Verify the alias exists
-          echo "Test 2: Checking if alias exists..."
-          if ! keytool -list -keystore android/upload-keystore.jks \
-            -storepass:env STORE_PASS \
-            -alias "$KEY_ALIAS" > /tmp/alias_check.txt 2>&1; then
-            echo "❌ FAILED: Configured alias not found in keystore!"
-            echo ""
-            echo "Available aliases in keystore:"
-            grep "Alias name:" /tmp/keystore_list.txt || echo "(Could not parse aliases)"
-            echo ""
-            echo "To fix: Update ANDROID_KEY_ALIAS secret to match one of the aliases above"
-            exit 1
-          fi
-          echo "✅ SUCCESS: Alias found in keystore!"
-          echo ""
-
-          # Test 3: Verify we can access the key with the key password
-          echo "Test 3: Verifying key password..."
-          if ! keytool -list -keystore android/upload-keystore.jks \
-            -storepass:env STORE_PASS \
-            -alias "$KEY_ALIAS" \
-            -keypass:env KEY_PASS > /tmp/key_check.txt 2>&1; then
-            echo "❌ FAILED: Cannot access key with the provided key password!"
-            echo ""
-            echo "To fix: Verify ANDROID_KEY_PASSWORD is correct"
-            echo ""
-            echo "Note: Error details hidden to protect secrets"
-            exit 1
-          fi
-          echo "✅ SUCCESS: Key password is correct!"
-          echo ""
-          echo "========================================="
-          echo "✅ All keystore verification tests passed!"
-          echo "========================================="
 
       - name: Build APK
         run: flutter build apk --release
