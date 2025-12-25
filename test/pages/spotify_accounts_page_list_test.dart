@@ -23,6 +23,8 @@ void main() {
       appState.config = const AppConfig(
         apiUrl: 'https://api.example.com',
         accountId: 'test-account',
+        mgmtUsername: 'admin',
+        mgmtPassword: 'testpass',
       );
       mockClient = MockClient();
     });
@@ -33,7 +35,11 @@ void main() {
           value: appState,
           child: Scaffold(
             body: SpotifyAccountsPage(
-              apiService: SpotifyApiService(httpClient: mockClient),
+              apiService: SpotifyApiService(
+                httpClient: mockClient,
+                username: 'admin',
+                password: 'testpass',
+              ),
             ),
           ),
         ),
@@ -43,8 +49,10 @@ void main() {
     testWidgets('should show loading indicator while fetching accounts',
         (WidgetTester tester) async {
       // Mock the API call to delay
+      final expectedAuth = 'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
       when(mockClient.get(
         Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
+        headers: {'Authorization': expectedAuth},
       )).thenAnswer(
         (_) => Future.delayed(
           const Duration(milliseconds: 100),
@@ -65,8 +73,10 @@ void main() {
 
     testWidgets('should show empty state when no accounts',
         (WidgetTester tester) async {
+      final expectedAuth = 'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
       when(mockClient.get(
         Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
+        headers: {'Authorization': expectedAuth},
       )).thenAnswer(
         (_) async => http.Response('{"accounts": []}', 200),
       );
@@ -94,8 +104,10 @@ void main() {
         ],
       });
 
+      final expectedAuth = 'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
       when(mockClient.get(
         Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
+        headers: {'Authorization': expectedAuth},
       )).thenAnswer(
         (_) async => http.Response(responseBody, 200),
       );
@@ -123,8 +135,10 @@ void main() {
         ],
       });
 
+      final expectedAuth = 'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
       when(mockClient.get(
         Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
+        headers: {'Authorization': expectedAuth},
       )).thenAnswer(
         (_) async => http.Response(responseBody, 200),
       );
@@ -138,8 +152,10 @@ void main() {
 
     testWidgets('should show error snackbar when API fails',
         (WidgetTester tester) async {
+      final expectedAuth = 'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
       when(mockClient.get(
         Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
+        headers: {'Authorization': expectedAuth},
       )).thenAnswer(
         (_) async => http.Response('Internal Server Error', 500),
       );
@@ -153,8 +169,10 @@ void main() {
 
     testWidgets('should show empty state when API returns empty list',
         (WidgetTester tester) async {
+      final expectedAuth = 'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
       when(mockClient.get(
         Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
+        headers: {'Authorization': expectedAuth},
       )).thenAnswer(
         (_) async => http.Response('{"accounts": []}', 200),
       );
@@ -181,8 +199,10 @@ void main() {
         ],
       });
 
+      final expectedAuth = 'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
       when(mockClient.get(
         Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
+        headers: {'Authorization': expectedAuth},
       )).thenAnswer(
         (_) async => http.Response(responseBody, 200),
       );
@@ -205,8 +225,10 @@ void main() {
         ],
       });
 
+      final expectedAuth = 'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
       when(mockClient.get(
         Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
+        headers: {'Authorization': expectedAuth},
       )).thenAnswer(
         (_) async => http.Response(responseBody, 200),
       );

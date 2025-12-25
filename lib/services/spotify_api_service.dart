@@ -4,8 +4,23 @@ import '../models/spotify_account.dart';
 
 class SpotifyApiService {
   final http.Client? httpClient;
+  final String? username;
+  final String? password;
 
-  SpotifyApiService({this.httpClient});
+  SpotifyApiService({
+    this.httpClient,
+    this.username,
+    this.password,
+  });
+
+  String _createAuthHeader() {
+    if (username == null || password == null) {
+      return '';
+    }
+    final credentials = '$username:$password';
+    final encoded = base64Encode(utf8.encode(credentials));
+    return 'Basic $encoded';
+  }
 
   Future<String> initSpotifyAuth(String apiUrl) async {
     final url = Uri.parse('$apiUrl/mgmt/spotify/init');
@@ -13,10 +28,15 @@ class SpotifyApiService {
 
     try {
       final body = jsonEncode({});
+      final headers = {
+        'Content-Type': 'application/json',
+        if (username != null && password != null)
+          'Authorization': _createAuthHeader(),
+      };
       final response = await client
           .post(
             url,
-            headers: {'Content-Type': 'application/json'},
+            headers: headers,
             body: body,
           )
           .timeout(const Duration(seconds: 10));
@@ -52,8 +72,12 @@ class SpotifyApiService {
     final client = httpClient ?? http.Client();
 
     try {
+      final headers = <String, String>{
+        if (username != null && password != null)
+          'Authorization': _createAuthHeader(),
+      };
       final response = await client
-          .post(url)
+          .post(url, headers: headers)
           .timeout(const Duration(seconds: 10));
 
       if (response.statusCode != 200) {
@@ -78,8 +102,12 @@ class SpotifyApiService {
     final client = httpClient ?? http.Client();
 
     try {
+      final headers = <String, String>{
+        if (username != null && password != null)
+          'Authorization': _createAuthHeader(),
+      };
       final response = await client
-          .get(url)
+          .get(url, headers: headers)
           .timeout(const Duration(seconds: 10));
 
       if (response.statusCode != 200) {

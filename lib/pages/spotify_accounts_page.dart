@@ -28,7 +28,11 @@ class _SpotifyAccountsPageState extends State<SpotifyAccountsPage> {
   @override
   void initState() {
     super.initState();
-    _apiService = widget.apiService ?? SpotifyApiService();
+    final config = context.read<MyAppState>().config;
+    _apiService = widget.apiService ?? SpotifyApiService(
+      username: config.mgmtUsername,
+      password: config.mgmtPassword,
+    );
     _initDeepLinkListener();
     _loadAccounts();
   }

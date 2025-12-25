@@ -12,10 +12,16 @@ void main() {
   group('SpotifyApiService', () {
     late MockClient mockClient;
     late SpotifyApiService service;
+    late SpotifyApiService serviceWithAuth;
 
     setUp(() {
       mockClient = MockClient();
       service = SpotifyApiService(httpClient: mockClient);
+      serviceWithAuth = SpotifyApiService(
+        httpClient: mockClient,
+        username: 'admin',
+        password: 'testpass',
+      );
     });
 
     group('initSpotifyAuth', () {
@@ -127,6 +133,37 @@ void main() {
           throwsA(isA<Exception>()),
         );
       });
+
+      test('should include Authorization header when credentials are provided', () async {
+        final response = http.Response(
+          jsonEncode({'redirectUrl': redirectUrl}),
+          200,
+        );
+
+        // The expected auth header for admin:testpass
+        final expectedAuth = 'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
+
+        when(mockClient.post(
+          Uri.parse('$apiUrl/mgmt/spotify/init'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': expectedAuth,
+          },
+          body: '{}',
+        )).thenAnswer((_) async => response);
+
+        final result = await serviceWithAuth.initSpotifyAuth(apiUrl);
+
+        expect(result, redirectUrl);
+        verify(mockClient.post(
+          Uri.parse('$apiUrl/mgmt/spotify/init'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': expectedAuth,
+          },
+          body: '{}',
+        )).called(1);
+      });
     });
 
     group('confirmSpotifyAuth', () {
@@ -138,12 +175,14 @@ void main() {
 
         when(mockClient.post(
           Uri.parse('$apiUrl/mgmt/spotify/confirm?code=$code'),
+          headers: {},
         )).thenAnswer((_) async => response);
 
         await service.confirmSpotifyAuth(apiUrl, code);
 
         verify(mockClient.post(
           Uri.parse('$apiUrl/mgmt/spotify/confirm?code=$code'),
+          headers: {},
         )).called(1);
       });
 
@@ -152,6 +191,7 @@ void main() {
 
         when(mockClient.post(
           Uri.parse('$apiUrl/mgmt/spotify/confirm?code=$code'),
+          headers: {},
         )).thenAnswer((_) async => response);
 
         expect(
@@ -163,6 +203,7 @@ void main() {
       test('should throw exception on timeout', () async {
         when(mockClient.post(
           Uri.parse('$apiUrl/mgmt/spotify/confirm?code=$code'),
+          headers: {},
         )).thenAnswer(
           (_) => Future.delayed(
             const Duration(seconds: 11),
@@ -174,6 +215,23 @@ void main() {
           () => service.confirmSpotifyAuth(apiUrl, code),
           throwsA(isA<Exception>()),
         );
+      });
+
+      test('should include Authorization header when credentials are provided', () async {
+        final response = http.Response('', 200);
+        final expectedAuth = 'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
+
+        when(mockClient.post(
+          Uri.parse('$apiUrl/mgmt/spotify/confirm?code=$code'),
+          headers: {'Authorization': expectedAuth},
+        )).thenAnswer((_) async => response);
+
+        await serviceWithAuth.confirmSpotifyAuth(apiUrl, code);
+
+        verify(mockClient.post(
+          Uri.parse('$apiUrl/mgmt/spotify/confirm?code=$code'),
+          headers: {'Authorization': expectedAuth},
+        )).called(1);
       });
     });
 
@@ -197,6 +255,7 @@ void main() {
 
         when(mockClient.get(
           Uri.parse('$apiUrl/mgmt/spotify/accounts'),
+          headers: {},
         )).thenAnswer((_) async => response);
 
         final result = await service.listSpotifyAccounts(apiUrl);
@@ -206,6 +265,7 @@ void main() {
         expect(result[1].displayName, 'Jane Smith');
         verify(mockClient.get(
           Uri.parse('$apiUrl/mgmt/spotify/accounts'),
+          headers: {},
         )).called(1);
       });
 
@@ -215,6 +275,7 @@ void main() {
 
         when(mockClient.get(
           Uri.parse('$apiUrl/mgmt/spotify/accounts'),
+          headers: {},
         )).thenAnswer((_) async => response);
 
         final result = await service.listSpotifyAccounts(apiUrl);
@@ -228,6 +289,7 @@ void main() {
 
         when(mockClient.get(
           Uri.parse('$apiUrl/mgmt/spotify/accounts'),
+          headers: {},
         )).thenAnswer((_) async => response);
 
         final result = await service.listSpotifyAccounts(apiUrl);
@@ -240,6 +302,7 @@ void main() {
 
         when(mockClient.get(
           Uri.parse('$apiUrl/mgmt/spotify/accounts'),
+          headers: {},
         )).thenAnswer((_) async => response);
 
         expect(
@@ -253,6 +316,7 @@ void main() {
 
         when(mockClient.get(
           Uri.parse('$apiUrl/mgmt/spotify/accounts'),
+          headers: {},
         )).thenAnswer((_) async => response);
 
         expect(
@@ -264,6 +328,7 @@ void main() {
       test('should throw exception on timeout', () async {
         when(mockClient.get(
           Uri.parse('$apiUrl/mgmt/spotify/accounts'),
+          headers: {},
         )).thenAnswer(
           (_) => Future.delayed(
             const Duration(seconds: 11),
@@ -290,6 +355,7 @@ void main() {
 
         when(mockClient.get(
           Uri.parse('$apiUrl/mgmt/spotify/accounts'),
+          headers: {},
         )).thenAnswer((_) async => response);
 
         final result = await service.listSpotifyAccounts(apiUrl);
@@ -298,6 +364,32 @@ void main() {
         expect(result[0].createdAt.year, 2025);
         expect(result[0].createdAt.month, 12);
         expect(result[0].createdAt.day, 23);
+      });
+
+      test('should include Authorization header when credentials are provided', () async {
+        final responseBody = jsonEncode({
+          'accounts': [
+            {
+              'displayName': 'Test User',
+              'createdAt': '2025-12-23T10:30:00.000Z',
+            },
+          ],
+        });
+        final response = http.Response(responseBody, 200);
+        final expectedAuth = 'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
+
+        when(mockClient.get(
+          Uri.parse('$apiUrl/mgmt/spotify/accounts'),
+          headers: {'Authorization': expectedAuth},
+        )).thenAnswer((_) async => response);
+
+        final result = await serviceWithAuth.listSpotifyAccounts(apiUrl);
+
+        expect(result.length, 1);
+        verify(mockClient.get(
+          Uri.parse('$apiUrl/mgmt/spotify/accounts'),
+          headers: {'Authorization': expectedAuth},
+        )).called(1);
       });
     });
   });

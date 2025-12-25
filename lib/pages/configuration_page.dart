@@ -14,6 +14,9 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
   final _formKey = GlobalKey<FormState>();
   final _apiUrlController = TextEditingController();
   final _accountIdController = TextEditingController();
+  final _mgmtUsernameController = TextEditingController();
+  final _mgmtPasswordController = TextEditingController();
+  bool _obscurePassword = true;
 
   @override
   void initState() {
@@ -22,12 +25,16 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
     final config = context.read<MyAppState>().config;
     _apiUrlController.text = config.apiUrl;
     _accountIdController.text = config.accountId;
+    _mgmtUsernameController.text = config.mgmtUsername;
+    _mgmtPasswordController.text = config.mgmtPassword;
   }
 
   @override
   void dispose() {
     _apiUrlController.dispose();
     _accountIdController.dispose();
+    _mgmtUsernameController.dispose();
+    _mgmtPasswordController.dispose();
     super.dispose();
   }
 
@@ -52,6 +59,8 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
     final newConfig = AppConfig(
       apiUrl: _apiUrlController.text.trim(),
       accountId: _accountIdController.text.trim(),
+      mgmtUsername: _mgmtUsernameController.text.trim(),
+      mgmtPassword: _mgmtPasswordController.text.trim(),
     );
 
     appState.updateConfig(newConfig);
@@ -115,6 +124,58 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
                 final alphanumericRegex = RegExp(r'^[a-zA-Z0-9]*$');
                 if (!alphanumericRegex.hasMatch(value.trim())) {
                   return 'Account ID must contain only letters and numbers';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 32),
+            const Text(
+              'Management API Credentials',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _mgmtUsernameController,
+              decoration: const InputDecoration(
+                labelText: 'Management Username',
+                hintText: 'Default: admin',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.admin_panel_settings),
+              ),
+              keyboardType: TextInputType.text,
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Please enter a management username';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 24),
+            TextFormField(
+              controller: _mgmtPasswordController,
+              decoration: InputDecoration(
+                labelText: 'Management Password',
+                hintText: 'Default: change_me!',
+                border: const OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.lock),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                ),
+              ),
+              obscureText: _obscurePassword,
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Please enter a management password';
                 }
                 return null;
               },

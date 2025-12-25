@@ -33,6 +33,9 @@ void main() {
       expect(find.text('Configuration'), findsOneWidget);
       expect(find.text('Überböse API URL'), findsOneWidget);
       expect(find.text('Account ID'), findsOneWidget);
+      expect(find.text('Management API Credentials'), findsOneWidget);
+      expect(find.text('Management Username'), findsOneWidget);
+      expect(find.text('Management Password'), findsOneWidget);
       expect(find.text('Save Configuration'), findsOneWidget);
     });
 
@@ -40,12 +43,16 @@ void main() {
       appState.updateConfig(const AppConfig(
         apiUrl: 'https://test.example.com',
         accountId: 'testuser',
+        mgmtUsername: 'customadmin',
+        mgmtPassword: 'custompass',
       ));
 
       await pumpConfigurationPage(tester);
 
       expect(find.text('https://test.example.com'), findsOneWidget);
       expect(find.text('testuser'), findsOneWidget);
+      expect(find.text('customadmin'), findsOneWidget);
+      expect(find.text('custompass'), findsOneWidget);
     });
 
     testWidgets('validates empty account ID', (WidgetTester tester) async {
@@ -196,6 +203,91 @@ void main() {
       await tester.pump();
 
       expect(find.text('Configuration saved successfully'), findsOneWidget);
+    });
+
+    testWidgets('validates empty management username',
+        (WidgetTester tester) async {
+      await pumpConfigurationPage(tester);
+
+      final accountIdField = find.widgetWithText(TextFormField, 'Account ID');
+      await tester.enterText(accountIdField, 'testuser');
+
+      final mgmtUsernameField =
+          find.widgetWithText(TextFormField, 'Management Username');
+      await tester.enterText(mgmtUsernameField, '');
+
+      await tester.tap(find.text('Save Configuration'));
+      await tester.pump();
+
+      expect(find.text('Please enter a management username'), findsOneWidget);
+    });
+
+    testWidgets('validates empty management password',
+        (WidgetTester tester) async {
+      await pumpConfigurationPage(tester);
+
+      final accountIdField = find.widgetWithText(TextFormField, 'Account ID');
+      await tester.enterText(accountIdField, 'testuser');
+
+      final mgmtPasswordField =
+          find.widgetWithText(TextFormField, 'Management Password');
+      await tester.enterText(mgmtPasswordField, '');
+
+      await tester.tap(find.text('Save Configuration'));
+      await tester.pump();
+
+      expect(find.text('Please enter a management password'), findsOneWidget);
+    });
+
+    testWidgets('saves management credentials', (WidgetTester tester) async {
+      await pumpConfigurationPage(tester);
+
+      final accountIdField = find.widgetWithText(TextFormField, 'Account ID');
+      await tester.enterText(accountIdField, 'testuser');
+
+      final mgmtUsernameField =
+          find.widgetWithText(TextFormField, 'Management Username');
+      await tester.enterText(mgmtUsernameField, 'myadmin');
+
+      final mgmtPasswordField =
+          find.widgetWithText(TextFormField, 'Management Password');
+      await tester.enterText(mgmtPasswordField, 'mypassword');
+
+      await tester.tap(find.text('Save Configuration'));
+      await tester.pumpAndSettle();
+
+      expect(appState.config.mgmtUsername, 'myadmin');
+      expect(appState.config.mgmtPassword, 'mypassword');
+    });
+
+    testWidgets('toggles password visibility', (WidgetTester tester) async {
+      await pumpConfigurationPage(tester);
+
+      // Find and tap the visibility toggle button (initially shows visibility icon)
+      final visibilityIcon = find.byIcon(Icons.visibility);
+      expect(visibilityIcon, findsOneWidget);
+      await tester.tap(visibilityIcon);
+      await tester.pump();
+
+      // After toggling, should show visibility_off icon
+      final visibilityOffIcon = find.byIcon(Icons.visibility_off);
+      expect(visibilityOffIcon, findsOneWidget);
+
+      // Tap again to toggle back
+      await tester.tap(visibilityOffIcon);
+      await tester.pump();
+
+      // Should show visibility icon again
+      expect(find.byIcon(Icons.visibility), findsOneWidget);
+    });
+
+    testWidgets('loads default values for management credentials',
+        (WidgetTester tester) async {
+      await pumpConfigurationPage(tester);
+
+      // Default values should be loaded from AppConfig defaults
+      expect(find.text('admin'), findsOneWidget);
+      expect(find.text('change_me!'), findsOneWidget);
     });
   });
 }
