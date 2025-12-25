@@ -261,6 +261,41 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
     }
   }
 
+  Future<void> _togglePlayPause() async {
+    setState(() {
+      _isLoadingNowPlaying = true;
+      _nowPlayingErrorMessage = null;
+    });
+
+    try {
+
+      await _apiService.userPlayControl(
+        widget.speaker.ipAddress,
+        'PLAY_PAUSE_CONTROL',
+      );
+
+      // Wait a bit for the state to update on the speaker
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // Reload the now playing info to get the updated play status
+      await _loadNowPlaying();
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Playback toggled')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _nowPlayingErrorMessage = 'Failed to toggle playback: ${e.toString()}';
+        _isLoadingNowPlaying = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to toggle playback: ${e.toString()}')),
+      );
+    }
+  }
+
   Speaker? _getSpeakerByDeviceId(String deviceId) {
     final appState = context.read<MyAppState>();
     try {
@@ -865,6 +900,32 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                               ),
                             ],
                           ),
+                          if (_nowPlaying!.playStatus != null &&
+                              (_nowPlaying!.playStatus == 'PLAY_STATE' ||
+                                  _nowPlaying!.playStatus == 'PAUSE_STATE')) ...[
+                            const SizedBox(height: 16),
+                            Center(
+                              child: FilledButton.icon(
+                                onPressed: _isLoadingNowPlaying ? null : _togglePlayPause,
+                                icon: Icon(
+                                  _nowPlaying!.playStatus == 'PLAY_STATE'
+                                      ? Icons.pause
+                                      : Icons.play_arrow,
+                                ),
+                                label: Text(
+                                  _nowPlaying!.playStatus == 'PLAY_STATE'
+                                      ? 'Pause'
+                                      : 'Play',
+                                ),
+                                style: FilledButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 32,
+                                    vertical: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                   ],

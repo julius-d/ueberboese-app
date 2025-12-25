@@ -211,5 +211,56 @@ void main() {
 
       expect(appState.speakers.length, 1);
     });
+
+    testWidgets('displays Now Playing section', (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      expect(find.text('Now Playing'), findsOneWidget);
+      expect(find.byIcon(Icons.music_note), findsOneWidget);
+    });
+
+    testWidgets('displays Volume section', (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      expect(find.text('Volume'), findsOneWidget);
+      expect(find.byIcon(Icons.volume_up), findsOneWidget);
+    });
+
+    testWidgets('displays Multi-Room Zone section', (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      expect(find.text('Multi-Room Zone'), findsOneWidget);
+      expect(find.byIcon(Icons.speaker_group), findsOneWidget);
+    });
   });
 }

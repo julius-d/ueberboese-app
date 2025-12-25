@@ -523,5 +523,93 @@ void main() {
         );
       });
     });
+
+    group('Play Control API', () {
+      test('userPlayControl sends PAUSE_CONTROL correctly', () async {
+        const xmlResponse = '''<?xml version='1.0' encoding='utf-8'?>
+<status>/userPlayControl</status>''';
+
+        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        await apiService.userPlayControl('192.168.1.131', 'PAUSE_CONTROL');
+
+        verify(mockClient.post(
+          any,
+          headers: {'Content-Type': 'text/xml'},
+          body: '<PlayControl>PAUSE_CONTROL</PlayControl>',
+        )).called(1);
+      });
+
+      test('userPlayControl sends PLAY_CONTROL correctly', () async {
+        const xmlResponse = '''<?xml version='1.0' encoding='utf-8'?>
+<status>/userPlayControl</status>''';
+
+        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        await apiService.userPlayControl('192.168.1.131', 'PLAY_CONTROL');
+
+        verify(mockClient.post(
+          any,
+          headers: {'Content-Type': 'text/xml'},
+          body: '<PlayControl>PLAY_CONTROL</PlayControl>',
+        )).called(1);
+      });
+
+      test('userPlayControl sends PLAY_PAUSE_CONTROL correctly', () async {
+        const xmlResponse = '''<?xml version='1.0' encoding='utf-8'?>
+<status>/userPlayControl</status>''';
+
+        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        await apiService.userPlayControl('192.168.1.131', 'PLAY_PAUSE_CONTROL');
+
+        verify(mockClient.post(
+          any,
+          headers: {'Content-Type': 'text/xml'},
+          body: '<PlayControl>PLAY_PAUSE_CONTROL</PlayControl>',
+        )).called(1);
+      });
+
+      test('userPlayControl sends STOP_CONTROL correctly', () async {
+        const xmlResponse = '''<?xml version='1.0' encoding='utf-8'?>
+<status>/userPlayControl</status>''';
+
+        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        await apiService.userPlayControl('192.168.1.131', 'STOP_CONTROL');
+
+        verify(mockClient.post(
+          any,
+          headers: {'Content-Type': 'text/xml'},
+          body: '<PlayControl>STOP_CONTROL</PlayControl>',
+        )).called(1);
+      });
+
+      test('userPlayControl throws ArgumentError for invalid control type', () async {
+        expect(
+          () => apiService.userPlayControl('192.168.1.131', 'INVALID_CONTROL'),
+          throwsA(isA<ArgumentError>()),
+        );
+      });
+
+      test('userPlayControl throws exception on non-200 status code', () async {
+        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
+          (_) async => http.Response('Not Found', 404),
+        );
+
+        expect(
+          () => apiService.userPlayControl('192.168.1.131', 'PAUSE_CONTROL'),
+          throwsA(isA<Exception>()),
+        );
+      });
+    });
   });
 }

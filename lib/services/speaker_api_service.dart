@@ -464,4 +464,40 @@ class SpeakerApiService {
       }
     }
   }
+
+  Future<void> userPlayControl(String ipAddress, String controlType) async {
+    final validControls = ['PAUSE_CONTROL', 'PLAY_CONTROL', 'PLAY_PAUSE_CONTROL', 'STOP_CONTROL'];
+    if (!validControls.contains(controlType)) {
+      throw ArgumentError('Invalid control type. Must be one of: ${validControls.join(", ")}');
+    }
+
+    final url = Uri.parse('http://$ipAddress:8090/userPlayControl');
+    final client = httpClient ?? http.Client();
+
+    try {
+      final body = '<PlayControl>$controlType</PlayControl>';
+      final response = await client
+          .post(
+            url,
+            headers: {'Content-Type': 'text/xml'},
+            body: body,
+          )
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          'Failed to send play control: HTTP ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Failed to send play control: $e');
+    } finally {
+      if (httpClient == null) {
+        client.close();
+      }
+    }
+  }
 }
