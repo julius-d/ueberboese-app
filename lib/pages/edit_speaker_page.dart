@@ -192,6 +192,7 @@ class _EditSpeakerPageState extends State<EditSpeakerPage> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _saveSpeaker,
+        tooltip: 'Save changes',
         icon: const Icon(Icons.save),
         label: const Text('Save Changes'),
       ),

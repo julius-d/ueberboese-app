@@ -73,6 +73,7 @@ class SpeakerListPage extends StatelessWidget {
             ),
           );
         },
+        tooltip: 'Add speaker',
         child: const Icon(Icons.add),
       ),
     );

@@ -367,6 +367,7 @@ class _SpotifyAccountsPageState extends State<SpotifyAccountsPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _isLoading ? null : _onAddSpotifyAccount,
+        tooltip: 'Add Spotify account',
         child: const Icon(Icons.add),
       ),
     );

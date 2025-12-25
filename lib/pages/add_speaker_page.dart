@@ -278,6 +278,7 @@ class _AddSpeakerPageState extends State<AddSpeakerPage> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _isLoading ? null : _saveSpeaker,
+        tooltip: 'Save speaker',
         icon: const Icon(Icons.save),
         label: const Text('Save Speaker'),
       ),

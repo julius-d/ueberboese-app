@@ -185,6 +185,7 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _saveConfig,
+        tooltip: 'Save configuration',
         icon: const Icon(Icons.save),
         label: const Text('Save Configuration'),
       ),

@@ -10,6 +10,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+
 class _HomePageState extends State<HomePage> {
   var selectedIndex = 0;
 
@@ -51,29 +52,27 @@ class _HomePageState extends State<HomePage> {
                     child: mainArea,
                   ),
                 ),
-                SafeArea(
-                  child: BottomNavigationBar(
-                    items: const [
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.speaker),
-                        label: 'Speakers',
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.music_note),
-                        label: 'Spotify',
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(Icons.settings),
-                        label: 'Configuration',
-                      ),
-                    ],
-                    currentIndex: selectedIndex,
-                    onTap: (value) {
-                      setState(() {
-                        selectedIndex = value;
-                      });
-                    },
-                  ),
+                BottomNavigationBar(
+                  items: const [
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.speaker),
+                      label: 'Speakers',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.music_note),
+                      label: 'Spotify',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.settings),
+                      label: 'Configuration',
+                    ),
+                  ],
+                  currentIndex: selectedIndex,
+                  onTap: (value) {
+                    setState(() {
+                      selectedIndex = value;
+                    });
+                  },
                 )
               ],
             );
