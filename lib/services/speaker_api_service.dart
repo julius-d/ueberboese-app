@@ -5,6 +5,7 @@ import '../models/speaker_info.dart';
 import '../models/volume.dart';
 import '../models/now_playing.dart';
 import '../models/zone.dart';
+import '../models/preset.dart';
 
 class SpeakerApiService {
   final http.Client? httpClient;
@@ -494,6 +495,45 @@ class SpeakerApiService {
         rethrow;
       }
       throw Exception('Failed to send play control: $e');
+    } finally {
+      if (httpClient == null) {
+        client.close();
+      }
+    }
+  }
+
+  Future<List<Preset>> getPresets(String ipAddress) async {
+    final url = Uri.parse('http://$ipAddress:8090/presets');
+    final client = httpClient ?? http.Client();
+
+    try {
+      final response = await client
+          .get(url)
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          'Failed to fetch presets: HTTP ${response.statusCode}',
+        );
+      }
+
+      final bodyText = utf8.decode(response.bodyBytes);
+      final document = XmlDocument.parse(bodyText);
+
+      // Find all preset elements
+      final presetElements = document.findAllElements('preset');
+
+      // Parse each preset
+      final presets = presetElements
+          .map((element) => Preset.fromXml(element))
+          .toList();
+
+      return presets;
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Failed to fetch presets: $e');
     } finally {
       if (httpClient == null) {
         client.close();

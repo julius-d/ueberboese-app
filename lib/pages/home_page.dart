@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'speaker_list_page.dart';
 import 'spotify_accounts_page.dart';
 import 'configuration_page.dart';
+import 'presets_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -25,6 +26,8 @@ class _HomePageState extends State<HomePage> {
       case 1:
         page = const SpotifyAccountsPage();
       case 2:
+        page = const PresetsPage();
+      case 3:
         page = const ConfigurationPage();
       default:
         throw UnimplementedError('no widget for $selectedIndex');
@@ -53,6 +56,9 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 BottomNavigationBar(
+                  type: BottomNavigationBarType.fixed,
+                  selectedItemColor: colorScheme.primary,
+                  unselectedItemColor: colorScheme.onSurfaceVariant,
                   items: const [
                     BottomNavigationBarItem(
                       icon: Icon(Icons.speaker),
@@ -61,6 +67,10 @@ class _HomePageState extends State<HomePage> {
                     BottomNavigationBarItem(
                       icon: Icon(Icons.music_note),
                       label: 'Spotify',
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.settings_remote),
+                      label: 'Presets',
                     ),
                     BottomNavigationBarItem(
                       icon: Icon(Icons.settings),
@@ -90,6 +100,10 @@ class _HomePageState extends State<HomePage> {
                       NavigationRailDestination(
                         icon: Icon(Icons.music_note),
                         label: Text('Spotify'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.settings_remote),
+                        label: Text('Presets'),
                       ),
                       NavigationRailDestination(
                         icon: Icon(Icons.settings),
