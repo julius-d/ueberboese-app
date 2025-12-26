@@ -7,7 +7,6 @@ import 'package:ueberboese_app/models/speaker.dart';
 import 'package:ueberboese_app/models/app_config.dart';
 import 'package:ueberboese_app/pages/speaker_list_page.dart';
 import 'package:ueberboese_app/pages/speaker_detail_page.dart';
-import 'package:ueberboese_app/pages/add_speaker_page.dart';
 
 void main() {
   setUp(() {
@@ -249,8 +248,8 @@ void main() {
       await tester.tap(find.byIcon(Icons.router));
       await tester.pumpAndSettle();
 
-      // Should navigate to AddSpeakerPage
-      expect(find.byType(AddSpeakerPage), findsOneWidget);
+      // Should navigate to AddSpeakerPage (check for the page title)
+      expect(find.text('Add Speaker'), findsOneWidget);
     });
 
     testWidgets(

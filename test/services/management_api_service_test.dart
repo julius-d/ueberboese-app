@@ -89,7 +89,6 @@ void main() {
         password,
       );
 
-      final credentials = base64Encode(utf8.encode('$username:$password'));
       verify(mockClient.get(
         Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
         headers: argThat(
