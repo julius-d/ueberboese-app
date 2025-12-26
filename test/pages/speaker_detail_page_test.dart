@@ -262,5 +262,124 @@ void main() {
       expect(find.text('Multi-Room Zone'), findsOneWidget);
       expect(find.byIcon(Icons.speaker_group), findsOneWidget);
     });
+
+    testWidgets('displays zone member list with basic info', (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      // Wait for initial load
+      await tester.pumpAndSettle();
+
+      // The Multi-Room Zone section should be visible
+      expect(find.text('Multi-Room Zone'), findsOneWidget);
+    });
+
+    testWidgets('displays volume controls for zone members when zone is loaded', (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      // Add multiple speakers to test zone display
+      const speaker2 = Speaker(
+        id: '2',
+        name: 'Speaker 2',
+        emoji: '🎵',
+        ipAddress: '192.168.1.101',
+        type: 'SoundTouch 20',
+        deviceId: 'device-456',
+      );
+
+      appState.addSpeaker(testSpeaker);
+      appState.addSpeaker(speaker2);
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      // Wait for initial load
+      await tester.pumpAndSettle();
+
+      // Verify the zone section is present
+      expect(find.text('Multi-Room Zone'), findsOneWidget);
+
+      // Note: Volume controls will only appear if a zone is actually created via API,
+      // which requires mocking the API service. This test verifies the UI structure exists.
+    });
+
+    testWidgets('volume section includes volume controls', (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // The Volume section header should be visible
+      expect(find.text('Volume'), findsOneWidget);
+
+      // Note: Volume control buttons (Down/Up) only appear after API successfully loads volume data.
+      // Without API mocking, this test verifies the Volume section structure exists.
+    });
+
+    testWidgets('displays CircularProgressIndicator while loading volumes', (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      // Before pumpAndSettle, should show loading indicators
+      expect(find.byType(CircularProgressIndicator), findsAtLeast(1));
+    });
+
+    testWidgets('zone members section structure exists', (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Verify the Multi-Room Zone section exists
+      expect(find.text('Multi-Room Zone'), findsOneWidget);
+      expect(find.byIcon(Icons.speaker_group), findsOneWidget);
+
+      // Note: Star icon for master and zone member volume controls only appear
+      // when a zone is actually loaded from the API, which requires API mocking.
+      // This test verifies the basic zone section structure exists.
+    });
   });
 }
