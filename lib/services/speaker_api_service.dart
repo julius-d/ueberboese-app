@@ -584,4 +584,30 @@ class SpeakerApiService {
       }
     }
   }
+
+  Future<void> standby(String ipAddress) async {
+    final url = Uri.parse('http://$ipAddress:8090/standby');
+    final client = httpClient ?? http.Client();
+
+    try {
+      final response = await client
+          .get(url)
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          'Failed to set standby: HTTP ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Failed to set standby: $e');
+    } finally {
+      if (httpClient == null) {
+        client.close();
+      }
+    }
+  }
 }

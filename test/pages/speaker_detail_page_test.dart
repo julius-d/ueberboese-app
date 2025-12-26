@@ -72,7 +72,11 @@ void main() {
       await tester.tap(find.byIcon(Icons.more_vert));
       await tester.pumpAndSettle();
 
+      expect(find.text('Edit speaker'), findsOneWidget);
+      expect(find.text('Send to standby'), findsOneWidget);
       expect(find.text('Delete speaker'), findsOneWidget);
+      expect(find.byIcon(Icons.edit), findsOneWidget);
+      expect(find.byIcon(Icons.bedtime), findsOneWidget);
       expect(find.byIcon(Icons.delete), findsOneWidget);
     });
 

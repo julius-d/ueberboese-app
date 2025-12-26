@@ -807,5 +807,47 @@ void main() {
         );
       });
     });
+
+    group('Standby API', () {
+      test('standby sends GET request to correct endpoint', () async {
+        const xmlResponse = '''<?xml version='1.0' encoding='utf-8'?>
+<status>/standby</status>''';
+
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        await apiService.standby('192.168.1.131');
+
+        verify(mockClient.get(
+          Uri.parse('http://192.168.1.131:8090/standby'),
+        )).called(1);
+      });
+
+      test('standby throws exception on non-200 status code', () async {
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response('Not Found', 404),
+        );
+
+        expect(
+          () => apiService.standby('192.168.1.131'),
+          throwsA(isA<Exception>()),
+        );
+      });
+
+      test('standby throws exception on timeout', () async {
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => Future.delayed(
+            const Duration(seconds: 11),
+            () => http.Response('', 200),
+          ),
+        );
+
+        expect(
+          () => apiService.standby('192.168.1.131'),
+          throwsA(isA<Exception>()),
+        );
+      });
+    });
   });
 }

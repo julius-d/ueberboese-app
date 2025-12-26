@@ -474,6 +474,21 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
     );
   }
 
+  Future<void> _sendToStandby() async {
+    try {
+      await _apiService.standby(widget.speaker.ipAddress);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Speaker sent to standby')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to send to standby: ${e.toString()}')),
+      );
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -493,6 +508,8 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                     builder: (context) => EditSpeakerPage(speaker: widget.speaker),
                   ),
                 );
+              } else if (value == 'standby') {
+                _sendToStandby();
               } else if (value == 'delete') {
                 _showDeleteConfirmationDialog(context);
               }
@@ -505,6 +522,16 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                     Icon(Icons.edit),
                     SizedBox(width: 8),
                     Text('Edit speaker'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'standby',
+                child: Row(
+                  children: [
+                    Icon(Icons.bedtime),
+                    SizedBox(width: 8),
+                    Text('Send to standby'),
                   ],
                 ),
               ),
