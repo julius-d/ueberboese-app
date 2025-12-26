@@ -275,7 +275,7 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Error'),
-          content: Text(
+          content: SelectableText(
             'Failed to fetch speakers from account.\n\n${e.toString()}',
           ),
           actions: [

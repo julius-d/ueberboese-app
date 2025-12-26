@@ -186,7 +186,7 @@ class _AddSpeakerPageState extends State<AddSpeakerPage> {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Error'),
-          content: Text(
+          content: SelectableText(
             'Failed to fetch speaker information.\n\n${e.toString()}',
           ),
           actions: [

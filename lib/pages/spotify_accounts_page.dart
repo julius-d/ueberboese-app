@@ -163,7 +163,7 @@ class _SpotifyAccountsPageState extends State<SpotifyAccountsPage> {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Error'),
-          content: Text(
+          content: SelectableText(
             'Failed to initialize Spotify authentication.\n\n${e.toString()}',
           ),
           actions: [
@@ -220,7 +220,7 @@ class _SpotifyAccountsPageState extends State<SpotifyAccountsPage> {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Error'),
-          content: Text(
+          content: SelectableText(
             'Failed to confirm Spotify authentication.\n\n${e.toString()}',
           ),
           actions: [
