@@ -715,5 +715,97 @@ void main() {
         );
       });
     });
+
+    group('removePreset', () {
+      test('removePreset sends correct XML and returns updated list', () async {
+        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8"?>
+<presets>
+  <preset id="1">
+    <ContentItem source="TUNEIN" type="stationurl" location="/v1/playback/station/s33828" isPresetable="true">
+      <itemName>K-LOVE Radio</itemName>
+      <containerArt>http://cdn-profiles.tunein.com/s33828/images/logog.png</containerArt>
+    </ContentItem>
+  </preset>
+  <preset id="3">
+    <ContentItem source="TUNEIN" type="stationurl" location="/v1/playback/station/s309605" isPresetable="true">
+      <itemName>K-LOVE 90s</itemName>
+      <containerArt>http://cdn-profiles.tunein.com/s309605/images/logog.png</containerArt>
+    </ContentItem>
+  </preset>
+</presets>''';
+
+        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        final presets = await apiService.removePreset('192.168.1.131', '2');
+
+        // Verify request was made correctly
+        verify(mockClient.post(
+          any,
+          headers: {'Content-Type': 'text/xml'},
+          body: '<preset id="2"></preset>',
+        )).called(1);
+
+        // Verify response parsing
+        expect(presets.length, 2);
+        expect(presets[0].id, '1');
+        expect(presets[1].id, '3');
+        // Preset 2 should be removed
+        expect(presets.any((p) => p.id == '2'), false);
+      });
+
+      test('removePreset returns empty list when all presets deleted', () async {
+        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8"?>
+<presets>
+</presets>''';
+
+        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        final presets = await apiService.removePreset('192.168.1.131', '1');
+
+        expect(presets, isEmpty);
+      });
+
+      test('removePreset throws exception on non-200 status code', () async {
+        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
+          (_) async => http.Response('Not Found', 404),
+        );
+
+        expect(
+          () => apiService.removePreset('192.168.1.131', '1'),
+          throwsA(isA<Exception>()),
+        );
+      });
+
+      test('removePreset throws exception on timeout', () async {
+        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
+          (_) async => Future.delayed(
+            const Duration(seconds: 11),
+            () => http.Response('', 200),
+          ),
+        );
+
+        expect(
+          () => apiService.removePreset('192.168.1.131', '1'),
+          throwsA(isA<Exception>()),
+        );
+      });
+
+      test('removePreset throws exception on XML parsing error', () async {
+        const xmlResponse = '''This is not valid XML''';
+
+        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        expect(
+          () => apiService.removePreset('192.168.1.131', '1'),
+          throwsA(isA<Exception>()),
+        );
+      });
+    });
   });
 }

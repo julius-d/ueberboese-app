@@ -540,4 +540,48 @@ class SpeakerApiService {
       }
     }
   }
+
+  Future<List<Preset>> removePreset(String ipAddress, String presetId) async {
+    final url = Uri.parse('http://$ipAddress:8090/removePreset');
+    final client = httpClient ?? http.Client();
+
+    try {
+      final body = '<preset id="$presetId"></preset>';
+      final response = await client
+          .post(
+            url,
+            headers: {'Content-Type': 'text/xml'},
+            body: body,
+          )
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          'Failed to remove preset: HTTP ${response.statusCode}',
+        );
+      }
+
+      final bodyText = utf8.decode(response.bodyBytes);
+      final document = XmlDocument.parse(bodyText);
+
+      // Find all preset elements in the updated list
+      final presetElements = document.findAllElements('preset');
+
+      // Parse each preset
+      final presets = presetElements
+          .map((element) => Preset.fromXml(element))
+          .toList();
+
+      return presets;
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Failed to remove preset: $e');
+    } finally {
+      if (httpClient == null) {
+        client.close();
+      }
+    }
+  }
 }
