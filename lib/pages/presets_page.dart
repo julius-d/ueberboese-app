@@ -77,10 +77,13 @@ class _PresetsPageState extends State<PresetsPage> {
                     style: theme.textTheme.titleLarge,
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    snapshot.error.toString(),
-                    style: theme.textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: SelectableText(
+                      snapshot.error.toString(),
+                      style: theme.textTheme.bodyMedium,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(

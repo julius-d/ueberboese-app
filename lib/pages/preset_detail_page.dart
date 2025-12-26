@@ -102,7 +102,7 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Error'),
-        content: Text(message),
+        content: SelectableText(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -290,7 +290,7 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
+                SelectableText(
                   value,
                   style: theme.textTheme.bodyLarge,
                 ),
