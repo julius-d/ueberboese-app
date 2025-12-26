@@ -159,6 +159,11 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
     setState(() {
       _isLoadingVolume = true;
       _volumeErrorMessage = null;
+      // Also update zone member volume loading state if speaker is in a zone
+      if (_currentZone != null && _currentZone!.isInZone(widget.speaker.deviceId)) {
+        _loadingVolumes[widget.speaker.deviceId] = true;
+        _volumeErrors[widget.speaker.deviceId] = null;
+      }
     });
 
     try {
@@ -167,12 +172,22 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
       setState(() {
         _currentVolume = volume;
         _isLoadingVolume = false;
+        // Also update zone member volume if speaker is in a zone
+        if (_currentZone != null && _currentZone!.isInZone(widget.speaker.deviceId)) {
+          _zoneMemberVolumes[widget.speaker.deviceId] = volume;
+          _loadingVolumes[widget.speaker.deviceId] = false;
+        }
       });
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _volumeErrorMessage = 'Failed to adjust volume: ${e.toString()}';
         _isLoadingVolume = false;
+        // Also update zone member volume error state if speaker is in a zone
+        if (_currentZone != null && _currentZone!.isInZone(widget.speaker.deviceId)) {
+          _volumeErrors[widget.speaker.deviceId] = 'Failed to adjust volume: ${e.toString()}';
+          _loadingVolumes[widget.speaker.deviceId] = false;
+        }
       });
     }
   }
@@ -185,10 +200,16 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
     if (speaker == null) return;
 
     final newVolume = (currentVolume.actualVolume + delta).clamp(0, 100);
+    final isCurrentSpeaker = deviceId == widget.speaker.deviceId;
 
     setState(() {
       _loadingVolumes[deviceId] = true;
       _volumeErrors[deviceId] = null;
+      // Also update main volume loading state if this is the current speaker
+      if (isCurrentSpeaker) {
+        _isLoadingVolume = true;
+        _volumeErrorMessage = null;
+      }
     });
 
     try {
@@ -197,12 +218,22 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
       setState(() {
         _zoneMemberVolumes[deviceId] = volume;
         _loadingVolumes[deviceId] = false;
+        // Also update main volume if this is the current speaker
+        if (isCurrentSpeaker) {
+          _currentVolume = volume;
+          _isLoadingVolume = false;
+        }
       });
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _volumeErrors[deviceId] = 'Failed to adjust volume: ${e.toString()}';
         _loadingVolumes[deviceId] = false;
+        // Also update main volume error state if this is the current speaker
+        if (isCurrentSpeaker) {
+          _volumeErrorMessage = 'Failed to adjust volume: ${e.toString()}';
+          _isLoadingVolume = false;
+        }
       });
     }
   }
