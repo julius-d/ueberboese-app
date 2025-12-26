@@ -12,7 +12,6 @@ class PresetsPage extends StatefulWidget {
   State<PresetsPage> createState() => _PresetsPageState();
 }
 
-
 class _PresetsPageState extends State<PresetsPage> {
   final _speakerApiService = SpeakerApiService();
   Future<List<Preset>>? _presetsFuture;
@@ -132,7 +131,7 @@ class _PresetsPageState extends State<PresetsPage> {
                                     return Container(
                                       width: 56,
                                       height: 56,
-                                      color: theme.colorScheme.surfaceVariant,
+                                      color: theme.colorScheme.surfaceContainerHighest,
                                       child: Icon(
                                         Icons.music_note,
                                         color: theme.colorScheme.onSurfaceVariant,
@@ -145,7 +144,7 @@ class _PresetsPageState extends State<PresetsPage> {
                                 width: 56,
                                 height: 56,
                                 decoration: BoxDecoration(
-                                  color: theme.colorScheme.surfaceVariant,
+                                  color: theme.colorScheme.surfaceContainerHighest,
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Icon(
@@ -167,7 +166,7 @@ class _PresetsPageState extends State<PresetsPage> {
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
+                                  color: Colors.black.withValues(alpha: 0.2),
                                   blurRadius: 4,
                                   offset: const Offset(2, 2),
                                 ),

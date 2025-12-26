@@ -611,5 +611,109 @@ void main() {
         );
       });
     });
+
+    group('getPresets', () {
+      test('getPresets parses multiple presets correctly', () async {
+        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8"?>
+<presets>
+  <preset id="1">
+    <ContentItem source="TUNEIN" type="stationurl" location="/v1/playback/station/s33828" isPresetable="true">
+      <itemName>K-LOVE Radio</itemName>
+      <containerArt>http://cdn-profiles.tunein.com/s33828/images/logog.png?t=637986894890000000</containerArt>
+    </ContentItem>
+  </preset>
+  <preset id="2">
+    <ContentItem source="TUNEIN" type="stationurl" location="/v1/playback/station/s309606" isPresetable="true">
+      <itemName>K-LOVE 2000s</itemName>
+      <containerArt>http://cdn-profiles.tunein.com/s309606/images/logog.png?t=637986893640000000</containerArt>
+    </ContentItem>
+  </preset>
+  <preset id="3" createdOn="1701220500" updatedOn="1701220500">
+    <ContentItem source="TUNEIN" type="stationurl" location="/v1/playback/station/s309605" isPresetable="true">
+      <itemName>My Copy K-Love 90s</itemName>
+      <containerArt>http://cdn-profiles.tunein.com/s309605/images/logog.png?t=637986891960000000</containerArt>
+    </ContentItem>
+  </preset>
+</presets>''';
+
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        final presets = await apiService.getPresets('192.168.1.131');
+
+        expect(presets.length, 3);
+
+        expect(presets[0].id, '1');
+        expect(presets[0].itemName, 'K-LOVE Radio');
+        expect(presets[0].source, 'TUNEIN');
+        expect(presets[0].location, '/v1/playback/station/s33828');
+        expect(presets[0].type, 'stationurl');
+        expect(presets[0].isPresetable, true);
+        expect(presets[0].containerArt, contains('s33828'));
+        expect(presets[0].createdOn, isNull);
+        expect(presets[0].updatedOn, isNull);
+
+        expect(presets[1].id, '2');
+        expect(presets[1].itemName, 'K-LOVE 2000s');
+
+        expect(presets[2].id, '3');
+        expect(presets[2].itemName, 'My Copy K-Love 90s');
+        expect(presets[2].createdOn, 1701220500);
+        expect(presets[2].updatedOn, 1701220500);
+      });
+
+      test('getPresets returns empty list when no presets', () async {
+        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8"?>
+<presets>
+</presets>''';
+
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        final presets = await apiService.getPresets('192.168.1.131');
+
+        expect(presets, isEmpty);
+      });
+
+      test('getPresets throws exception on non-200 status code', () async {
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response('Not Found', 404),
+        );
+
+        expect(
+          () => apiService.getPresets('192.168.1.131'),
+          throwsA(isA<Exception>()),
+        );
+      });
+
+      test('getPresets throws exception on timeout', () async {
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => Future.delayed(
+            const Duration(seconds: 11),
+            () => http.Response('', 200),
+          ),
+        );
+
+        expect(
+          () => apiService.getPresets('192.168.1.131'),
+          throwsA(isA<Exception>()),
+        );
+      });
+
+      test('getPresets throws exception on XML parsing error', () async {
+        const xmlResponse = '''This is not valid XML''';
+
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        expect(
+          () => apiService.getPresets('192.168.1.131'),
+          throwsA(isA<Exception>()),
+        );
+      });
+    });
   });
 }

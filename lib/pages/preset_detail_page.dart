@@ -40,7 +40,7 @@ class PresetDetailPage extends StatelessWidget {
                         return Container(
                           width: 200,
                           height: 200,
-                          color: theme.colorScheme.surfaceVariant,
+                          color: theme.colorScheme.surfaceContainerHighest,
                           child: Icon(
                             Icons.music_note,
                             size: 100,
