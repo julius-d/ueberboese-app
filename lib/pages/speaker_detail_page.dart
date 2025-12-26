@@ -791,6 +791,22 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                                       // Volume controls - always present to maintain alignment
                                       if (speaker != null) ...[
                                         const SizedBox(width: 16),
+                                        SizedBox(
+                                          height: 32,
+                                          width: 32,
+                                          child: FilledButton(
+                                            onPressed: (isLoadingMemberVolume || memberVolume == null)
+                                                ? null
+                                                : () => _adjustMemberVolume(deviceId, -5),
+                                            style: FilledButton.styleFrom(
+                                              padding: EdgeInsets.zero,
+                                              minimumSize: const Size(32, 32),
+                                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                            ),
+                                            child: const Icon(Icons.volume_down, size: 16),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
                                         if (isLoadingMemberVolume)
                                           const SizedBox(
                                             width: 50,
@@ -811,41 +827,48 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                                               style: theme.textTheme.bodySmall?.copyWith(
                                                 fontWeight: FontWeight.bold,
                                               ),
-                                              textAlign: TextAlign.right,
+                                              textAlign: TextAlign.center,
                                             ),
                                           ),
                                         ] else
                                           const SizedBox(width: 50),
-                                        IconButton(
-                                          icon: const Icon(Icons.volume_down),
-                                          iconSize: 18,
-                                          onPressed: (isLoadingMemberVolume || memberVolume == null)
-                                              ? null
-                                              : () => _adjustMemberVolume(deviceId, -5),
-                                          visualDensity: VisualDensity.compact,
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(Icons.volume_up),
-                                          iconSize: 18,
-                                          onPressed: (isLoadingMemberVolume || memberVolume == null)
-                                              ? null
-                                              : () => _adjustMemberVolume(deviceId, 5),
-                                          visualDensity: VisualDensity.compact,
+                                        const SizedBox(width: 4),
+                                        SizedBox(
+                                          height: 32,
+                                          width: 32,
+                                          child: FilledButton(
+                                            onPressed: (isLoadingMemberVolume || memberVolume == null)
+                                                ? null
+                                                : () => _adjustMemberVolume(deviceId, 5),
+                                            style: FilledButton.styleFrom(
+                                              padding: EdgeInsets.zero,
+                                              minimumSize: const Size(32, 32),
+                                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                            ),
+                                            child: const Icon(Icons.volume_up, size: 16),
+                                          ),
                                         ),
                                         // Remove button - fixed width to maintain alignment
+                                        const SizedBox(width: 4),
                                         SizedBox(
-                                          width: 48,
+                                          width: 32,
+                                          height: 32,
                                           child: (!isCurrentSpeaker &&
                                                   !isMaster &&
                                                   _currentZone!.isMaster(widget.speaker.deviceId) &&
                                                   member != null)
-                                              ? IconButton(
-                                                  icon: const Icon(Icons.remove_circle_outline),
-                                                  iconSize: 20,
+                                              ? FilledButton(
                                                   onPressed: _isLoadingZone
                                                       ? null
                                                       : () => _removeFromZone(member),
-                                                  color: theme.colorScheme.error,
+                                                  style: FilledButton.styleFrom(
+                                                    padding: EdgeInsets.zero,
+                                                    minimumSize: const Size(32, 32),
+                                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                    backgroundColor: theme.colorScheme.errorContainer,
+                                                    foregroundColor: theme.colorScheme.onErrorContainer,
+                                                  ),
+                                                  child: const Icon(Icons.remove_circle_outline, size: 16),
                                                 )
                                               : null,
                                         ),
