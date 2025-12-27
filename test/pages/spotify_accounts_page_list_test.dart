@@ -96,10 +96,12 @@ void main() {
           {
             'displayName': 'John Doe',
             'createdAt': '2025-12-23T10:30:00Z',
+            'spotifyUserId': 'user123',
           },
           {
             'displayName': 'Jane Smith',
             'createdAt': '2025-12-22T14:15:00Z',
+            'spotifyUserId': 'user456',
           },
         ],
       });
@@ -131,6 +133,7 @@ void main() {
           {
             'displayName': 'John Doe',
             'createdAt': twoDaysAgo.toIso8601String(),
+            'spotifyUserId': 'user123',
           },
         ],
       });
@@ -191,10 +194,12 @@ void main() {
           {
             'displayName': 'John Doe',
             'createdAt': '2025-12-23T10:30:00Z',
+            'spotifyUserId': 'user123',
           },
           {
             'displayName': 'Jane Smith',
             'createdAt': '2025-12-22T14:15:00Z',
+            'spotifyUserId': 'user456',
           },
         ],
       });
@@ -221,6 +226,7 @@ void main() {
           {
             'displayName': 'John Doe',
             'createdAt': '2025-12-23T10:30:00Z',
+            'spotifyUserId': 'user123',
           },
         ],
       });

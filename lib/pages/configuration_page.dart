@@ -17,16 +17,20 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
   final _mgmtUsernameController = TextEditingController();
   final _mgmtPasswordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _initialized = false;
 
   @override
-  void initState() {
-    super.initState();
-    // Load current config values
-    final config = context.read<MyAppState>().config;
-    _apiUrlController.text = config.apiUrl;
-    _accountIdController.text = config.accountId;
-    _mgmtUsernameController.text = config.mgmtUsername;
-    _mgmtPasswordController.text = config.mgmtPassword;
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      // Load current config values
+      final config = context.read<MyAppState>().config;
+      _apiUrlController.text = config.apiUrl;
+      _accountIdController.text = config.accountId;
+      _mgmtUsernameController.text = config.mgmtUsername;
+      _mgmtPasswordController.text = config.mgmtPassword;
+      _initialized = true;
+    }
   }
 
   @override

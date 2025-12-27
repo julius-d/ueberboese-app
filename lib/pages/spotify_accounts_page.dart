@@ -24,17 +24,35 @@ class _SpotifyAccountsPageState extends State<SpotifyAccountsPage> {
   List<SpotifyAccount> _accounts = [];
   late AppLinks _appLinks;
   StreamSubscription<Uri>? _linkSubscription;
+  bool _initialized = false;
 
   @override
   void initState() {
     super.initState();
-    final config = context.read<MyAppState>().config;
-    _apiService = widget.apiService ?? SpotifyApiService(
-      username: config.mgmtUsername,
-      password: config.mgmtPassword,
-    );
-    _initDeepLinkListener();
-    _loadAccounts();
+    // If apiService is provided via constructor (for testing), initialize immediately
+    if (widget.apiService != null) {
+      _apiService = widget.apiService!;
+      _initDeepLinkListener();
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      // If no apiService was provided, create one from config
+      if (widget.apiService == null) {
+        final config = context.read<MyAppState>().config;
+        _apiService = SpotifyApiService(
+          username: config.mgmtUsername,
+          password: config.mgmtPassword,
+        );
+        _initDeepLinkListener();
+      }
+      // Load accounts regardless of whether apiService came from constructor or config
+      _loadAccounts();
+      _initialized = true;
+    }
   }
 
   @override
@@ -302,7 +320,6 @@ class _SpotifyAccountsPageState extends State<SpotifyAccountsPage> {
       );
     } else {
       content = ListView.builder(
-        padding: const EdgeInsets.all(16),
         itemCount: _accounts.length,
         itemBuilder: (context, index) {
           final account = _accounts[index];

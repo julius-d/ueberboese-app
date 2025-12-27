@@ -289,5 +289,39 @@ void main() {
       expect(find.text('admin'), findsOneWidget);
       expect(find.text('change_me!'), findsOneWidget);
     });
+
+    testWidgets('initializes without errors when config is loaded',
+        (WidgetTester tester) async {
+      // Set up a pre-existing config
+      appState.updateConfig(const AppConfig(
+        apiUrl: 'https://existing.example.com',
+        accountId: 'existinguser',
+        mgmtUsername: 'existingadmin',
+        mgmtPassword: 'existingpass',
+      ));
+
+      // This should not throw an error or cause a black screen
+      await pumpConfigurationPage(tester);
+      await tester.pump(); // Additional pump to ensure state is settled
+
+      // Verify page rendered correctly
+      expect(find.text('Configuration'), findsOneWidget);
+      expect(find.text('https://existing.example.com'), findsOneWidget);
+      expect(find.text('existinguser'), findsOneWidget);
+      expect(find.text('existingadmin'), findsOneWidget);
+      expect(find.text('existingpass'), findsOneWidget);
+    });
+
+    testWidgets('initializes correctly with empty config',
+        (WidgetTester tester) async {
+      // Use default empty config
+      await pumpConfigurationPage(tester);
+      await tester.pump(); // Additional pump to ensure state is settled
+
+      // Verify page rendered correctly with default values
+      expect(find.text('Configuration'), findsOneWidget);
+      expect(find.text('admin'), findsOneWidget);
+      expect(find.text('change_me!'), findsOneWidget);
+    });
   });
 }
