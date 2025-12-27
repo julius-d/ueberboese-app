@@ -7,16 +7,19 @@ import 'package:ueberboese_app/main.dart';
 import 'package:ueberboese_app/models/preset.dart';
 import 'package:ueberboese_app/models/spotify_account.dart';
 import 'package:ueberboese_app/models/spotify_entity.dart';
+import 'package:ueberboese_app/services/speaker_api_service.dart';
 import 'package:ueberboese_app/services/spotify_api_service.dart';
 
 class EditSpotifyPresetPage extends StatefulWidget {
   final Preset preset;
   final SpotifyApiService? apiService;
+  final SpeakerApiService? speakerApiService;
 
   const EditSpotifyPresetPage({
     super.key,
     required this.preset,
     this.apiService,
+    this.speakerApiService,
   });
 
   @override
@@ -27,6 +30,7 @@ class EditSpotifyPresetPage extends StatefulWidget {
 class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
   late TextEditingController _spotifyUriController;
   late final SpotifyApiService _apiService;
+  late final SpeakerApiService _speakerApiService;
   String? _decodingError;
   SpotifyEntity? _entity;
   bool _isLoadingEntity = false;
@@ -36,6 +40,7 @@ class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
   SpotifyAccount? _selectedAccount;
   bool _isLoadingAccounts = false;
   String? _accountsFetchError;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -48,6 +53,7 @@ class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
           username: config.mgmtUsername,
           password: config.mgmtPassword,
         );
+    _speakerApiService = widget.speakerApiService ?? SpeakerApiService();
 
     try {
       final location = widget.preset.location;
@@ -248,20 +254,67 @@ class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
     );
   }
 
-  void _onSavePressed() {
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Not Implemented'),
-        content: const Text('Saving is not yet implemented'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
-      ),
-    );
+  Future<void> _onSavePressed() async {
+    final appState = context.read<MyAppState>();
+
+    // Validate required fields
+    final spotifyUri = _spotifyUriController.text.trim();
+    if (spotifyUri.isEmpty) {
+      _showErrorDialog('Spotify URI cannot be empty');
+      return;
+    }
+
+    if (_selectedAccount == null) {
+      _showErrorDialog('Please select a Spotify account');
+      return;
+    }
+
+    if (_entity == null) {
+      _showErrorDialog('Please wait for entity information to load');
+      return;
+    }
+
+    if (appState.speakers.isEmpty) {
+      _showErrorDialog('No speakers available');
+      return;
+    }
+
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      final speaker = appState.speakers.first;
+      await _speakerApiService.storePreset(
+        speaker.ipAddress,
+        widget.preset.id,
+        spotifyUri,
+        _selectedAccount!.spotifyUserId,
+        _entity!.name,
+        _entity!.imageUrl,
+      );
+
+      if (!mounted) return;
+
+      // Show success snackbar
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Preset saved successfully'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      // Navigate back to presets list
+      Navigator.pop(context);
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _isSaving = false;
+      });
+
+      _showErrorDialog('Failed to save preset: ${e.toString()}');
+    }
   }
 
   @override
@@ -502,10 +555,22 @@ class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: _decodingError == null && _selectedAccount != null
+              onPressed: _decodingError == null &&
+                      _selectedAccount != null &&
+                      _entity != null &&
+                      !_isSaving
                   ? _onSavePressed
                   : null,
-              child: const Text('Save'),
+              child: _isSaving
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : const Text('Save'),
             ),
             ],
           ),

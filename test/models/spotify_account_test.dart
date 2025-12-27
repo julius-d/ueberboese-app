@@ -8,40 +8,53 @@ void main() {
       final account = SpotifyAccount(
         displayName: 'John Doe',
         createdAt: createdAt,
+        spotifyUserId: 'user123',
       );
 
       expect(account.displayName, 'John Doe');
       expect(account.createdAt, createdAt);
+      expect(account.spotifyUserId, 'user123');
     });
 
-    test('equality is based on displayName and createdAt', () {
+    test('equality is based on displayName, createdAt, and spotifyUserId', () {
       final createdAt = DateTime(2025, 12, 23, 10, 30, 0);
       final account1 = SpotifyAccount(
         displayName: 'John Doe',
         createdAt: createdAt,
+        spotifyUserId: 'user123',
       );
       final account2 = SpotifyAccount(
         displayName: 'John Doe',
         createdAt: createdAt,
+        spotifyUserId: 'user123',
       );
       final account3 = SpotifyAccount(
         displayName: 'Jane Smith',
         createdAt: createdAt,
+        spotifyUserId: 'user456',
+      );
+      final account4 = SpotifyAccount(
+        displayName: 'John Doe',
+        createdAt: createdAt,
+        spotifyUserId: 'user456',
       );
 
       expect(account1, equals(account2));
       expect(account1, isNot(equals(account3)));
+      expect(account1, isNot(equals(account4)));
     });
 
-    test('hashCode is based on displayName and createdAt', () {
+    test('hashCode is based on displayName, createdAt, and spotifyUserId', () {
       final createdAt = DateTime(2025, 12, 23, 10, 30, 0);
       final account1 = SpotifyAccount(
         displayName: 'John Doe',
         createdAt: createdAt,
+        spotifyUserId: 'user123',
       );
       final account2 = SpotifyAccount(
         displayName: 'John Doe',
         createdAt: createdAt,
+        spotifyUserId: 'user123',
       );
 
       expect(account1.hashCode, equals(account2.hashCode));
@@ -52,18 +65,21 @@ void main() {
       final account = SpotifyAccount(
         displayName: 'John Doe',
         createdAt: createdAt,
+        spotifyUserId: 'user123',
       );
 
       final json = account.toJson();
 
       expect(json['displayName'], 'John Doe');
       expect(json['createdAt'], '2025-12-23T10:30:00.000');
+      expect(json['spotifyUserId'], 'user123');
     });
 
     test('fromJson deserializes account correctly', () {
       final json = {
         'displayName': 'John Doe',
         'createdAt': '2025-12-23T10:30:00.000Z',
+        'spotifyUserId': 'user123',
       };
 
       final account = SpotifyAccount.fromJson(json);
@@ -72,6 +88,7 @@ void main() {
       expect(account.createdAt.year, 2025);
       expect(account.createdAt.month, 12);
       expect(account.createdAt.day, 23);
+      expect(account.spotifyUserId, 'user123');
     });
 
     test('roundtrip serialization preserves data', () {
@@ -79,6 +96,7 @@ void main() {
       final original = SpotifyAccount(
         displayName: 'John Doe',
         createdAt: createdAt,
+        spotifyUserId: 'user123',
       );
 
       final json = original.toJson();
@@ -86,6 +104,7 @@ void main() {
 
       expect(restored.displayName, original.displayName);
       expect(restored.createdAt, original.createdAt);
+      expect(restored.spotifyUserId, original.spotifyUserId);
     });
 
     test('handles different display names', () {
@@ -94,14 +113,17 @@ void main() {
       final account1 = SpotifyAccount(
         displayName: 'Simple Name',
         createdAt: createdAt,
+        spotifyUserId: 'user1',
       );
       final account2 = SpotifyAccount(
         displayName: 'Name with Spaces',
         createdAt: createdAt,
+        spotifyUserId: 'user2',
       );
       final account3 = SpotifyAccount(
         displayName: 'Name_with-special.chars',
         createdAt: createdAt,
+        spotifyUserId: 'user3',
       );
 
       expect(account1.displayName, 'Simple Name');
@@ -114,6 +136,7 @@ void main() {
       final json1 = {
         'displayName': 'John Doe',
         'createdAt': '2025-12-23T10:30:00.000Z',
+        'spotifyUserId': 'user1',
       };
       final account1 = SpotifyAccount.fromJson(json1);
       expect(account1.createdAt.year, 2025);
@@ -122,6 +145,7 @@ void main() {
       final json2 = {
         'displayName': 'Jane Smith',
         'createdAt': '2025-12-23T10:30:00.000',
+        'spotifyUserId': 'user2',
       };
       final account2 = SpotifyAccount.fromJson(json2);
       expect(account2.createdAt.year, 2025);

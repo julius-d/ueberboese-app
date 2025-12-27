@@ -123,50 +123,9 @@ void main() {
       expect(find.widgetWithText(ElevatedButton, 'Save'), findsOneWidget);
     });
 
-    testWidgets('shows not implemented dialog when save is tapped', (WidgetTester tester) async {
-      const testPreset = Preset(
-        id: '1',
-        itemName: 'Test Playlist',
-        source: 'SPOTIFY',
-        location: '/playback/container/c3BvdGlmeTpwbGF5bGlzdDp0ZXN0',
-        type: 'playlist',
-        isPresetable: true,
-      );
-
-      final accounts = [
-        SpotifyAccount(
-          displayName: 'John Doe',
-          createdAt: DateTime(2024, 1, 1),
-        ),
-      ];
-
-      when(mockApiService.listSpotifyAccounts(any))
-          .thenAnswer((_) async => accounts);
-
-      await tester.pumpWidget(
-        createWidgetWithProvider(
-          EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
-        ),
-      );
-
-      await tester.pumpAndSettle();
-
-      // Select an account first
-      await tester.ensureVisible(find.byType(DropdownButtonFormField<SpotifyAccount>));
-      await tester.tap(find.byType(DropdownButtonFormField<SpotifyAccount>));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('John Doe').last);
-      await tester.pumpAndSettle();
-
-      // Scroll to save button and tap it
-      await tester.ensureVisible(find.widgetWithText(ElevatedButton, 'Save'));
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Save'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Not Implemented'), findsOneWidget);
-      expect(find.text('Saving is not yet implemented'), findsOneWidget);
-      expect(find.widgetWithText(TextButton, 'OK'), findsOneWidget);
-    });
+    // Test removed: Save functionality is now implemented
+    // To properly test the save functionality, we would need to mock SpeakerApiService
+    // and verify that storePreset is called with the correct parameters
 
     testWidgets('shows error for invalid location format', (WidgetTester tester) async {
       const testPreset = Preset(
@@ -419,6 +378,7 @@ void main() {
           SpotifyAccount(
             displayName: 'John Doe',
             createdAt: DateTime(2024, 1, 1),
+            spotifyUserId: 'user123',
           ),
         ];
 
@@ -447,10 +407,10 @@ void main() {
         await tester.tap(find.text('John Doe').last);
         await tester.pumpAndSettle();
 
-        // Save button should be enabled despite entity fetch error (error only affects entity display, not save)
+        // Save button should be disabled when entity fetch fails (entity is required for save)
         await tester.ensureVisible(find.byType(ElevatedButton));
         final saveButton = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
-        expect(saveButton.onPressed, isNotNull);
+        expect(saveButton.onPressed, isNull);
       });
 
       testWidgets('fetches entity info on URI change with debouncing', (WidgetTester tester) async {
@@ -645,10 +605,12 @@ void main() {
           SpotifyAccount(
             displayName: 'John Doe',
             createdAt: DateTime(2024, 1, 1),
+            spotifyUserId: 'user123',
           ),
           SpotifyAccount(
             displayName: 'Jane Smith',
             createdAt: DateTime(2024, 1, 2),
+            spotifyUserId: 'user456',
           ),
         ];
 
@@ -754,10 +716,12 @@ void main() {
           SpotifyAccount(
             displayName: 'John Doe',
             createdAt: DateTime(2024, 1, 1),
+            spotifyUserId: 'user123',
           ),
           SpotifyAccount(
             displayName: 'Jane Smith',
             createdAt: DateTime(2024, 1, 2),
+            spotifyUserId: 'user456',
           ),
         ];
 
@@ -805,6 +769,7 @@ void main() {
           SpotifyAccount(
             displayName: 'John Doe',
             createdAt: DateTime(2024, 1, 1),
+            spotifyUserId: 'user123',
           ),
         ];
 
@@ -845,6 +810,7 @@ void main() {
           SpotifyAccount(
             displayName: 'John Doe',
             createdAt: DateTime(2024, 1, 1),
+            spotifyUserId: 'user123',
           ),
         ];
 
@@ -887,6 +853,7 @@ void main() {
           SpotifyAccount(
             displayName: 'John Doe',
             createdAt: DateTime(2024, 1, 1),
+            spotifyUserId: 'user123',
           ),
         ];
 

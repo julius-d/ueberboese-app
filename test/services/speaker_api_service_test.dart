@@ -849,5 +849,205 @@ void main() {
         );
       });
     });
+
+    group('storePreset', () {
+      test('should store preset successfully', () async {
+        const ipAddress = '192.168.1.131';
+        const presetId = '3';
+        const spotifyUri = 'spotify:playlist:37i9dQZF1DXcBWIGoYBM5M';
+        const spotifyUserId = 'testuser123';
+        const itemName = 'Top 50 Global';
+        const containerArt = 'https://example.com/art.jpg';
+
+        const responseBody = '''<?xml version="1.0" encoding="UTF-8"?>
+<presets>
+  <preset id="3" createdOn="1701220500" updatedOn="1701220500">
+    <ContentItem source="SPOTIFY" type="tracklisturl" location="/playback/container/c3BvdGlmeTpwbGF5bGlzdDozN2k5ZFFaRjFEWGNCV0lHb1lCTTVN" sourceAccount="testuser123" isPresetable="true">
+      <itemName>Top 50 Global</itemName>
+      <containerArt>https://example.com/art.jpg</containerArt>
+    </ContentItem>
+  </preset>
+</presets>''';
+
+        final mockResponse = http.Response(responseBody, 200);
+
+        when(mockClient.post(
+          Uri.parse('http://$ipAddress:8090/storePreset'),
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).thenAnswer((_) async => mockResponse);
+
+        final result = await apiService.storePreset(
+          ipAddress,
+          presetId,
+          spotifyUri,
+          spotifyUserId,
+          itemName,
+          containerArt,
+        );
+
+        expect(result.length, 1);
+        expect(result[0].id, '3');
+        expect(result[0].itemName, itemName);
+        expect(result[0].source, 'SPOTIFY');
+
+        verify(mockClient.post(
+          Uri.parse('http://$ipAddress:8090/storePreset'),
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).called(1);
+      });
+
+      test('should store preset with null containerArt', () async {
+        const ipAddress = '192.168.1.131';
+        const presetId = '3';
+        const spotifyUri = 'spotify:playlist:37i9dQZF1DXcBWIGoYBM5M';
+        const spotifyUserId = 'testuser123';
+        const itemName = 'Top 50 Global';
+
+        const responseBody = '''<?xml version="1.0" encoding="UTF-8"?>
+<presets>
+  <preset id="3" createdOn="1701220500" updatedOn="1701220500">
+    <ContentItem source="SPOTIFY" type="tracklisturl" location="/playback/container/c3BvdGlmeTpwbGF5bGlzdDozN2k5ZFFaRjFEWGNCV0lHb1lCTTVN" sourceAccount="testuser123" isPresetable="true">
+      <itemName>Top 50 Global</itemName>
+    </ContentItem>
+  </preset>
+</presets>''';
+
+        final mockResponse = http.Response(responseBody, 200);
+
+        when(mockClient.post(
+          Uri.parse('http://$ipAddress:8090/storePreset'),
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).thenAnswer((_) async => mockResponse);
+
+        final result = await apiService.storePreset(
+          ipAddress,
+          presetId,
+          spotifyUri,
+          spotifyUserId,
+          itemName,
+          null,
+        );
+
+        expect(result.length, 1);
+        expect(result[0].id, '3');
+        expect(result[0].containerArt, isNull);
+      });
+
+      test('should encode Spotify URI to base64 correctly', () async {
+        const ipAddress = '192.168.1.131';
+        const presetId = '1';
+        const spotifyUri = 'spotify:playlist:123';
+        const spotifyUserId = 'user123';
+        const itemName = 'Test Playlist';
+
+        const responseBody = '''<?xml version="1.0" encoding="UTF-8"?>
+<presets>
+  <preset id="1">
+    <ContentItem source="SPOTIFY" type="tracklisturl" location="/playback/container/c3BvdGlmeTpwbGF5bGlzdDoxMjM=" sourceAccount="user123" isPresetable="true">
+      <itemName>Test Playlist</itemName>
+    </ContentItem>
+  </preset>
+</presets>''';
+
+        final mockResponse = http.Response(responseBody, 200);
+
+        when(mockClient.post(
+          Uri.parse('http://$ipAddress:8090/storePreset'),
+          headers: anyNamed('headers'),
+          body: argThat(contains('/playback/container/c3BvdGlmeTpwbGF5bGlzdDoxMjM='), named: 'body'),
+        )).thenAnswer((_) async => mockResponse);
+
+        await apiService.storePreset(
+          ipAddress,
+          presetId,
+          spotifyUri,
+          spotifyUserId,
+          itemName,
+          null,
+        );
+
+        verify(mockClient.post(
+          Uri.parse('http://$ipAddress:8090/storePreset'),
+          headers: anyNamed('headers'),
+          body: argThat(contains('/playback/container/c3BvdGlmeTpwbGF5bGlzdDoxMjM='), named: 'body'),
+        )).called(1);
+      });
+
+      test('should throw exception on non-200 status code', () async {
+        const ipAddress = '192.168.1.131';
+        final mockResponse = http.Response('Internal Server Error', 500);
+
+        when(mockClient.post(
+          Uri.parse('http://$ipAddress:8090/storePreset'),
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).thenAnswer((_) async => mockResponse);
+
+        expect(
+          () => apiService.storePreset(
+            ipAddress,
+            '1',
+            'spotify:playlist:123',
+            'user123',
+            'Test',
+            null,
+          ),
+          throwsA(isA<Exception>()),
+        );
+      });
+
+      test('should throw exception on malformed XML', () async {
+        const ipAddress = '192.168.1.131';
+        final mockResponse = http.Response('not valid xml', 200);
+
+        when(mockClient.post(
+          Uri.parse('http://$ipAddress:8090/storePreset'),
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).thenAnswer((_) async => mockResponse);
+
+        expect(
+          () => apiService.storePreset(
+            ipAddress,
+            '1',
+            'spotify:playlist:123',
+            'user123',
+            'Test',
+            null,
+          ),
+          throwsA(isA<Exception>()),
+        );
+      });
+
+      test('should throw exception on timeout', () async {
+        const ipAddress = '192.168.1.131';
+
+        when(mockClient.post(
+          Uri.parse('http://$ipAddress:8090/storePreset'),
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).thenAnswer(
+          (_) async => Future.delayed(
+            const Duration(seconds: 11),
+            () => http.Response('{}', 200),
+          ),
+        );
+
+        expect(
+          () => apiService.storePreset(
+            ipAddress,
+            '1',
+            'spotify:playlist:123',
+            'user123',
+            'Test',
+            null,
+          ),
+          throwsA(isA<Exception>()),
+        );
+      });
+    });
   });
 }

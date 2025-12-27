@@ -610,4 +610,72 @@ class SpeakerApiService {
       }
     }
   }
+
+  Future<List<Preset>> storePreset(
+    String ipAddress,
+    String presetId,
+    String spotifyUri,
+    String spotifyUserId,
+    String itemName,
+    String? containerArt,
+  ) async {
+    final url = Uri.parse('http://$ipAddress:8090/storePreset');
+    final client = httpClient ?? http.Client();
+
+    try {
+      // Construct location by base64 encoding the Spotify URI
+      final location = '/playback/container/${base64Encode(utf8.encode(spotifyUri))}';
+
+      // Get current timestamp in seconds
+      final timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+      // Build XML body
+      final containerArtElement = containerArt != null
+          ? '<containerArt>$containerArt</containerArt>'
+          : '';
+
+      final body = '''<preset id="$presetId" createdOn="$timestamp" updatedOn="$timestamp">
+  <ContentItem source="SPOTIFY" type="tracklisturl" location="$location" sourceAccount="$spotifyUserId" isPresetable="true">
+    <itemName>$itemName</itemName>$containerArtElement
+  </ContentItem>
+</preset>''';
+
+      final response = await client
+          .post(
+            url,
+            headers: {'Content-Type': 'text/xml'},
+            body: body,
+          )
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          'Failed to store preset: HTTP ${response.statusCode}',
+        );
+      }
+
+      // Parse response XML
+      final bodyText = utf8.decode(response.bodyBytes);
+      final document = XmlDocument.parse(bodyText);
+
+      // Find all preset elements in the updated list
+      final presetElements = document.findAllElements('preset');
+
+      // Parse each preset
+      final presets = presetElements
+          .map((element) => Preset.fromXml(element))
+          .toList();
+
+      return presets;
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Failed to store preset: $e');
+    } finally {
+      if (httpClient == null) {
+        client.close();
+      }
+    }
+  }
 }

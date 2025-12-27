@@ -244,10 +244,12 @@ void main() {
             {
               'displayName': 'John Doe',
               'createdAt': '2025-12-23T10:30:00Z',
+              'spotifyUserId': 'user123',
             },
             {
               'displayName': 'Jane Smith',
               'createdAt': '2025-12-22T14:15:00Z',
+              'spotifyUserId': 'user456',
             },
           ],
         });
@@ -262,7 +264,9 @@ void main() {
 
         expect(result.length, 2);
         expect(result[0].displayName, 'John Doe');
+        expect(result[0].spotifyUserId, 'user123');
         expect(result[1].displayName, 'Jane Smith');
+        expect(result[1].spotifyUserId, 'user456');
         verify(mockClient.get(
           Uri.parse('$apiUrl/mgmt/spotify/accounts'),
           headers: {},
@@ -348,6 +352,7 @@ void main() {
             {
               'displayName': 'Test User',
               'createdAt': '2025-12-23T10:30:00.000Z',
+              'spotifyUserId': 'testuser123',
             },
           ],
         });
@@ -372,6 +377,7 @@ void main() {
             {
               'displayName': 'Test User',
               'createdAt': '2025-12-23T10:30:00.000Z',
+              'spotifyUserId': 'testuser123',
             },
           ],
         });
