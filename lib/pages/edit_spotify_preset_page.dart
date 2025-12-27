@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../main.dart';
 import '../models/preset.dart';
+import '../models/spotify_account.dart';
 import '../models/spotify_entity.dart';
 import '../services/spotify_api_service.dart';
 
@@ -31,6 +32,10 @@ class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
   bool _isLoadingEntity = false;
   String? _entityFetchError;
   Timer? _debounceTimer;
+  List<SpotifyAccount> _accounts = [];
+  SpotifyAccount? _selectedAccount;
+  bool _isLoadingAccounts = false;
+  String? _accountsFetchError;
 
   @override
   void initState() {
@@ -69,6 +74,9 @@ class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
 
     // Add listener for URI changes with debouncing
     _spotifyUriController.addListener(_onUriChanged);
+
+    // Fetch Spotify accounts
+    _fetchSpotifyAccounts();
   }
 
   @override
@@ -134,6 +142,45 @@ class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
         _entity = null;
         _entityFetchError = e.toString().replaceFirst('Exception: ', '');
         _isLoadingEntity = false;
+      });
+    }
+  }
+
+  Future<void> _fetchSpotifyAccounts() async {
+    final appState = context.read<MyAppState>();
+    final apiUrl = appState.config.apiUrl;
+
+    if (apiUrl.isEmpty) {
+      setState(() {
+        _accounts = [];
+        _accountsFetchError = 'API URL not configured';
+        _isLoadingAccounts = false;
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoadingAccounts = true;
+      _accountsFetchError = null;
+    });
+
+    try {
+      final accounts = await _apiService.listSpotifyAccounts(apiUrl);
+
+      if (!mounted) return;
+
+      setState(() {
+        _accounts = accounts;
+        _accountsFetchError = null;
+        _isLoadingAccounts = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _accounts = [];
+        _accountsFetchError = e.toString().replaceFirst('Exception: ', '');
+        _isLoadingAccounts = false;
       });
     }
   }
@@ -225,11 +272,12 @@ class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
       appBar: AppBar(
         title: const Text('Edit Spotify Preset'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
             if (_decodingError != null) ...[
               Card(
                 color: theme.colorScheme.errorContainer,
@@ -365,6 +413,78 @@ class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
               ),
             if (_entity != null || _isLoadingEntity || _entityFetchError != null)
               const SizedBox(height: 16),
+            // Spotify Account Dropdown
+            if (_isLoadingAccounts)
+              const Card(
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                      SizedBox(width: 12),
+                      Text('Loading Spotify accounts...'),
+                    ],
+                  ),
+                ),
+              )
+            else if (_accountsFetchError != null)
+              Card(
+                color: theme.colorScheme.errorContainer,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        color: theme.colorScheme.onErrorContainer,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          _accountsFetchError!,
+                          style: TextStyle(
+                            color: theme.colorScheme.onErrorContainer,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              DropdownButtonFormField<SpotifyAccount>(
+                value: _selectedAccount,
+                decoration: const InputDecoration(
+                  labelText: 'Spotify Account',
+                  border: OutlineInputBorder(),
+                  helperText: 'Select the Spotify account to use',
+                ),
+                items: _accounts.isEmpty
+                    ? null
+                    : _accounts.map((account) {
+                        return DropdownMenuItem<SpotifyAccount>(
+                          value: account,
+                          child: Text(account.displayName),
+                        );
+                      }).toList(),
+                onChanged: _decodingError == null
+                    ? (SpotifyAccount? newAccount) {
+                        setState(() {
+                          _selectedAccount = newAccount;
+                        });
+                      }
+                    : null,
+                hint: Text(
+                  _accounts.isEmpty
+                      ? 'No Spotify accounts connected'
+                      : 'Select an account',
+                ),
+              ),
+            const SizedBox(height: 16),
             TextField(
               controller: _spotifyUriController,
               enabled: _decodingError == null,
@@ -382,10 +502,13 @@ class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: _decodingError == null ? _onSavePressed : null,
+              onPressed: _decodingError == null && _selectedAccount != null
+                  ? _onSavePressed
+                  : null,
               child: const Text('Save'),
             ),
-          ],
+            ],
+          ),
         ),
       ),
     );

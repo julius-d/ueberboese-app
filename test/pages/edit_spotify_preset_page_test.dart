@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:ueberboese_app/main.dart';
 import 'package:ueberboese_app/models/app_config.dart';
 import 'package:ueberboese_app/models/preset.dart';
+import 'package:ueberboese_app/models/spotify_account.dart';
 import 'package:ueberboese_app/models/spotify_entity.dart';
 import 'package:ueberboese_app/pages/edit_spotify_preset_page.dart';
 import 'package:ueberboese_app/services/spotify_api_service.dart';
@@ -132,12 +133,33 @@ void main() {
         isPresetable: true,
       );
 
+      final accounts = [
+        SpotifyAccount(
+          displayName: 'John Doe',
+          createdAt: DateTime(2024, 1, 1),
+        ),
+      ];
+
+      when(mockApiService.listSpotifyAccounts(any))
+          .thenAnswer((_) async => accounts);
+
       await tester.pumpWidget(
         createWidgetWithProvider(
           EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
         ),
       );
 
+      await tester.pumpAndSettle();
+
+      // Select an account first
+      await tester.ensureVisible(find.byType(DropdownButtonFormField<SpotifyAccount>));
+      await tester.tap(find.byType(DropdownButtonFormField<SpotifyAccount>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('John Doe').last);
+      await tester.pumpAndSettle();
+
+      // Scroll to save button and tap it
+      await tester.ensureVisible(find.widgetWithText(ElevatedButton, 'Save'));
       await tester.tap(find.widgetWithText(ElevatedButton, 'Save'));
       await tester.pumpAndSettle();
 
@@ -156,11 +178,16 @@ void main() {
         isPresetable: true,
       );
 
+      when(mockApiService.listSpotifyAccounts(any))
+          .thenAnswer((_) async => []);
+
       await tester.pumpWidget(
         createWidgetWithProvider(
           EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
         ),
       );
+
+      await tester.pumpAndSettle();
 
       expect(find.text('Invalid location format'), findsOneWidget);
       expect(find.byIcon(Icons.error_outline), findsOneWidget);
@@ -170,6 +197,7 @@ void main() {
       expect(textField.enabled, isFalse);
 
       // Save button should be disabled
+      await tester.ensureVisible(find.byType(ElevatedButton));
       final saveButton = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
       expect(saveButton.onPressed, isNull);
     });
@@ -184,11 +212,16 @@ void main() {
         isPresetable: true,
       );
 
+      when(mockApiService.listSpotifyAccounts(any))
+          .thenAnswer((_) async => []);
+
       await tester.pumpWidget(
         createWidgetWithProvider(
           EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
         ),
       );
+
+      await tester.pumpAndSettle();
 
       expect(find.textContaining('Failed to decode Spotify URI'), findsOneWidget);
       expect(find.byIcon(Icons.error_outline), findsOneWidget);
@@ -303,6 +336,9 @@ void main() {
           imageUrl: 'https://i.scdn.co/image/test.jpg',
         );
 
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => []);
+
         when(mockApiService.getSpotifyEntity(any, any))
             .thenAnswer((_) async => entity);
 
@@ -342,6 +378,9 @@ void main() {
           imageUrl: null,
         );
 
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => []);
+
         when(mockApiService.getSpotifyEntity(any, any))
             .thenAnswer((_) async => entity);
 
@@ -376,6 +415,16 @@ void main() {
           isPresetable: true,
         );
 
+        final accounts = [
+          SpotifyAccount(
+            displayName: 'John Doe',
+            createdAt: DateTime(2024, 1, 1),
+          ),
+        ];
+
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => accounts);
+
         when(mockApiService.getSpotifyEntity(any, any))
             .thenThrow(Exception('Spotify entity not found'));
 
@@ -391,7 +440,15 @@ void main() {
         expect(find.text('Spotify entity not found'), findsOneWidget);
         expect(find.byIcon(Icons.info_outline), findsOneWidget);
 
-        // Save button should still be enabled despite entity fetch error
+        // Select an account so save button can be enabled
+        await tester.ensureVisible(find.byType(DropdownButtonFormField<SpotifyAccount>));
+        await tester.tap(find.byType(DropdownButtonFormField<SpotifyAccount>));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('John Doe').last);
+        await tester.pumpAndSettle();
+
+        // Save button should be enabled despite entity fetch error (error only affects entity display, not save)
+        await tester.ensureVisible(find.byType(ElevatedButton));
         final saveButton = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
         expect(saveButton.onPressed, isNotNull);
       });
@@ -419,6 +476,9 @@ void main() {
           name: 'New Playlist',
           imageUrl: null,
         );
+
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => []);
 
         when(mockApiService.getSpotifyEntity(any, spotifyUri))
             .thenAnswer((_) async => initialEntity);
@@ -467,6 +527,9 @@ void main() {
           name: 'Test Playlist',
           imageUrl: null,
         );
+
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => []);
 
         when(mockApiService.getSpotifyEntity(any, any))
             .thenAnswer((_) async => entity);
@@ -519,6 +582,388 @@ void main() {
         // Should not show entity loading or display
         expect(find.text('Loading entity information...'), findsNothing);
         expect(find.text('Spotify Entity'), findsNothing);
+      });
+    });
+
+    group('Spotify Account Selection', () {
+      testWidgets('displays loading state while fetching accounts', (WidgetTester tester) async {
+        final spotifyUri = 'spotify:playlist:test123';
+        final base64Encoded = base64Encode(utf8.encode(spotifyUri));
+        final location = '/playback/container/$base64Encoded';
+
+        final testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: location,
+          type: 'playlist',
+          isPresetable: true,
+        );
+
+        // Delay the account fetch to simulate loading
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async {
+          await Future.delayed(const Duration(milliseconds: 100));
+          return [];
+        });
+
+        when(mockApiService.getSpotifyEntity(any, any))
+            .thenAnswer((_) async => const SpotifyEntity(name: 'Test', imageUrl: null));
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
+          ),
+        );
+
+        // Should show loading state
+        expect(find.text('Loading Spotify accounts...'), findsOneWidget);
+        expect(find.byType(CircularProgressIndicator), findsNWidgets(2)); // One for accounts, one for entity
+
+        // Wait for loading to complete
+        await tester.pumpAndSettle();
+
+        // Loading state should be gone
+        expect(find.text('Loading Spotify accounts...'), findsNothing);
+      });
+
+      testWidgets('displays dropdown with accounts after successful fetch', (WidgetTester tester) async {
+        final spotifyUri = 'spotify:playlist:test123';
+        final base64Encoded = base64Encode(utf8.encode(spotifyUri));
+        final location = '/playback/container/$base64Encoded';
+
+        final testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: location,
+          type: 'playlist',
+          isPresetable: true,
+        );
+
+        final accounts = [
+          SpotifyAccount(
+            displayName: 'John Doe',
+            createdAt: DateTime(2024, 1, 1),
+          ),
+          SpotifyAccount(
+            displayName: 'Jane Smith',
+            createdAt: DateTime(2024, 1, 2),
+          ),
+        ];
+
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => accounts);
+
+        when(mockApiService.getSpotifyEntity(any, any))
+            .thenAnswer((_) async => const SpotifyEntity(name: 'Test', imageUrl: null));
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Should display dropdown
+        expect(find.byType(DropdownButtonFormField<SpotifyAccount>), findsOneWidget);
+        expect(find.text('Spotify Account'), findsOneWidget);
+      });
+
+      testWidgets('displays "No Spotify accounts connected" when list is empty', (WidgetTester tester) async {
+        final spotifyUri = 'spotify:playlist:test123';
+        final base64Encoded = base64Encode(utf8.encode(spotifyUri));
+        final location = '/playback/container/$base64Encoded';
+
+        final testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: location,
+          type: 'playlist',
+          isPresetable: true,
+        );
+
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => []);
+
+        when(mockApiService.getSpotifyEntity(any, any))
+            .thenAnswer((_) async => const SpotifyEntity(name: 'Test', imageUrl: null));
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Should show empty state message
+        expect(find.text('No Spotify accounts connected'), findsOneWidget);
+      });
+
+      testWidgets('displays error message on fetch failure', (WidgetTester tester) async {
+        final spotifyUri = 'spotify:playlist:test123';
+        final base64Encoded = base64Encode(utf8.encode(spotifyUri));
+        final location = '/playback/container/$base64Encoded';
+
+        final testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: location,
+          type: 'playlist',
+          isPresetable: true,
+        );
+
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenThrow(Exception('Failed to fetch accounts'));
+
+        when(mockApiService.getSpotifyEntity(any, any))
+            .thenAnswer((_) async => const SpotifyEntity(name: 'Test', imageUrl: null));
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Should display error message
+        expect(find.text('Failed to fetch accounts'), findsOneWidget);
+        expect(find.byIcon(Icons.error_outline), findsWidgets);
+      });
+
+      testWidgets('updates selected account on dropdown change', (WidgetTester tester) async {
+        final spotifyUri = 'spotify:playlist:test123';
+        final base64Encoded = base64Encode(utf8.encode(spotifyUri));
+        final location = '/playback/container/$base64Encoded';
+
+        final testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: location,
+          type: 'playlist',
+          isPresetable: true,
+        );
+
+        final accounts = [
+          SpotifyAccount(
+            displayName: 'John Doe',
+            createdAt: DateTime(2024, 1, 1),
+          ),
+          SpotifyAccount(
+            displayName: 'Jane Smith',
+            createdAt: DateTime(2024, 1, 2),
+          ),
+        ];
+
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => accounts);
+
+        when(mockApiService.getSpotifyEntity(any, any))
+            .thenAnswer((_) async => const SpotifyEntity(name: 'Test', imageUrl: null));
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Open dropdown
+        await tester.tap(find.byType(DropdownButtonFormField<SpotifyAccount>));
+        await tester.pumpAndSettle();
+
+        // Select first account
+        await tester.tap(find.text('John Doe').last);
+        await tester.pumpAndSettle();
+
+        // Should show selected account
+        expect(find.text('John Doe'), findsWidgets);
+      });
+
+      testWidgets('save button is disabled when no account is selected', (WidgetTester tester) async {
+        final spotifyUri = 'spotify:playlist:test123';
+        final base64Encoded = base64Encode(utf8.encode(spotifyUri));
+        final location = '/playback/container/$base64Encoded';
+
+        final testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: location,
+          type: 'playlist',
+          isPresetable: true,
+        );
+
+        final accounts = [
+          SpotifyAccount(
+            displayName: 'John Doe',
+            createdAt: DateTime(2024, 1, 1),
+          ),
+        ];
+
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => accounts);
+
+        when(mockApiService.getSpotifyEntity(any, any))
+            .thenAnswer((_) async => const SpotifyEntity(name: 'Test', imageUrl: null));
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Save button should be disabled
+        final saveButton = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
+        expect(saveButton.onPressed, isNull);
+      });
+
+      testWidgets('save button is enabled when account is selected', (WidgetTester tester) async {
+        final spotifyUri = 'spotify:playlist:test123';
+        final base64Encoded = base64Encode(utf8.encode(spotifyUri));
+        final location = '/playback/container/$base64Encoded';
+
+        final testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: location,
+          type: 'playlist',
+          isPresetable: true,
+        );
+
+        final accounts = [
+          SpotifyAccount(
+            displayName: 'John Doe',
+            createdAt: DateTime(2024, 1, 1),
+          ),
+        ];
+
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => accounts);
+
+        when(mockApiService.getSpotifyEntity(any, any))
+            .thenAnswer((_) async => const SpotifyEntity(name: 'Test', imageUrl: null));
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Select an account
+        await tester.tap(find.byType(DropdownButtonFormField<SpotifyAccount>));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('John Doe').last);
+        await tester.pumpAndSettle();
+
+        // Save button should be enabled
+        final saveButton = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
+        expect(saveButton.onPressed, isNotNull);
+      });
+
+      testWidgets('dropdown is disabled when decoding error exists', (WidgetTester tester) async {
+        final testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: '/invalid/path/abc123',
+          type: 'playlist',
+          isPresetable: true,
+        );
+
+        final accounts = [
+          SpotifyAccount(
+            displayName: 'John Doe',
+            createdAt: DateTime(2024, 1, 1),
+          ),
+        ];
+
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => accounts);
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Dropdown should be disabled
+        final dropdown = tester.widget<DropdownButtonFormField<SpotifyAccount>>(
+          find.byType(DropdownButtonFormField<SpotifyAccount>),
+        );
+        expect(dropdown.onChanged, isNull);
+      });
+
+      testWidgets('fetches accounts on page load', (WidgetTester tester) async {
+        final spotifyUri = 'spotify:playlist:test123';
+        final base64Encoded = base64Encode(utf8.encode(spotifyUri));
+        final location = '/playback/container/$base64Encoded';
+
+        final testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: location,
+          type: 'playlist',
+          isPresetable: true,
+        );
+
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => []);
+
+        when(mockApiService.getSpotifyEntity(any, any))
+            .thenAnswer((_) async => const SpotifyEntity(name: 'Test', imageUrl: null));
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Verify API was called
+        verify(mockApiService.listSpotifyAccounts('https://api.example.com')).called(1);
+      });
+
+      testWidgets('save button is disabled when both decoding error and no account', (WidgetTester tester) async {
+        final testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: '/invalid/path/abc123',
+          type: 'playlist',
+          isPresetable: true,
+        );
+
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => []);
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Save button should be disabled
+        final saveButton = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
+        expect(saveButton.onPressed, isNull);
       });
     });
   });
