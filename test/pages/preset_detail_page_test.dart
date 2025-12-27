@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
+import 'package:ueberboese_app/main.dart';
+import 'package:ueberboese_app/models/app_config.dart';
 import 'package:ueberboese_app/models/preset.dart';
 import 'package:ueberboese_app/pages/preset_detail_page.dart';
 import 'package:ueberboese_app/pages/edit_spotify_preset_page.dart';
@@ -157,9 +160,19 @@ void main() {
         isPresetable: true,
       );
 
+      final appState = MyAppState();
+      appState.config = const AppConfig(
+        apiUrl: 'http://test.example.com',
+        mgmtUsername: 'test',
+        mgmtPassword: 'test',
+      );
+
       await tester.pumpWidget(
-        const MaterialApp(
-          home: PresetDetailPage(preset: testPreset),
+        ChangeNotifierProvider<MyAppState>.value(
+          value: appState,
+          child: const MaterialApp(
+            home: PresetDetailPage(preset: testPreset),
+          ),
         ),
       );
 
