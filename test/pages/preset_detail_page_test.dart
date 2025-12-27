@@ -30,7 +30,6 @@ void main() {
       expect(find.text('TUNEIN'), findsOneWidget);
       expect(find.text('stationurl'), findsOneWidget);
       expect(find.text('/v1/playback/station/s12345'), findsOneWidget);
-      expect(find.text('Yes'), findsOneWidget); // isPresetable
     });
 
     testWidgets('displays preset without optional fields', (WidgetTester tester) async {
@@ -54,7 +53,6 @@ void main() {
       expect(find.text('Simple Preset'), findsOneWidget);
       expect(find.text('SPOTIFY'), findsOneWidget);
       expect(find.text('playlist'), findsOneWidget);
-      expect(find.text('No'), findsOneWidget); // isPresetable false
 
       // Optional fields should not be present
       expect(find.text('Created On'), findsNothing);
@@ -126,7 +124,6 @@ void main() {
       expect(find.text('Source'), findsOneWidget);
       expect(find.text('Type'), findsOneWidget);
       expect(find.text('Location'), findsOneWidget);
-      expect(find.text('Presetable'), findsOneWidget);
     });
   });
 }

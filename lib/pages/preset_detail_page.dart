@@ -225,13 +225,6 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
                     widget.preset.location,
                     Icons.location_on,
                   ),
-                  const Divider(),
-                  _buildDetailRow(
-                    context,
-                    'Presetable',
-                    widget.preset.isPresetable ? 'Yes' : 'No',
-                    Icons.bookmark,
-                  ),
                   if (widget.preset.createdOn != null) ...[
                     const Divider(),
                     _buildDetailRow(
