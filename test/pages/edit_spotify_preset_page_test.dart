@@ -276,6 +276,59 @@ void main() {
     });
 
     group('Entity Display', () {
+      testWidgets('displays entity with larger image and selectable name', (WidgetTester tester) async {
+        const spotifyUri = 'spotify:playlist:test123';
+        final base64Encoded = base64Encode(utf8.encode(spotifyUri));
+        final location = '/playback/container/$base64Encoded';
+
+        final testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: location,
+          type: 'playlist',
+          isPresetable: true,
+        );
+
+        const entity = SpotifyEntity(
+          name: 'My Favorite Songs',
+          imageUrl: 'https://i.scdn.co/image/test.jpg',
+        );
+
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => []);
+
+        when(mockApiService.getSpotifyEntity(any, any))
+            .thenAnswer((_) async => entity);
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Verify image is 200x200 (larger size)
+        final image = tester.widget<Image>(find.byType(Image));
+        expect(image.width, equals(200));
+        expect(image.height, equals(200));
+
+        // Verify name is displayed as SelectableText (allows copy/paste)
+        expect(find.byType(SelectableText), findsOneWidget);
+        final selectableText = tester.widget<SelectableText>(find.byType(SelectableText));
+        expect(selectableText.data, equals('My Favorite Songs'));
+
+        // Verify centered layout
+        final column = tester.widget<Column>(
+          find.ancestor(
+            of: find.byType(SelectableText),
+            matching: find.byType(Column),
+          ).first,
+        );
+        expect(column.crossAxisAlignment, equals(CrossAxisAlignment.center));
+      });
+
       testWidgets('displays entity with image on successful fetch', (WidgetTester tester) async {
         const spotifyUri = 'spotify:playlist:test123';
         final base64Encoded = base64Encode(utf8.encode(spotifyUri));
@@ -310,9 +363,10 @@ void main() {
         // Wait for async operations
         await tester.pumpAndSettle();
 
-        // Should display entity name
-        expect(find.text('Bohemian Rhapsody'), findsOneWidget);
-        expect(find.text('Spotify Entity'), findsOneWidget);
+        // Should display entity name as selectable text
+        expect(find.byType(SelectableText), findsOneWidget);
+        final selectableText = tester.widget<SelectableText>(find.byType(SelectableText));
+        expect(selectableText.data, equals('Bohemian Rhapsody'));
 
         // Should display image
         expect(find.byType(Image), findsOneWidget);
@@ -351,9 +405,10 @@ void main() {
 
         await tester.pumpAndSettle();
 
-        // Should display entity name
-        expect(find.text('My Private Playlist'), findsOneWidget);
-        expect(find.text('Spotify Entity'), findsOneWidget);
+        // Should display entity name as selectable text
+        expect(find.byType(SelectableText), findsOneWidget);
+        final selectableText = tester.widget<SelectableText>(find.byType(SelectableText));
+        expect(selectableText.data, equals('My Private Playlist'));
 
         // Should display placeholder icon instead of image
         expect(find.byIcon(Icons.music_note), findsWidgets);
@@ -510,8 +565,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // No entity display should be visible
-        expect(find.text('Test Playlist'), findsNothing);
-        expect(find.text('Spotify Entity'), findsNothing);
+        expect(find.byType(SelectableText), findsNothing);
         expect(find.text('Loading entity information...'), findsNothing);
       });
 
@@ -541,7 +595,7 @@ void main() {
 
         // Should not show entity loading or display
         expect(find.text('Loading entity information...'), findsNothing);
-        expect(find.text('Spotify Entity'), findsNothing);
+        expect(find.byType(SelectableText), findsNothing);
       });
     });
 
