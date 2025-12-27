@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ueberboese_app/models/preset.dart';
 import 'package:ueberboese_app/pages/preset_detail_page.dart';
+import 'package:ueberboese_app/pages/edit_spotify_preset_page.dart';
 
 void main() {
   group('PresetDetailPage', () {
@@ -124,6 +125,72 @@ void main() {
       expect(find.text('Source'), findsOneWidget);
       expect(find.text('Type'), findsOneWidget);
       expect(find.text('Location'), findsOneWidget);
+    });
+
+    testWidgets('displays FAB with edit icon', (WidgetTester tester) async {
+      const testPreset = Preset(
+        id: '1',
+        itemName: 'Test',
+        source: 'SPOTIFY',
+        location: '/playback/container/c3BvdGlmeTpwbGF5bGlzdDp0ZXN0',
+        type: 'playlist',
+        isPresetable: true,
+      );
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: PresetDetailPage(preset: testPreset),
+        ),
+      );
+
+      expect(find.byType(FloatingActionButton), findsOneWidget);
+      expect(find.byIcon(Icons.edit), findsOneWidget);
+    });
+
+    testWidgets('tapping FAB with Spotify preset navigates to edit page', (WidgetTester tester) async {
+      const testPreset = Preset(
+        id: '1',
+        itemName: 'Test Playlist',
+        source: 'SPOTIFY',
+        location: '/playback/container/c3BvdGlmeTpwbGF5bGlzdDp0ZXN0',
+        type: 'playlist',
+        isPresetable: true,
+      );
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: PresetDetailPage(preset: testPreset),
+        ),
+      );
+
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(EditSpotifyPresetPage), findsOneWidget);
+      expect(find.text('Edit Spotify Preset'), findsOneWidget);
+    });
+
+    testWidgets('tapping FAB with non-Spotify preset shows error dialog', (WidgetTester tester) async {
+      const testPreset = Preset(
+        id: '1',
+        itemName: 'Test Station',
+        source: 'TUNEIN',
+        location: '/v1/playback/station/s12345',
+        type: 'stationurl',
+        isPresetable: true,
+      );
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: PresetDetailPage(preset: testPreset),
+        ),
+      );
+
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Error'), findsOneWidget);
+      expect(find.text('Editing TUNEIN presets is not yet supported'), findsOneWidget);
     });
   });
 }

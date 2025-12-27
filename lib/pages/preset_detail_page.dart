@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../models/preset.dart';
 import '../services/speaker_api_service.dart';
 import '../main.dart';
+import 'edit_spotify_preset_page.dart';
 
 class PresetDetailPage extends StatefulWidget {
   final Preset preset;
@@ -111,6 +112,19 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
         ],
       ),
     );
+  }
+
+  void _onEditPressed() {
+    if (widget.preset.source == 'SPOTIFY') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => EditSpotifyPresetPage(preset: widget.preset),
+        ),
+      );
+    } else {
+      _showErrorDialog('Editing ${widget.preset.source} presets is not yet supported');
+    }
   }
 
   @override
@@ -248,6 +262,10 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _onEditPressed,
+        child: const Icon(Icons.edit),
       ),
     );
   }
