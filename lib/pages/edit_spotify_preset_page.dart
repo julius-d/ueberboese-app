@@ -41,18 +41,34 @@ class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
   bool _isLoadingAccounts = false;
   String? _accountsFetchError;
   bool _isSaving = false;
+  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
     _spotifyUriController = TextEditingController();
+  }
 
-    final config = context.read<MyAppState>().config;
-    _apiService = widget.apiService ??
-        SpotifyApiService(
-          username: config.mgmtUsername,
-          password: config.mgmtPassword,
-        );
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Only initialize once
+    if (_isInitialized) {
+      return;
+    }
+    _isInitialized = true;
+
+    // Initialize services here where context is available
+    if (widget.apiService != null) {
+      _apiService = widget.apiService!;
+    } else {
+      final config = context.read<MyAppState>().config;
+      _apiService = SpotifyApiService(
+        username: config.mgmtUsername,
+        password: config.mgmtPassword,
+      );
+    }
     _speakerApiService = widget.speakerApiService ?? SpeakerApiService();
 
     try {
@@ -179,6 +195,18 @@ class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
         _accounts = accounts;
         _accountsFetchError = null;
         _isLoadingAccounts = false;
+
+        // Preselect account if sourceAccount matches
+        if (widget.preset.sourceAccount != null) {
+          try {
+            _selectedAccount = accounts.firstWhere(
+              (account) => account.spotifyUserId == widget.preset.sourceAccount,
+            );
+          } catch (e) {
+            // Account not found in list - leave as null for user to select
+            _selectedAccount = null;
+          }
+        }
       });
     } catch (e) {
       if (!mounted) return;

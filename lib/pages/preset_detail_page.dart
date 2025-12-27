@@ -3,13 +3,19 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:ueberboese_app/models/preset.dart';
 import 'package:ueberboese_app/services/speaker_api_service.dart';
+import 'package:ueberboese_app/services/spotify_api_service.dart';
 import 'package:ueberboese_app/main.dart';
 import 'package:ueberboese_app/pages/edit_spotify_preset_page.dart';
 
 class PresetDetailPage extends StatefulWidget {
   final Preset preset;
+  final SpotifyApiService? spotifyApiService;
 
-  const PresetDetailPage({super.key, required this.preset});
+  const PresetDetailPage({
+    super.key,
+    required this.preset,
+    this.spotifyApiService,
+  });
 
   @override
   State<PresetDetailPage> createState() => _PresetDetailPageState();
@@ -17,12 +23,66 @@ class PresetDetailPage extends StatefulWidget {
 
 class _PresetDetailPageState extends State<PresetDetailPage> {
   final _speakerApiService = SpeakerApiService();
+  late final SpotifyApiService _spotifyApiService;
   bool _isDeleting = false;
+  String? _accountDisplayName;
+  bool _isLoadingAccount = false;
+  String? _accountFetchError;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final config = context.read<MyAppState>().config;
+    _spotifyApiService = widget.spotifyApiService ??
+        SpotifyApiService(
+          username: config.mgmtUsername,
+          password: config.mgmtPassword,
+        );
+
+    _fetchSpotifyAccount();
+  }
 
   String _formatTimestamp(int? timestamp) {
     if (timestamp == null) return 'N/A';
     final date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
     return DateFormat('yyyy-MM-dd HH:mm:ss').format(date);
+  }
+
+  Future<void> _fetchSpotifyAccount() async {
+    if (widget.preset.sourceAccount == null || widget.preset.source != 'SPOTIFY') {
+      return;
+    }
+
+    final appState = context.read<MyAppState>();
+    final apiUrl = appState.config.apiUrl;
+
+    if (apiUrl.isEmpty) return;
+
+    setState(() {
+      _isLoadingAccount = true;
+    });
+
+    try {
+      final accounts = await _spotifyApiService.listSpotifyAccounts(apiUrl);
+      final account = accounts.firstWhere(
+        (a) => a.spotifyUserId == widget.preset.sourceAccount,
+        orElse: () => throw Exception('Account not found'),
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _accountDisplayName = account.displayName;
+        _isLoadingAccount = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _accountDisplayName = null;
+        _accountFetchError = e.toString();
+        _isLoadingAccount = false;
+      });
+    }
   }
 
   Future<void> _showDeleteConfirmationDialog() async {
@@ -225,6 +285,25 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
                     widget.preset.source,
                     Icons.source,
                   ),
+                  if (widget.preset.source == 'SPOTIFY' && widget.preset.sourceAccount != null) ...[
+                    const Divider(),
+                    if (_isLoadingAccount)
+                      _buildLoadingRow(context, 'Spotify Account', Icons.account_circle)
+                    else if (_accountDisplayName != null)
+                      _buildDetailRow(
+                        context,
+                        'Spotify Account',
+                        _accountDisplayName!,
+                        Icons.account_circle,
+                      )
+                    else if (_accountFetchError != null)
+                      _buildDetailRow(
+                        context,
+                        'Spotify Account',
+                        widget.preset.sourceAccount!,
+                        Icons.account_circle,
+                      ),
+                  ],
                   const Divider(),
                   _buildDetailRow(
                     context,
@@ -305,6 +384,42 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
                   value,
                   style: theme.textTheme.bodyLarge,
                 ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+  Widget _buildLoadingRow(BuildContext context, String label, IconData icon) {
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            icon,
+            size: 20,
+            color: theme.colorScheme.primary,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.secondary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                const Text('Loading...'),
               ],
             ),
           ),

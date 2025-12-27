@@ -10,6 +10,7 @@ class Preset {
   final bool isPresetable;
   final int? createdOn;
   final int? updatedOn;
+  final String? sourceAccount;
 
   const Preset({
     required this.id,
@@ -21,6 +22,7 @@ class Preset {
     required this.isPresetable,
     this.createdOn,
     this.updatedOn,
+    this.sourceAccount,
   });
 
   factory Preset.fromXml(XmlElement presetElement) {
@@ -46,6 +48,7 @@ class Preset {
     final source = contentItem.getAttribute('source') ?? '';
     final type = contentItem.getAttribute('type') ?? '';
     final location = contentItem.getAttribute('location') ?? '';
+    final sourceAccount = contentItem.getAttribute('sourceAccount');
     final isPresetableStr = contentItem.getAttribute('isPresetable');
     final isPresetable = isPresetableStr?.toLowerCase() == 'true';
 
@@ -70,6 +73,7 @@ class Preset {
       isPresetable: isPresetable,
       createdOn: createdOn,
       updatedOn: updatedOn,
+      sourceAccount: sourceAccount,
     );
   }
 
@@ -83,6 +87,7 @@ class Preset {
         'isPresetable': isPresetable,
         'createdOn': createdOn,
         'updatedOn': updatedOn,
+        'sourceAccount': sourceAccount,
       };
 
   factory Preset.fromJson(Map<String, dynamic> json) => Preset(
@@ -95,6 +100,7 @@ class Preset {
         isPresetable: json['isPresetable'] as bool,
         createdOn: json['createdOn'] as int?,
         updatedOn: json['updatedOn'] as int?,
+        sourceAccount: json['sourceAccount'] as String?,
       );
 
   @override

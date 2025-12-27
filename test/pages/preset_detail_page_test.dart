@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 import 'package:ueberboese_app/main.dart';
 import 'package:ueberboese_app/models/app_config.dart';
 import 'package:ueberboese_app/models/preset.dart';
+import 'package:ueberboese_app/models/spotify_account.dart';
 import 'package:ueberboese_app/pages/preset_detail_page.dart';
 import 'package:ueberboese_app/pages/edit_spotify_preset_page.dart';
+import 'package:ueberboese_app/services/spotify_api_service.dart';
+
+@GenerateMocks([SpotifyApiService])
+import 'preset_detail_page_test.mocks.dart';
 
 void main() {
   group('PresetDetailPage', () {
@@ -22,9 +29,15 @@ void main() {
         updatedOn: 1701220600,
       );
 
+      final appState = MyAppState();
+      appState.config = const AppConfig();
+
       await tester.pumpWidget(
-        const MaterialApp(
-          home: PresetDetailPage(preset: testPreset),
+        ChangeNotifierProvider<MyAppState>.value(
+          value: appState,
+          child: const MaterialApp(
+            home: PresetDetailPage(preset: testPreset),
+          ),
         ),
       );
 
@@ -46,9 +59,15 @@ void main() {
         isPresetable: false,
       );
 
+      final appState = MyAppState();
+      appState.config = const AppConfig();
+
       await tester.pumpWidget(
-        const MaterialApp(
-          home: PresetDetailPage(preset: testPreset),
+        ChangeNotifierProvider<MyAppState>.value(
+          value: appState,
+          child: const MaterialApp(
+            home: PresetDetailPage(preset: testPreset),
+          ),
         ),
       );
 
@@ -75,9 +94,15 @@ void main() {
         updatedOn: 1701220600,
       );
 
+      final appState = MyAppState();
+      appState.config = const AppConfig();
+
       await tester.pumpWidget(
-        const MaterialApp(
-          home: PresetDetailPage(preset: testPreset),
+        ChangeNotifierProvider<MyAppState>.value(
+          value: appState,
+          child: const MaterialApp(
+            home: PresetDetailPage(preset: testPreset),
+          ),
         ),
       );
 
@@ -96,9 +121,15 @@ void main() {
         isPresetable: true,
       );
 
+      final appState = MyAppState();
+      appState.config = const AppConfig();
+
       await tester.pumpWidget(
-        const MaterialApp(
-          home: PresetDetailPage(preset: testPreset),
+        ChangeNotifierProvider<MyAppState>.value(
+          value: appState,
+          child: const MaterialApp(
+            home: PresetDetailPage(preset: testPreset),
+          ),
         ),
       );
 
@@ -117,9 +148,15 @@ void main() {
         isPresetable: true,
       );
 
+      final appState = MyAppState();
+      appState.config = const AppConfig();
+
       await tester.pumpWidget(
-        const MaterialApp(
-          home: PresetDetailPage(preset: testPreset),
+        ChangeNotifierProvider<MyAppState>.value(
+          value: appState,
+          child: const MaterialApp(
+            home: PresetDetailPage(preset: testPreset),
+          ),
         ),
       );
 
@@ -140,9 +177,15 @@ void main() {
         isPresetable: true,
       );
 
+      final appState = MyAppState();
+      appState.config = const AppConfig();
+
       await tester.pumpWidget(
-        const MaterialApp(
-          home: PresetDetailPage(preset: testPreset),
+        ChangeNotifierProvider<MyAppState>.value(
+          value: appState,
+          child: const MaterialApp(
+            home: PresetDetailPage(preset: testPreset),
+          ),
         ),
       );
 
@@ -193,9 +236,15 @@ void main() {
         isPresetable: true,
       );
 
+      final appState = MyAppState();
+      appState.config = const AppConfig();
+
       await tester.pumpWidget(
-        const MaterialApp(
-          home: PresetDetailPage(preset: testPreset),
+        ChangeNotifierProvider<MyAppState>.value(
+          value: appState,
+          child: const MaterialApp(
+            home: PresetDetailPage(preset: testPreset),
+          ),
         ),
       );
 
@@ -204,6 +253,150 @@ void main() {
 
       expect(find.text('Error'), findsOneWidget);
       expect(find.text('Editing TUNEIN presets is not yet supported'), findsOneWidget);
+    });
+
+    group('Spotify Account Display', () {
+      late MyAppState appState;
+      late MockSpotifyApiService mockSpotifyApiService;
+
+      setUp(() {
+        appState = MyAppState();
+        appState.config = const AppConfig(
+          apiUrl: 'https://api.example.com',
+          mgmtUsername: 'admin',
+          mgmtPassword: 'password',
+        );
+        mockSpotifyApiService = MockSpotifyApiService();
+      });
+
+      Widget createWidgetWithProvider(Widget child) {
+        return ChangeNotifierProvider<MyAppState>.value(
+          value: appState,
+          child: MaterialApp(
+            home: child,
+          ),
+        );
+      }
+
+      testWidgets('displays Spotify account name when sourceAccount is present and fetch succeeds', (WidgetTester tester) async {
+        const testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: '/playback/container/xyz',
+          type: 'playlist',
+          isPresetable: true,
+          sourceAccount: 'user123',
+        );
+
+        final accounts = [
+          SpotifyAccount(
+            displayName: 'John Doe',
+            createdAt: DateTime(2024, 1, 1),
+            spotifyUserId: 'user123',
+          ),
+        ];
+
+        when(mockSpotifyApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => accounts);
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            PresetDetailPage(
+              preset: testPreset,
+              spotifyApiService: mockSpotifyApiService,
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Should display the account display name
+        expect(find.text('Spotify Account'), findsOneWidget);
+        expect(find.text('John Doe'), findsOneWidget);
+      });
+
+      testWidgets('displays sourceAccount ID when fetch fails', (WidgetTester tester) async {
+        const testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: '/playback/container/xyz',
+          type: 'playlist',
+          isPresetable: true,
+          sourceAccount: 'user123',
+        );
+
+        when(mockSpotifyApiService.listSpotifyAccounts(any))
+            .thenThrow(Exception('Failed to fetch accounts'));
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            PresetDetailPage(
+              preset: testPreset,
+              spotifyApiService: mockSpotifyApiService,
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Should display the sourceAccount ID as fallback
+        expect(find.text('Spotify Account'), findsOneWidget);
+        expect(find.text('user123'), findsOneWidget);
+      });
+
+      testWidgets('does not display Spotify account field when sourceAccount is null', (WidgetTester tester) async {
+        const testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: '/playback/container/xyz',
+          type: 'playlist',
+          isPresetable: true,
+          sourceAccount: null,
+        );
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            PresetDetailPage(
+              preset: testPreset,
+              spotifyApiService: mockSpotifyApiService,
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Should not display the Spotify Account field
+        expect(find.text('Spotify Account'), findsNothing);
+      });
+
+      testWidgets('does not display Spotify account field for non-Spotify presets', (WidgetTester tester) async {
+        const testPreset = Preset(
+          id: '1',
+          itemName: 'Test Station',
+          source: 'TUNEIN',
+          location: '/v1/playback/station/s12345',
+          type: 'stationurl',
+          isPresetable: true,
+          sourceAccount: 'user123', // Has account but not Spotify
+        );
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            PresetDetailPage(
+              preset: testPreset,
+              spotifyApiService: mockSpotifyApiService,
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Should not display the Spotify Account field
+        expect(find.text('Spotify Account'), findsNothing);
+      });
     });
   });
 }

@@ -986,6 +986,154 @@ void main() {
         final saveButton = tester.widget<ElevatedButton>(find.byType(ElevatedButton));
         expect(saveButton.onPressed, isNull);
       });
+
+      testWidgets('preselects account when sourceAccount matches available account', (WidgetTester tester) async {
+        const spotifyUri = 'spotify:playlist:test123';
+        final base64Encoded = base64Encode(utf8.encode(spotifyUri));
+        final location = '/playback/container/$base64Encoded';
+
+        final testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: location,
+          type: 'playlist',
+          isPresetable: true,
+          sourceAccount: 'user123',
+        );
+
+        final accounts = [
+          SpotifyAccount(
+            displayName: 'John Doe',
+            createdAt: DateTime(2024, 1, 1),
+            spotifyUserId: 'user123',
+          ),
+          SpotifyAccount(
+            displayName: 'Jane Smith',
+            createdAt: DateTime(2024, 1, 2),
+            spotifyUserId: 'user456',
+          ),
+        ];
+
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => accounts);
+
+        when(mockApiService.getSpotifyEntity(any, any))
+            .thenAnswer((_) async => const SpotifyEntity(name: 'Test', imageUrl: null));
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Should preselect the matching account
+        final dropdown = tester.widget<DropdownButtonFormField<SpotifyAccount>>(
+          find.byType(DropdownButtonFormField<SpotifyAccount>),
+        );
+        expect(dropdown.initialValue?.spotifyUserId, 'user123');
+        expect(dropdown.initialValue?.displayName, 'John Doe');
+      });
+
+      testWidgets('does not preselect when sourceAccount does not match any account', (WidgetTester tester) async {
+        const spotifyUri = 'spotify:playlist:test123';
+        final base64Encoded = base64Encode(utf8.encode(spotifyUri));
+        final location = '/playback/container/$base64Encoded';
+
+        final testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: location,
+          type: 'playlist',
+          isPresetable: true,
+          sourceAccount: 'unknown_user',
+        );
+
+        final accounts = [
+          SpotifyAccount(
+            displayName: 'John Doe',
+            createdAt: DateTime(2024, 1, 1),
+            spotifyUserId: 'user123',
+          ),
+          SpotifyAccount(
+            displayName: 'Jane Smith',
+            createdAt: DateTime(2024, 1, 2),
+            spotifyUserId: 'user456',
+          ),
+        ];
+
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => accounts);
+
+        when(mockApiService.getSpotifyEntity(any, any))
+            .thenAnswer((_) async => const SpotifyEntity(name: 'Test', imageUrl: null));
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Should not preselect any account
+        final dropdown = tester.widget<DropdownButtonFormField<SpotifyAccount>>(
+          find.byType(DropdownButtonFormField<SpotifyAccount>),
+        );
+        expect(dropdown.initialValue, isNull);
+      });
+
+      testWidgets('does not preselect when sourceAccount is null', (WidgetTester tester) async {
+        const spotifyUri = 'spotify:playlist:test123';
+        final base64Encoded = base64Encode(utf8.encode(spotifyUri));
+        final location = '/playback/container/$base64Encoded';
+
+        final testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: location,
+          type: 'playlist',
+          isPresetable: true,
+          sourceAccount: null,
+        );
+
+        final accounts = [
+          SpotifyAccount(
+            displayName: 'John Doe',
+            createdAt: DateTime(2024, 1, 1),
+            spotifyUserId: 'user123',
+          ),
+          SpotifyAccount(
+            displayName: 'Jane Smith',
+            createdAt: DateTime(2024, 1, 2),
+            spotifyUserId: 'user456',
+          ),
+        ];
+
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => accounts);
+
+        when(mockApiService.getSpotifyEntity(any, any))
+            .thenAnswer((_) async => const SpotifyEntity(name: 'Test', imageUrl: null));
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Should not preselect any account
+        final dropdown = tester.widget<DropdownButtonFormField<SpotifyAccount>>(
+          find.byType(DropdownButtonFormField<SpotifyAccount>),
+        );
+        expect(dropdown.initialValue, isNull);
+      });
     });
   });
 }

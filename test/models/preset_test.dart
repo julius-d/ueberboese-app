@@ -141,5 +141,84 @@ void main() {
       expect(preset1.hashCode, equals(preset2.hashCode));
       expect(preset1, isNot(equals(preset3))); // Different id
     });
+
+    test('fromXml parses preset with sourceAccount attribute', () {
+      const xmlString = '''
+      <preset id="3" createdOn="1701220500" updatedOn="1701220500">
+        <ContentItem source="SPOTIFY" type="tracklisturl" location="/playback/container/c3BvdGlmeTpwbGF5bGlzdDoxMjM=" sourceAccount="user123" isPresetable="true">
+          <itemName>Top 50 Global</itemName>
+          <containerArt>https://example.com/art.jpg</containerArt>
+        </ContentItem>
+      </preset>
+      ''';
+
+      final document = XmlDocument.parse(xmlString);
+      final presetElement = document.findAllElements('preset').first;
+
+      final preset = Preset.fromXml(presetElement);
+
+      expect(preset.id, '3');
+      expect(preset.itemName, 'Top 50 Global');
+      expect(preset.containerArt, 'https://example.com/art.jpg');
+      expect(preset.source, 'SPOTIFY');
+      expect(preset.location, '/playback/container/c3BvdGlmeTpwbGF5bGlzdDoxMjM=');
+      expect(preset.type, 'tracklisturl');
+      expect(preset.isPresetable, true);
+      expect(preset.createdOn, 1701220500);
+      expect(preset.updatedOn, 1701220500);
+      expect(preset.sourceAccount, 'user123');
+    });
+
+    test('fromXml parses preset without sourceAccount attribute', () {
+      const xmlString = '''
+      <preset id="1">
+        <ContentItem source="SPOTIFY" type="playlist" location="/v1/spotify/playlist/456" isPresetable="true">
+          <itemName>My Playlist</itemName>
+        </ContentItem>
+      </preset>
+      ''';
+
+      final document = XmlDocument.parse(xmlString);
+      final presetElement = document.findAllElements('preset').first;
+
+      final preset = Preset.fromXml(presetElement);
+
+      expect(preset.id, '1');
+      expect(preset.itemName, 'My Playlist');
+      expect(preset.source, 'SPOTIFY');
+      expect(preset.location, '/v1/spotify/playlist/456');
+      expect(preset.type, 'playlist');
+      expect(preset.isPresetable, true);
+      expect(preset.sourceAccount, isNull);
+    });
+
+    test('toJson and fromJson work correctly with sourceAccount', () {
+      const preset = Preset(
+        id: '3',
+        itemName: 'Spotify Preset',
+        containerArt: 'http://example.com/art.jpg',
+        source: 'SPOTIFY',
+        location: '/playback/container/xyz',
+        type: 'tracklisturl',
+        isPresetable: true,
+        createdOn: 1701220500,
+        updatedOn: 1701220500,
+        sourceAccount: 'user456',
+      );
+
+      final json = preset.toJson();
+      final fromJson = Preset.fromJson(json);
+
+      expect(fromJson.id, preset.id);
+      expect(fromJson.itemName, preset.itemName);
+      expect(fromJson.containerArt, preset.containerArt);
+      expect(fromJson.source, preset.source);
+      expect(fromJson.location, preset.location);
+      expect(fromJson.type, preset.type);
+      expect(fromJson.isPresetable, preset.isPresetable);
+      expect(fromJson.createdOn, preset.createdOn);
+      expect(fromJson.updatedOn, preset.updatedOn);
+      expect(fromJson.sourceAccount, preset.sourceAccount);
+    });
   });
 }
