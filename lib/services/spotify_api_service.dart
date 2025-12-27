@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/spotify_account.dart';
+import '../models/spotify_entity.dart';
 
 class SpotifyApiService {
   final http.Client? httpClient;
@@ -131,6 +132,49 @@ class SpotifyApiService {
         rethrow;
       }
       throw Exception('Failed to list Spotify accounts: $e');
+    } finally {
+      if (httpClient == null) {
+        client.close();
+      }
+    }
+  }
+
+  Future<SpotifyEntity> getSpotifyEntity(String apiUrl, String spotifyUri) async {
+    final url = Uri.parse('$apiUrl/mgmt/spotify/entity');
+    final client = httpClient ?? http.Client();
+
+    try {
+      final body = jsonEncode({'uri': spotifyUri});
+      final headers = {
+        'Content-Type': 'application/json',
+        if (username != null && password != null)
+          'Authorization': _createAuthHeader(),
+      };
+
+      final response = await client
+          .post(url, headers: headers, body: body)
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 400) {
+        final errorData = jsonDecode(response.body) as Map<String, dynamic>;
+        throw Exception(errorData['message'] ?? 'Invalid URI');
+      }
+
+      if (response.statusCode == 404) {
+        throw Exception('Spotify entity not found');
+      }
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to fetch entity: HTTP ${response.statusCode}');
+      }
+
+      final responseData = jsonDecode(response.body) as Map<String, dynamic>;
+      return SpotifyEntity.fromJson(responseData);
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Failed to fetch Spotify entity: $e');
     } finally {
       if (httpClient == null) {
         client.close();

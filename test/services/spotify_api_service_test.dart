@@ -392,5 +392,190 @@ void main() {
         )).called(1);
       });
     });
+
+    group('getSpotifyEntity', () {
+      const apiUrl = 'https://api.example.com';
+      const spotifyUri = 'spotify:track:6rqhFgbbKwnb9MLmUQDhG6';
+
+      test('should return entity with image on successful request', () async {
+        final responseBody = jsonEncode({
+          'name': 'Bohemian Rhapsody',
+          'imageUrl': 'https://i.scdn.co/image/ab67616d00001e02e319baafd16e84f0408af2a0',
+        });
+        final response = http.Response(responseBody, 200);
+
+        when(mockClient.post(
+          Uri.parse('$apiUrl/mgmt/spotify/entity'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'uri': spotifyUri}),
+        )).thenAnswer((_) async => response);
+
+        final result = await service.getSpotifyEntity(apiUrl, spotifyUri);
+
+        expect(result.name, 'Bohemian Rhapsody');
+        expect(result.imageUrl, 'https://i.scdn.co/image/ab67616d00001e02e319baafd16e84f0408af2a0');
+        verify(mockClient.post(
+          Uri.parse('$apiUrl/mgmt/spotify/entity'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'uri': spotifyUri}),
+        )).called(1);
+      });
+
+      test('should return entity without image on successful request', () async {
+        final responseBody = jsonEncode({
+          'name': 'My Private Playlist',
+          'imageUrl': null,
+        });
+        final response = http.Response(responseBody, 200);
+
+        when(mockClient.post(
+          Uri.parse('$apiUrl/mgmt/spotify/entity'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'uri': spotifyUri}),
+        )).thenAnswer((_) async => response);
+
+        final result = await service.getSpotifyEntity(apiUrl, spotifyUri);
+
+        expect(result.name, 'My Private Playlist');
+        expect(result.imageUrl, isNull);
+      });
+
+      test('should throw exception on 400 error with message', () async {
+        final responseBody = jsonEncode({
+          'error': 'Invalid URI',
+          'message': 'The provided URI is not a valid Spotify URI',
+        });
+        final response = http.Response(responseBody, 400);
+
+        when(mockClient.post(
+          Uri.parse('$apiUrl/mgmt/spotify/entity'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'uri': spotifyUri}),
+        )).thenAnswer((_) async => response);
+
+        expect(
+          () => service.getSpotifyEntity(apiUrl, spotifyUri),
+          throwsA(predicate((e) =>
+              e is Exception &&
+              e.toString().contains('The provided URI is not a valid Spotify URI'))),
+        );
+      });
+
+      test('should throw exception on 400 error without message', () async {
+        final responseBody = jsonEncode({
+          'error': 'Invalid URI',
+        });
+        final response = http.Response(responseBody, 400);
+
+        when(mockClient.post(
+          Uri.parse('$apiUrl/mgmt/spotify/entity'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'uri': spotifyUri}),
+        )).thenAnswer((_) async => response);
+
+        expect(
+          () => service.getSpotifyEntity(apiUrl, spotifyUri),
+          throwsA(predicate((e) =>
+              e is Exception && e.toString().contains('Invalid URI'))),
+        );
+      });
+
+      test('should throw exception on 404 error', () async {
+        final response = http.Response('Not Found', 404);
+
+        when(mockClient.post(
+          Uri.parse('$apiUrl/mgmt/spotify/entity'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'uri': spotifyUri}),
+        )).thenAnswer((_) async => response);
+
+        expect(
+          () => service.getSpotifyEntity(apiUrl, spotifyUri),
+          throwsA(predicate((e) =>
+              e is Exception &&
+              e.toString().contains('Spotify entity not found'))),
+        );
+      });
+
+      test('should throw exception on 500 error', () async {
+        final response = http.Response('Internal Server Error', 500);
+
+        when(mockClient.post(
+          Uri.parse('$apiUrl/mgmt/spotify/entity'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'uri': spotifyUri}),
+        )).thenAnswer((_) async => response);
+
+        expect(
+          () => service.getSpotifyEntity(apiUrl, spotifyUri),
+          throwsA(predicate((e) =>
+              e is Exception &&
+              e.toString().contains('Failed to fetch entity: HTTP 500'))),
+        );
+      });
+
+      test('should throw exception on timeout', () async {
+        when(mockClient.post(
+          Uri.parse('$apiUrl/mgmt/spotify/entity'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'uri': spotifyUri}),
+        )).thenAnswer(
+          (_) => Future.delayed(
+            const Duration(seconds: 11),
+            () => http.Response('{}', 200),
+          ),
+        );
+
+        expect(
+          () => service.getSpotifyEntity(apiUrl, spotifyUri),
+          throwsA(isA<Exception>()),
+        );
+      });
+
+      test('should include Authorization header when credentials are provided', () async {
+        final responseBody = jsonEncode({
+          'name': 'Test Track',
+          'imageUrl': 'https://example.com/image.jpg',
+        });
+        final response = http.Response(responseBody, 200);
+        final expectedAuth = 'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
+
+        when(mockClient.post(
+          Uri.parse('$apiUrl/mgmt/spotify/entity'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': expectedAuth,
+          },
+          body: jsonEncode({'uri': spotifyUri}),
+        )).thenAnswer((_) async => response);
+
+        final result = await serviceWithAuth.getSpotifyEntity(apiUrl, spotifyUri);
+
+        expect(result.name, 'Test Track');
+        verify(mockClient.post(
+          Uri.parse('$apiUrl/mgmt/spotify/entity'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': expectedAuth,
+          },
+          body: jsonEncode({'uri': spotifyUri}),
+        )).called(1);
+      });
+
+      test('should throw exception on malformed JSON', () async {
+        final response = http.Response('not valid json', 200);
+
+        when(mockClient.post(
+          Uri.parse('$apiUrl/mgmt/spotify/entity'),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'uri': spotifyUri}),
+        )).thenAnswer((_) async => response);
+
+        expect(
+          () => service.getSpotifyEntity(apiUrl, spotifyUri),
+          throwsA(isA<Exception>()),
+        );
+      });
+    });
   });
 }
