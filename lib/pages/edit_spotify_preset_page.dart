@@ -457,7 +457,7 @@ class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
               )
             else
               DropdownButtonFormField<SpotifyAccount>(
-                value: _selectedAccount,
+                initialValue: _selectedAccount,
                 decoration: const InputDecoration(
                   labelText: 'Spotify Account',
                   border: OutlineInputBorder(),
