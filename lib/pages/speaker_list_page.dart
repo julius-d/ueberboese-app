@@ -1,14 +1,14 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../main.dart';
-import '../models/speaker.dart';
-import '../widgets/emoji_selector.dart';
-import '../services/speaker_api_service.dart';
-import '../services/management_api_service.dart';
-import 'speaker_detail_page.dart';
-import 'add_speaker_page.dart';
-import 'configuration_page.dart';
+import 'package:ueberboese_app/main.dart';
+import 'package:ueberboese_app/models/speaker.dart';
+import 'package:ueberboese_app/widgets/emoji_selector.dart';
+import 'package:ueberboese_app/services/speaker_api_service.dart';
+import 'package:ueberboese_app/services/management_api_service.dart';
+import 'package:ueberboese_app/pages/speaker_detail_page.dart';
+import 'package:ueberboese_app/pages/add_speaker_page.dart';
+import 'package:ueberboese_app/pages/configuration_page.dart';
 
 class SpeakerListPage extends StatefulWidget {
   const SpeakerListPage({super.key});
@@ -122,7 +122,7 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
     // Check if running on web
     if (kIsWeb) {
       if (!mounted) return;
-      showDialog(
+      showDialog<void>(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Web Platform Not Supported'),
@@ -143,7 +143,7 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
 
     // Show loading dialog
     if (!mounted) return;
-    showDialog(
+    showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (context) => const Center(
@@ -220,7 +220,7 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
           addedCount++;
 
           // Small delay to avoid overwhelming the speakers
-          await Future.delayed(const Duration(milliseconds: 100));
+          await Future<void>.delayed(const Duration(milliseconds: 100));
         } catch (e) {
           failedCount++;
         }
@@ -250,7 +250,7 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
           ),
         );
       } else {
-        showDialog(
+        showDialog<void>(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Failed to Add Speakers'),
@@ -271,7 +271,7 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
 
       Navigator.pop(context); // Close loading dialog
 
-      showDialog(
+      showDialog<void>(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Error'),
@@ -290,7 +290,7 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
   }
 
   void _showConfigurationErrorDialog(String title, String message) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(title),
@@ -305,7 +305,7 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
               Navigator.pop(context);
               Navigator.push(
                 context,
-                MaterialPageRoute(
+                MaterialPageRoute<void>(
                   builder: (context) => const ConfigurationPage(),
                 ),
               );
@@ -319,7 +319,7 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
+    final appState = context.watch<MyAppState>();
     final theme = Theme.of(context);
 
     Widget content;
@@ -362,7 +362,7 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
+                  MaterialPageRoute<void>(
                     builder: (context) => SpeakerDetailPage(speaker: speaker),
                   ),
                 );
@@ -459,7 +459,7 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
                         _closeFab();
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
+                          MaterialPageRoute<void>(
                             builder: (context) => const AddSpeakerPage(),
                           ),
                         );

@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../main.dart';
-import '../models/preset.dart';
-import '../models/spotify_account.dart';
-import '../models/spotify_entity.dart';
-import '../services/spotify_api_service.dart';
+import 'package:ueberboese_app/main.dart';
+import 'package:ueberboese_app/models/preset.dart';
+import 'package:ueberboese_app/models/spotify_account.dart';
+import 'package:ueberboese_app/models/spotify_entity.dart';
+import 'package:ueberboese_app/services/spotify_api_service.dart';
 
 class EditSpotifyPresetPage extends StatefulWidget {
   final Preset preset;
@@ -233,7 +233,7 @@ class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
   }
 
   void _showErrorDialog(String message) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Error'),
@@ -249,7 +249,7 @@ class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
   }
 
   void _onSavePressed() {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Not Implemented'),

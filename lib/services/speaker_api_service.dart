@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:xml/xml.dart';
-import '../models/speaker_info.dart';
-import '../models/volume.dart';
-import '../models/now_playing.dart';
-import '../models/zone.dart';
-import '../models/preset.dart';
+import 'package:ueberboese_app/models/speaker_info.dart';
+import 'package:ueberboese_app/models/volume.dart';
+import 'package:ueberboese_app/models/now_playing.dart';
+import 'package:ueberboese_app/models/zone.dart';
+import 'package:ueberboese_app/models/preset.dart';
 
 class SpeakerApiService {
   final http.Client? httpClient;

@@ -28,7 +28,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: MaterialApp(
+          child: const MaterialApp(
             home: SpeakerDetailPage(speaker: testSpeaker),
           ),
         ),
@@ -46,7 +46,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: MaterialApp(
+          child: const MaterialApp(
             home: SpeakerDetailPage(speaker: testSpeaker),
           ),
         ),
@@ -63,7 +63,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: MaterialApp(
+          child: const MaterialApp(
             home: SpeakerDetailPage(speaker: testSpeaker),
           ),
         ),
@@ -88,7 +88,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: MaterialApp(
+          child: const MaterialApp(
             home: SpeakerDetailPage(speaker: testSpeaker),
           ),
         ),
@@ -119,7 +119,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: MaterialApp(
+          child: const MaterialApp(
             home: SpeakerDetailPage(speaker: testSpeaker),
           ),
         ),
@@ -156,9 +156,9 @@ void main() {
                 builder: (context) => ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(
+                      MaterialPageRoute<void>(
                         builder: (context) =>
-                            SpeakerDetailPage(speaker: testSpeaker),
+                            const SpeakerDetailPage(speaker: testSpeaker),
                       ),
                     );
                   },
@@ -198,7 +198,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: MaterialApp(
+          child: const MaterialApp(
             home: SpeakerDetailPage(speaker: testSpeaker),
           ),
         ),
@@ -223,7 +223,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: MaterialApp(
+          child: const MaterialApp(
             home: SpeakerDetailPage(speaker: testSpeaker),
           ),
         ),
@@ -240,7 +240,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: MaterialApp(
+          child: const MaterialApp(
             home: SpeakerDetailPage(speaker: testSpeaker),
           ),
         ),
@@ -257,7 +257,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: MaterialApp(
+          child: const MaterialApp(
             home: SpeakerDetailPage(speaker: testSpeaker),
           ),
         ),
@@ -274,7 +274,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: MaterialApp(
+          child: const MaterialApp(
             home: SpeakerDetailPage(speaker: testSpeaker),
           ),
         ),
@@ -307,7 +307,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: MaterialApp(
+          child: const MaterialApp(
             home: SpeakerDetailPage(speaker: testSpeaker),
           ),
         ),
@@ -330,7 +330,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: MaterialApp(
+          child: const MaterialApp(
             home: SpeakerDetailPage(speaker: testSpeaker),
           ),
         ),
@@ -352,7 +352,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: MaterialApp(
+          child: const MaterialApp(
             home: SpeakerDetailPage(speaker: testSpeaker),
           ),
         ),
@@ -369,7 +369,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: MaterialApp(
+          child: const MaterialApp(
             home: SpeakerDetailPage(speaker: testSpeaker),
           ),
         ),

@@ -429,8 +429,8 @@ void main() {
         );
 
         final members = [
-          ZoneMember(deviceId: '1004567890AA', ipAddress: '192.168.1.131'),
-          ZoneMember(deviceId: '3004567890BB', ipAddress: '192.168.1.130'),
+          const ZoneMember(deviceId: '1004567890AA', ipAddress: '192.168.1.131'),
+          const ZoneMember(deviceId: '3004567890BB', ipAddress: '192.168.1.130'),
         ];
 
         await apiService.createZone('192.168.1.131', '1004567890AA', members);
@@ -456,7 +456,7 @@ void main() {
         );
 
         final newMembers = [
-          ZoneMember(deviceId: 'F9BC35A6D825', ipAddress: '192.168.1.132'),
+          const ZoneMember(deviceId: 'F9BC35A6D825', ipAddress: '192.168.1.132'),
         ];
 
         await apiService.addZoneMembers('192.168.1.131', '1004567890AA', newMembers);
@@ -481,7 +481,7 @@ void main() {
         );
 
         final membersToRemove = [
-          ZoneMember(deviceId: '3004567890BB', ipAddress: '192.168.1.130'),
+          const ZoneMember(deviceId: '3004567890BB', ipAddress: '192.168.1.130'),
         ];
 
         await apiService.removeZoneMembers('192.168.1.131', '1004567890AA', membersToRemove);
@@ -514,7 +514,7 @@ void main() {
         );
 
         final members = [
-          ZoneMember(deviceId: '1004567890AA', ipAddress: '192.168.1.131'),
+          const ZoneMember(deviceId: '1004567890AA', ipAddress: '192.168.1.131'),
         ];
 
         expect(

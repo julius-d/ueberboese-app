@@ -1,11 +1,47 @@
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+
 linter:
   rules:
-    avoid_print: false
-    prefer_const_constructors_in_immutables: false
-    prefer_const_constructors: false
-    prefer_const_literals_to_create_immutables: false
-    prefer_final_fields: false
+    prefer_const_constructors: true
+    prefer_const_constructors_in_immutables: true
+    prefer_const_literals_to_create_immutables: true
+    prefer_const_declarations: true
+
+    # Code quality
+    prefer_final_fields: true
+    prefer_final_locals: true
+    prefer_final_in_for_each: true
+    unnecessary_late: true
+    unnecessary_null_checks: true
+    unnecessary_nullable_for_final_variable_declarations: true
     unnecessary_breaks: true
+
+    # Error prevention
+    avoid_dynamic_calls: true
+    avoid_slow_async_io: true
+    cancel_subscriptions: true
+    close_sinks: true
+
+    # Naming conventions
+    non_constant_identifier_names: true
+    constant_identifier_names: true
+
+    # Import preferences
+    always_use_package_imports: true
+    avoid_relative_lib_imports: true
+    prefer_single_quotes: true
+
+    # Best practices
+    avoid_empty_else: true
+    avoid_returning_null_for_void: true
+    no_duplicate_case_values: true
+
+    # Keep disabled for flexibility
+    avoid_print: false
     use_key_in_widget_constructors: false

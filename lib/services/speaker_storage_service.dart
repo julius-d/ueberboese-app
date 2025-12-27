@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/speaker.dart';
+import 'package:ueberboese_app/models/speaker.dart';
 
 class SpeakerStorageService {
   static const String _speakersKey = 'speakers';
@@ -26,8 +26,8 @@ class SpeakerStorageService {
         return [];
       }
 
-      final List<dynamic> jsonList = jsonDecode(jsonString);
-      return jsonList.map((json) => Speaker.fromJson(json)).toList();
+      final List<dynamic> jsonList = jsonDecode(jsonString) as List<dynamic>;
+      return jsonList.map((json) => Speaker.fromJson(json as Map<String, dynamic>)).toList();
     } catch (e) {
       // Log error and return empty list if data is corrupted
       print('Error loading speakers: $e');

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/speaker.dart';
-import '../main.dart';
-import '../widgets/emoji_selector.dart';
+import 'package:ueberboese_app/models/speaker.dart';
+import 'package:ueberboese_app/main.dart';
+import 'package:ueberboese_app/widgets/emoji_selector.dart';
 
 class EditSpeakerPage extends StatefulWidget {
   final Speaker speaker;

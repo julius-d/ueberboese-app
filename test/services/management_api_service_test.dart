@@ -73,7 +73,7 @@ void main() {
     });
 
     test('fetchAccountSpeakers sends correct Basic Auth header', () async {
-      final responseBody = json.encode({'speakers': []});
+      final responseBody = json.encode({'speakers': <String>[]});
 
       when(mockClient.get(
         Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
@@ -99,7 +99,7 @@ void main() {
     });
 
     test('fetchAccountSpeakers returns empty list when no speakers', () async {
-      final responseBody = json.encode({'speakers': []});
+      final responseBody = json.encode({'speakers': <String>[]});
 
       when(mockClient.get(
         Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
@@ -219,7 +219,7 @@ void main() {
     });
 
     test('fetchAccountSpeakers throws exception when speakers field is missing', () async {
-      final responseBody = json.encode({'data': []});
+      final responseBody = json.encode({'data': <String>[]});
 
       when(mockClient.get(
         Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),

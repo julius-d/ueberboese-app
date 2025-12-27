@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../models/spotify_account.dart';
-import '../models/spotify_entity.dart';
+import 'package:ueberboese_app/models/spotify_account.dart';
+import 'package:ueberboese_app/models/spotify_entity.dart';
 
 class SpotifyApiService {
   final http.Client? httpClient;

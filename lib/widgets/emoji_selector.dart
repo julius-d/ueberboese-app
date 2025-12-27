@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class EmojiSelector extends StatelessWidget {
   final String selectedEmoji;
-  final Function(String) onEmojiSelected;
+  final void Function(String) onEmojiSelected;
 
   const EmojiSelector({
     super.key,

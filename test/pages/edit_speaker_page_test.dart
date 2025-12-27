@@ -264,7 +264,7 @@ void main() {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
+                      MaterialPageRoute<void>(
                         builder: (context) => EditSpeakerPage(speaker: testSpeaker),
                       ),
                     );

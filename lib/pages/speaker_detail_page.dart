@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/speaker.dart';
-import '../models/volume.dart';
-import '../models/now_playing.dart';
-import '../models/zone.dart';
-import '../services/speaker_api_service.dart';
-import '../main.dart';
-import 'edit_speaker_page.dart';
+import 'package:ueberboese_app/models/speaker.dart';
+import 'package:ueberboese_app/models/volume.dart';
+import 'package:ueberboese_app/models/now_playing.dart';
+import 'package:ueberboese_app/models/zone.dart';
+import 'package:ueberboese_app/services/speaker_api_service.dart';
+import 'package:ueberboese_app/main.dart';
+import 'package:ueberboese_app/pages/edit_speaker_page.dart';
 
 class SpeakerDetailPage extends StatefulWidget {
   final Speaker speaker;
@@ -379,7 +379,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
       );
 
       // Wait a bit for the state to update on the speaker
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future<void>.delayed(const Duration(milliseconds: 500));
 
       // Reload the now playing info to get the updated play status
       await _loadNowPlaying();
@@ -422,7 +422,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
       return;
     }
 
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => _ZoneDialog(
         availableSpeakers: availableSpeakers,
@@ -436,7 +436,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
   void _showDeleteConfirmationDialog(BuildContext context) {
     final theme = Theme.of(context);
 
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Speaker'),
@@ -492,7 +492,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context);
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -504,7 +504,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
               if (value == 'edit') {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
+                  MaterialPageRoute<void>(
                     builder: (context) => EditSpeakerPage(speaker: widget.speaker),
                   ),
                 );
@@ -1192,8 +1192,8 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
 class _ZoneDialog extends StatefulWidget {
   final List<Speaker> availableSpeakers;
   final Zone? currentZone;
-  final Function(List<Speaker>) onCreateZone;
-  final Function(List<Speaker>) onAddToZone;
+  final void Function(List<Speaker>) onCreateZone;
+  final void Function(List<Speaker>) onAddToZone;
 
   const _ZoneDialog({
     required this.availableSpeakers,

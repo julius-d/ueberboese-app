@@ -4,9 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:app_links/app_links.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
-import '../main.dart';
-import '../services/spotify_api_service.dart';
-import '../models/spotify_account.dart';
+import 'package:ueberboese_app/main.dart';
+import 'package:ueberboese_app/services/spotify_api_service.dart';
+import 'package:ueberboese_app/models/spotify_account.dart';
 
 class SpotifyAccountsPage extends StatefulWidget {
   final SpotifyApiService? apiService;
@@ -23,7 +23,7 @@ class _SpotifyAccountsPageState extends State<SpotifyAccountsPage> {
   bool _isLoadingAccounts = false;
   List<SpotifyAccount> _accounts = [];
   late AppLinks _appLinks;
-  StreamSubscription? _linkSubscription;
+  StreamSubscription<Uri>? _linkSubscription;
 
   @override
   void initState() {
@@ -50,7 +50,7 @@ class _SpotifyAccountsPageState extends State<SpotifyAccountsPage> {
       // Listen to all incoming links
       _linkSubscription = _appLinks.uriLinkStream.listen((Uri uri) {
         _handleIncomingLink(uri);
-      }, onError: (err) {
+      }, onError: (Object err) {
         print('Error listening to deep links: $err');
       });
 
@@ -115,7 +115,7 @@ class _SpotifyAccountsPageState extends State<SpotifyAccountsPage> {
     if (apiUrl.isEmpty) {
       if (!mounted) return;
 
-      showDialog(
+      showDialog<void>(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Configuration Required'),
@@ -159,7 +159,7 @@ class _SpotifyAccountsPageState extends State<SpotifyAccountsPage> {
         _isLoading = false;
       });
 
-      showDialog(
+      showDialog<void>(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Error'),
@@ -216,7 +216,7 @@ class _SpotifyAccountsPageState extends State<SpotifyAccountsPage> {
         _isLoading = false;
       });
 
-      showDialog(
+      showDialog<void>(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Error'),

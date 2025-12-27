@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'models/speaker.dart';
-import 'models/app_config.dart';
-import 'pages/home_page.dart';
-import 'services/speaker_storage_service.dart';
-import 'services/config_storage_service.dart';
+import 'package:ueberboese_app/models/speaker.dart';
+import 'package:ueberboese_app/models/app_config.dart';
+import 'package:ueberboese_app/pages/home_page.dart';
+import 'package:ueberboese_app/services/speaker_storage_service.dart';
+import 'package:ueberboese_app/services/config_storage_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

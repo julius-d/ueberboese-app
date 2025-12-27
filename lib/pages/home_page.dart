@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'speaker_list_page.dart';
-import 'spotify_accounts_page.dart';
-import 'configuration_page.dart';
-import 'presets_page.dart';
+import 'package:ueberboese_app/pages/speaker_list_page.dart';
+import 'package:ueberboese_app/pages/spotify_accounts_page.dart';
+import 'package:ueberboese_app/pages/configuration_page.dart';
+import 'package:ueberboese_app/pages/presets_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,7 +17,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    var colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
 
     Widget page;
     switch (selectedIndex) {
@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> {
         throw UnimplementedError('no widget for $selectedIndex');
     }
 
-    var mainArea = ColoredBox(
+    final mainArea = ColoredBox(
       color: colorScheme.surfaceContainerHighest,
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 200),

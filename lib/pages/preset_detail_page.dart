@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../models/preset.dart';
-import '../services/speaker_api_service.dart';
-import '../main.dart';
-import 'edit_spotify_preset_page.dart';
+import 'package:ueberboese_app/models/preset.dart';
+import 'package:ueberboese_app/services/speaker_api_service.dart';
+import 'package:ueberboese_app/main.dart';
+import 'package:ueberboese_app/pages/edit_spotify_preset_page.dart';
 
 class PresetDetailPage extends StatefulWidget {
   final Preset preset;
@@ -99,7 +99,7 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
   }
 
   void _showErrorDialog(String message) {
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Error'),
@@ -118,7 +118,7 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
     if (widget.preset.source == 'SPOTIFY') {
       Navigator.push(
         context,
-        MaterialPageRoute(
+        MaterialPageRoute<void>(
           builder: (context) => EditSpotifyPresetPage(preset: widget.preset),
         ),
       );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/app_config.dart';
-import '../main.dart';
+import 'package:ueberboese_app/models/app_config.dart';
+import 'package:ueberboese_app/main.dart';
 
 class ConfigurationPage extends StatefulWidget {
   const ConfigurationPage({super.key});

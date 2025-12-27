@@ -270,7 +270,7 @@ void main() {
       });
 
       test('should return empty list when no accounts', () async {
-        final responseBody = jsonEncode({'accounts': []});
+        final responseBody = jsonEncode({'accounts': <Map<String, dynamic>>[]});
         final response = http.Response(responseBody, 200);
 
         when(mockClient.get(

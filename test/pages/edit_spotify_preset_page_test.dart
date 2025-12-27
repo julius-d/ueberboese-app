@@ -81,7 +81,7 @@ void main() {
 
     testWidgets('prefills TextField with decoded Spotify URI', (WidgetTester tester) async {
       // Base64 encode "spotify:playlist:test123"
-      final spotifyUri = 'spotify:playlist:test123';
+      const spotifyUri = 'spotify:playlist:test123';
       final base64Encoded = base64Encode(utf8.encode(spotifyUri));
       final location = '/playback/container/$base64Encoded';
 
@@ -318,7 +318,7 @@ void main() {
 
     group('Entity Display', () {
       testWidgets('displays entity with image on successful fetch', (WidgetTester tester) async {
-        final spotifyUri = 'spotify:playlist:test123';
+        const spotifyUri = 'spotify:playlist:test123';
         final base64Encoded = base64Encode(utf8.encode(spotifyUri));
         final location = '/playback/container/$base64Encoded';
 
@@ -360,7 +360,7 @@ void main() {
       });
 
       testWidgets('displays entity without image on successful fetch', (WidgetTester tester) async {
-        final spotifyUri = 'spotify:playlist:test123';
+        const spotifyUri = 'spotify:playlist:test123';
         final base64Encoded = base64Encode(utf8.encode(spotifyUri));
         final location = '/playback/container/$base64Encoded';
 
@@ -402,7 +402,7 @@ void main() {
       });
 
       testWidgets('displays error message on fetch failure', (WidgetTester tester) async {
-        final spotifyUri = 'spotify:playlist:test123';
+        const spotifyUri = 'spotify:playlist:test123';
         final base64Encoded = base64Encode(utf8.encode(spotifyUri));
         final location = '/playback/container/$base64Encoded';
 
@@ -454,7 +454,7 @@ void main() {
       });
 
       testWidgets('fetches entity info on URI change with debouncing', (WidgetTester tester) async {
-        final spotifyUri = 'spotify:playlist:test123';
+        const spotifyUri = 'spotify:playlist:test123';
         final base64Encoded = base64Encode(utf8.encode(spotifyUri));
         final location = '/playback/container/$base64Encoded';
 
@@ -510,7 +510,7 @@ void main() {
       });
 
       testWidgets('does not fetch entity when URI is empty', (WidgetTester tester) async {
-        final spotifyUri = 'spotify:playlist:test123';
+        const spotifyUri = 'spotify:playlist:test123';
         final base64Encoded = base64Encode(utf8.encode(spotifyUri));
         final location = '/playback/container/$base64Encoded';
 
@@ -556,7 +556,7 @@ void main() {
       });
 
       testWidgets('does not fetch entity on page load if decoding fails', (WidgetTester tester) async {
-        final testPreset = Preset(
+        const testPreset = Preset(
           id: '1',
           itemName: 'Test Playlist',
           source: 'SPOTIFY',
@@ -587,7 +587,7 @@ void main() {
 
     group('Spotify Account Selection', () {
       testWidgets('displays loading state while fetching accounts', (WidgetTester tester) async {
-        final spotifyUri = 'spotify:playlist:test123';
+        const spotifyUri = 'spotify:playlist:test123';
         final base64Encoded = base64Encode(utf8.encode(spotifyUri));
         final location = '/playback/container/$base64Encoded';
 
@@ -603,7 +603,7 @@ void main() {
         // Delay the account fetch to simulate loading
         when(mockApiService.listSpotifyAccounts(any))
             .thenAnswer((_) async {
-          await Future.delayed(const Duration(milliseconds: 100));
+          await Future<void>.delayed(const Duration(milliseconds: 100));
           return [];
         });
 
@@ -628,7 +628,7 @@ void main() {
       });
 
       testWidgets('displays dropdown with accounts after successful fetch', (WidgetTester tester) async {
-        final spotifyUri = 'spotify:playlist:test123';
+        const spotifyUri = 'spotify:playlist:test123';
         final base64Encoded = base64Encode(utf8.encode(spotifyUri));
         final location = '/playback/container/$base64Encoded';
 
@@ -672,7 +672,7 @@ void main() {
       });
 
       testWidgets('displays "No Spotify accounts connected" when list is empty', (WidgetTester tester) async {
-        final spotifyUri = 'spotify:playlist:test123';
+        const spotifyUri = 'spotify:playlist:test123';
         final base64Encoded = base64Encode(utf8.encode(spotifyUri));
         final location = '/playback/container/$base64Encoded';
 
@@ -704,7 +704,7 @@ void main() {
       });
 
       testWidgets('displays error message on fetch failure', (WidgetTester tester) async {
-        final spotifyUri = 'spotify:playlist:test123';
+        const spotifyUri = 'spotify:playlist:test123';
         final base64Encoded = base64Encode(utf8.encode(spotifyUri));
         final location = '/playback/container/$base64Encoded';
 
@@ -737,7 +737,7 @@ void main() {
       });
 
       testWidgets('updates selected account on dropdown change', (WidgetTester tester) async {
-        final spotifyUri = 'spotify:playlist:test123';
+        const spotifyUri = 'spotify:playlist:test123';
         final base64Encoded = base64Encode(utf8.encode(spotifyUri));
         final location = '/playback/container/$base64Encoded';
 
@@ -788,7 +788,7 @@ void main() {
       });
 
       testWidgets('save button is disabled when no account is selected', (WidgetTester tester) async {
-        final spotifyUri = 'spotify:playlist:test123';
+        const spotifyUri = 'spotify:playlist:test123';
         final base64Encoded = base64Encode(utf8.encode(spotifyUri));
         final location = '/playback/container/$base64Encoded';
 
@@ -828,7 +828,7 @@ void main() {
       });
 
       testWidgets('save button is enabled when account is selected', (WidgetTester tester) async {
-        final spotifyUri = 'spotify:playlist:test123';
+        const spotifyUri = 'spotify:playlist:test123';
         final base64Encoded = base64Encode(utf8.encode(spotifyUri));
         final location = '/playback/container/$base64Encoded';
 
@@ -874,7 +874,7 @@ void main() {
       });
 
       testWidgets('dropdown is disabled when decoding error exists', (WidgetTester tester) async {
-        final testPreset = Preset(
+        const testPreset = Preset(
           id: '1',
           itemName: 'Test Playlist',
           source: 'SPOTIFY',
@@ -909,7 +909,7 @@ void main() {
       });
 
       testWidgets('fetches accounts on page load', (WidgetTester tester) async {
-        final spotifyUri = 'spotify:playlist:test123';
+        const spotifyUri = 'spotify:playlist:test123';
         final base64Encoded = base64Encode(utf8.encode(spotifyUri));
         final location = '/playback/container/$base64Encoded';
 
@@ -941,7 +941,7 @@ void main() {
       });
 
       testWidgets('save button is disabled when both decoding error and no account', (WidgetTester tester) async {
-        final testPreset = Preset(
+        const testPreset = Preset(
           id: '1',
           itemName: 'Test Playlist',
           source: 'SPOTIFY',

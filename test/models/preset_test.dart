@@ -83,7 +83,7 @@ void main() {
     });
 
     test('toJson and fromJson work correctly', () {
-      final preset = Preset(
+      const preset = Preset(
         id: '2',
         itemName: 'Test Preset',
         containerArt: 'http://example.com/image.jpg',
@@ -110,7 +110,7 @@ void main() {
     });
 
     test('equality and hashCode work correctly', () {
-      final preset1 = Preset(
+      const preset1 = Preset(
         id: '1',
         itemName: 'Test',
         source: 'TUNEIN',
@@ -119,7 +119,7 @@ void main() {
         isPresetable: true,
       );
 
-      final preset2 = Preset(
+      const preset2 = Preset(
         id: '1',
         itemName: 'Different Name',
         source: 'SPOTIFY',
@@ -128,7 +128,7 @@ void main() {
         isPresetable: false,
       );
 
-      final preset3 = Preset(
+      const preset3 = Preset(
         id: '2',
         itemName: 'Test',
         source: 'TUNEIN',

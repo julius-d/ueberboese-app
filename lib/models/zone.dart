@@ -1,3 +1,5 @@
+import 'package:xml/xml.dart';
+
 class ZoneMember {
   final String deviceId;
   final String ipAddress;
@@ -7,9 +9,9 @@ class ZoneMember {
     required this.ipAddress,
   });
 
-  factory ZoneMember.fromXml(dynamic memberElement) {
+  factory ZoneMember.fromXml(XmlElement memberElement) {
     final ipAddress = memberElement.getAttribute('ipaddress') ?? '';
-    final deviceId = memberElement.text;
+    final deviceId = memberElement.innerText;
     return ZoneMember(
       deviceId: deviceId,
       ipAddress: ipAddress,

@@ -1,11 +1,11 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/speaker.dart';
-import '../models/app_config.dart';
-import '../main.dart';
-import '../widgets/emoji_selector.dart';
-import '../services/speaker_api_service.dart';
+import 'package:ueberboese_app/models/speaker.dart';
+import 'package:ueberboese_app/models/app_config.dart';
+import 'package:ueberboese_app/main.dart';
+import 'package:ueberboese_app/widgets/emoji_selector.dart';
+import 'package:ueberboese_app/services/speaker_api_service.dart';
 
 class AddSpeakerPage extends StatefulWidget {
   const AddSpeakerPage({super.key});
@@ -61,7 +61,7 @@ class _AddSpeakerPageState extends State<AddSpeakerPage> {
     }
 
     final parts = ip.split('.');
-    for (var part in parts) {
+    for (final part in parts) {
       final num = int.tryParse(part);
       if (num == null || num < 0 || num > 255) {
         return false;
@@ -80,7 +80,7 @@ class _AddSpeakerPageState extends State<AddSpeakerPage> {
     if (kIsWeb) {
       if (!mounted) return;
 
-      showDialog(
+      showDialog<void>(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Web Platform Not Supported'),
@@ -125,7 +125,7 @@ class _AddSpeakerPageState extends State<AddSpeakerPage> {
 
         if (!mounted) return;
 
-        showDialog(
+        showDialog<void>(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Duplicate Speaker'),
@@ -182,7 +182,7 @@ class _AddSpeakerPageState extends State<AddSpeakerPage> {
         _isLoading = false;
       });
 
-      showDialog(
+      showDialog<void>(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Error'),

@@ -129,7 +129,7 @@ void main() {
       // Create app state with existing speakers using first two emojis
       final appState = MyAppState();
 
-      final speaker1 = Speaker(
+      const speaker1 = Speaker(
         id: '1',
         name: 'Speaker 1',
         emoji: '🔊', // First emoji
@@ -138,7 +138,7 @@ void main() {
         deviceId: 'device1',
       );
 
-      final speaker2 = Speaker(
+      const speaker2 = Speaker(
         id: '2',
         name: 'Speaker 2',
         emoji: '🎵', // Second emoji

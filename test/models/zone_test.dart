@@ -5,7 +5,7 @@ import 'package:ueberboese_app/models/zone.dart';
 void main() {
   group('ZoneMember', () {
     test('creates ZoneMember from XML', () {
-      final xmlString = '<member ipaddress="192.168.1.131">1004567890AA</member>';
+      const xmlString = '<member ipaddress="192.168.1.131">1004567890AA</member>';
       final element = XmlDocument.parse(xmlString).rootElement;
 
       final member = ZoneMember.fromXml(element);
@@ -15,7 +15,7 @@ void main() {
     });
 
     test('converts ZoneMember to XML', () {
-      final member = ZoneMember(
+      const member = ZoneMember(
         deviceId: '1004567890AA',
         ipAddress: '192.168.1.131',
       );
@@ -26,15 +26,15 @@ void main() {
     });
 
     test('ZoneMember equality works correctly', () {
-      final member1 = ZoneMember(
+      const member1 = ZoneMember(
         deviceId: '1004567890AA',
         ipAddress: '192.168.1.131',
       );
-      final member2 = ZoneMember(
+      const member2 = ZoneMember(
         deviceId: '1004567890AA',
         ipAddress: '192.168.1.131',
       );
-      final member3 = ZoneMember(
+      const member3 = ZoneMember(
         deviceId: '3004567890BB',
         ipAddress: '192.168.1.130',
       );
@@ -47,7 +47,7 @@ void main() {
 
   group('Zone', () {
     test('creates Zone with members', () {
-      final zone = Zone(
+      const zone = Zone(
         masterId: '1004567890AA',
         members: [
           ZoneMember(deviceId: '1004567890AA', ipAddress: '192.168.1.131'),
@@ -62,7 +62,7 @@ void main() {
     });
 
     test('isEmpty returns true for empty zone', () {
-      final zone = Zone(
+      const zone = Zone(
         masterId: '1004567890AA',
         members: [],
       );
@@ -72,7 +72,7 @@ void main() {
     });
 
     test('isMaster identifies master correctly', () {
-      final zone = Zone(
+      const zone = Zone(
         masterId: '1004567890AA',
         members: [
           ZoneMember(deviceId: '1004567890AA', ipAddress: '192.168.1.131'),
@@ -85,7 +85,7 @@ void main() {
     });
 
     test('isMember identifies members correctly', () {
-      final zone = Zone(
+      const zone = Zone(
         masterId: '1004567890AA',
         members: [
           ZoneMember(deviceId: '1004567890AA', ipAddress: '192.168.1.131'),
@@ -99,7 +99,7 @@ void main() {
     });
 
     test('converts Zone to XML', () {
-      final zone = Zone(
+      const zone = Zone(
         masterId: '1004567890AA',
         members: [
           ZoneMember(deviceId: '1004567890AA', ipAddress: '192.168.1.131'),
@@ -116,21 +116,21 @@ void main() {
     });
 
     test('Zone equality works correctly', () {
-      final zone1 = Zone(
+      const zone1 = Zone(
         masterId: '1004567890AA',
         members: [
           ZoneMember(deviceId: '1004567890AA', ipAddress: '192.168.1.131'),
           ZoneMember(deviceId: '3004567890BB', ipAddress: '192.168.1.130'),
         ],
       );
-      final zone2 = Zone(
+      const zone2 = Zone(
         masterId: '1004567890AA',
         members: [
           ZoneMember(deviceId: '1004567890AA', ipAddress: '192.168.1.131'),
           ZoneMember(deviceId: '3004567890BB', ipAddress: '192.168.1.130'),
         ],
       );
-      final zone3 = Zone(
+      const zone3 = Zone(
         masterId: 'DIFFERENT',
         members: [
           ZoneMember(deviceId: '1004567890AA', ipAddress: '192.168.1.131'),
@@ -143,7 +143,7 @@ void main() {
     });
 
     test('Zone with optional attributes', () {
-      final zone = Zone(
+      const zone = Zone(
         masterId: '1004567890AA',
         members: [],
         senderIpAddress: '192.168.1.131',
@@ -155,7 +155,7 @@ void main() {
     });
 
     test('allMemberDeviceIds returns master and all members', () {
-      final zone = Zone(
+      const zone = Zone(
         masterId: 'MASTER123ABC',
         members: [
           ZoneMember(deviceId: 'MEMBER456DEF', ipAddress: '192.168.1.101'),
@@ -170,7 +170,7 @@ void main() {
     });
 
     test('allMemberDeviceIds returns only master when no members', () {
-      final zone = Zone(
+      const zone = Zone(
         masterId: 'MASTER123ABC',
         members: [],
       );
@@ -182,7 +182,7 @@ void main() {
     });
 
     test('allMemberDeviceIds returns master first with multiple members', () {
-      final zone = Zone(
+      const zone = Zone(
         masterId: 'MASTER123',
         members: [
           ZoneMember(deviceId: 'MEMBER1', ipAddress: '192.168.1.1'),
@@ -201,7 +201,7 @@ void main() {
     });
 
     test('isInZone identifies all devices in zone', () {
-      final zone = Zone(
+      const zone = Zone(
         masterId: 'MASTER123ABC',
         members: [
           ZoneMember(deviceId: 'MEMBER456DEF', ipAddress: '192.168.1.101'),
@@ -216,7 +216,7 @@ void main() {
     test('allMemberDeviceIds does not duplicate master when it appears in members', () {
       // This happens when querying a non-master device
       // The API includes the master in the members list
-      final zone = Zone(
+      const zone = Zone(
         masterId: 'MASTER123ABC',
         members: [
           ZoneMember(deviceId: 'MASTER123ABC', ipAddress: '192.168.1.100'),
