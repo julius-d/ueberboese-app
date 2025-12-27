@@ -69,17 +69,15 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
 
     appState.updateConfig(newConfig);
 
-    // Show success message
+    // Show success message after update
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Configuration saved successfully'),
         duration: Duration(seconds: 2),
       ),
     );
-
-    // Navigate back
-    Navigator.pop(context);
   }
+
 
   @override
   Widget build(BuildContext context) {

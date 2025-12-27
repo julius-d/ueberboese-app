@@ -103,7 +103,7 @@ void main() {
 
       // Tap save button
       await tester.tap(find.text('Save Configuration'));
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(milliseconds: 500));
 
       // Check that config was updated
       expect(appState.config.apiUrl, 'https://api.example.com');
@@ -143,7 +143,7 @@ void main() {
 
       // Tap save button
       await tester.tap(find.text('Save Configuration'));
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(milliseconds: 500));
 
       // Check that config was updated
       expect(appState.config.apiUrl, '');
@@ -163,7 +163,7 @@ void main() {
       await tester.enterText(accountIdField, 'testuser');
 
       await tester.tap(find.text('Save Configuration'));
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(milliseconds: 500));
 
       expect(appState.config.apiUrl, 'https://api.example.com');
     });
@@ -181,7 +181,7 @@ void main() {
       await tester.enterText(accountIdField, 'testuser');
 
       await tester.tap(find.text('Save Configuration'));
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(milliseconds: 500));
 
       expect(appState.config.apiUrl, 'http://api.example.com');
     });
@@ -203,6 +203,9 @@ void main() {
       await tester.pump();
 
       expect(find.text('Configuration saved successfully'), findsOneWidget);
+
+      // Wait for the delayed config update to complete
+      await tester.pumpAndSettle(const Duration(milliseconds: 500));
     });
 
     testWidgets('validates empty management username',
@@ -254,7 +257,7 @@ void main() {
       await tester.enterText(mgmtPasswordField, 'mypassword');
 
       await tester.tap(find.text('Save Configuration'));
-      await tester.pumpAndSettle();
+      await tester.pumpAndSettle(const Duration(milliseconds: 500));
 
       expect(appState.config.mgmtUsername, 'myadmin');
       expect(appState.config.mgmtPassword, 'mypassword');
@@ -322,6 +325,73 @@ void main() {
       expect(find.text('Configuration'), findsOneWidget);
       expect(find.text('admin'), findsOneWidget);
       expect(find.text('change_me!'), findsOneWidget);
+    });
+
+    testWidgets('handles save and update without crashing',
+        (WidgetTester tester) async {
+      await pumpConfigurationPage(tester);
+
+      // Enter valid values
+      final apiUrlField = find.widgetWithText(
+        TextFormField,
+        'Überböse API URL',
+      );
+      await tester.enterText(apiUrlField, 'https://api.example.com');
+
+      final accountIdField = find.widgetWithText(TextFormField, 'Account ID');
+      await tester.enterText(accountIdField, 'testuser');
+
+      final mgmtUsernameField =
+          find.widgetWithText(TextFormField, 'Management Username');
+      await tester.enterText(mgmtUsernameField, 'admin');
+
+      final mgmtPasswordField =
+          find.widgetWithText(TextFormField, 'Management Password');
+      await tester.enterText(mgmtPasswordField, 'password123');
+
+      // Tap save button
+      await tester.tap(find.text('Save Configuration'));
+      await tester.pumpAndSettle(const Duration(milliseconds: 500));
+
+      // Verify config was saved successfully
+      expect(appState.config.apiUrl, 'https://api.example.com');
+      expect(appState.config.accountId, 'testuser');
+      expect(appState.config.mgmtUsername, 'admin');
+      expect(appState.config.mgmtPassword, 'password123');
+
+      // Verify no black screen or crash - page should still be visible
+      expect(find.text('Configuration'), findsOneWidget);
+    });
+
+    testWidgets(
+        'saves configuration and shows success message',
+        (WidgetTester tester) async {
+      await pumpConfigurationPage(tester);
+
+      // Enter valid values
+      final accountIdField = find.widgetWithText(TextFormField, 'Account ID');
+      await tester.enterText(accountIdField, 'testuser');
+
+      final mgmtUsernameField =
+          find.widgetWithText(TextFormField, 'Management Username');
+      await tester.enterText(mgmtUsernameField, 'admin');
+
+      final mgmtPasswordField =
+          find.widgetWithText(TextFormField, 'Management Password');
+      await tester.enterText(mgmtPasswordField, 'password123');
+
+      // Tap save button
+      await tester.tap(find.text('Save Configuration'));
+      await tester.pump(); // Pump once to process the save
+
+      // Success message should appear
+      expect(find.text('Configuration saved successfully'), findsOneWidget);
+
+      // Finish animations
+      await tester.pumpAndSettle(const Duration(milliseconds: 500));
+
+      // Verify no errors occurred and config was saved
+      expect(appState.config.accountId, 'testuser');
     });
   });
 }
