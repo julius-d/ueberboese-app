@@ -385,5 +385,27 @@ void main() {
       // when a zone is actually loaded from the API, which requires API mocking.
       // This test verifies the basic zone section structure exists.
     });
+
+    testWidgets('IP address and type are selectable', (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: const MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Verify that SelectableText is used for the IP address and type
+      expect(find.byType(SelectableText), findsOneWidget);
+
+      // Verify the content is displayed
+      expect(find.text('SoundTouch 10 • 192.168.1.100'), findsOneWidget);
+    });
   });
 }

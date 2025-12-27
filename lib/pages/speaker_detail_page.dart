@@ -575,7 +575,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
+                      SelectableText(
                         '${widget.speaker.type} • ${widget.speaker.ipAddress}',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
