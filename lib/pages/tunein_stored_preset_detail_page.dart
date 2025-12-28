@@ -206,7 +206,7 @@ class _TuneInStoredPresetDetailPageState extends State<TuneInStoredPresetDetailP
                 ),
               ),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 88.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

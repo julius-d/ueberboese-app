@@ -185,7 +185,7 @@ void main() {
       expect(find.byIcon(Icons.edit), findsOneWidget);
     });
 
-    testWidgets('tapping FAB shows error dialog', (WidgetTester tester) async {
+    testWidgets('tapping FAB navigates to EditTuneInPresetPage for TUNEIN presets', (WidgetTester tester) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Station',
@@ -210,8 +210,37 @@ void main() {
       await tester.tap(find.byType(FloatingActionButton));
       await tester.pumpAndSettle();
 
+      // Should navigate to EditTuneInPresetPage
+      expect(find.text('Search TuneIn Stations'), findsOneWidget);
+    });
+
+    testWidgets('tapping FAB shows error dialog for unsupported preset types', (WidgetTester tester) async {
+      const testPreset = Preset(
+        id: '1',
+        itemName: 'Test Preset',
+        source: 'PRODUCT',
+        location: '/v1/playback/product/xyz',
+        type: 'producturl',
+        isPresetable: true,
+      );
+
+      final appState = MyAppState();
+      appState.config = const AppConfig();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<MyAppState>.value(
+          value: appState,
+          child: const MaterialApp(
+            home: PresetDetailPage(preset: testPreset),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+
       expect(find.text('Error'), findsOneWidget);
-      expect(find.text('Editing TUNEIN presets is not yet supported'), findsOneWidget);
+      expect(find.text('Editing PRODUCT presets is not yet supported'), findsOneWidget);
     });
   });
 }
