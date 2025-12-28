@@ -5,6 +5,7 @@ import 'package:ueberboese_app/models/preset.dart';
 import 'package:ueberboese_app/services/speaker_api_service.dart';
 import 'package:ueberboese_app/pages/preset_detail_page.dart';
 import 'package:ueberboese_app/pages/spotify_preset_detail_page.dart';
+import 'package:ueberboese_app/pages/tunein_stored_preset_detail_page.dart';
 
 class PresetsPage extends StatefulWidget {
   const PresetsPage({super.key});
@@ -212,6 +213,13 @@ class _PresetsPageState extends State<PresetsPage> {
                         context,
                         MaterialPageRoute<void>(
                           builder: (context) => SpotifyPresetDetailPage(preset: preset),
+                        ),
+                      );
+                    } else if (preset.source == 'TUNEIN') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (context) => TuneInStoredPresetDetailPage(preset: preset),
                         ),
                       );
                     } else {

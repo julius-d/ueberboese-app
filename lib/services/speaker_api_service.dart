@@ -678,4 +678,71 @@ class SpeakerApiService {
       }
     }
   }
+
+  Future<List<Preset>> storeTuneInPreset(
+    String ipAddress,
+    String presetId,
+    String stationId,
+    String itemName,
+    String? containerArt,
+  ) async {
+    final url = Uri.parse('http://$ipAddress:8090/storePreset');
+    final client = httpClient ?? http.Client();
+
+    try {
+      // Construct location with station ID
+      final location = '/v1/playback/station/$stationId';
+
+      // Get current timestamp in seconds
+      final timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+      // Build XML body
+      final containerArtElement = containerArt != null
+          ? '<containerArt>$containerArt</containerArt>'
+          : '';
+
+      final body = '''<preset id="$presetId" createdOn="$timestamp" updatedOn="$timestamp">
+  <ContentItem source="TUNEIN" type="stationurl" location="$location" isPresetable="true">
+    <itemName>$itemName</itemName>$containerArtElement
+  </ContentItem>
+</preset>''';
+
+      final response = await client
+          .post(
+            url,
+            headers: {'Content-Type': 'text/xml'},
+            body: body,
+          )
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          'Failed to store TuneIn preset: HTTP ${response.statusCode}',
+        );
+      }
+
+      // Parse response XML
+      final bodyText = utf8.decode(response.bodyBytes);
+      final document = XmlDocument.parse(bodyText);
+
+      // Find all preset elements in the updated list
+      final presetElements = document.findAllElements('preset');
+
+      // Parse each preset
+      final presets = presetElements
+          .map((element) => Preset.fromXml(element))
+          .toList();
+
+      return presets;
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Failed to store TuneIn preset: $e');
+    } finally {
+      if (httpClient == null) {
+        client.close();
+      }
+    }
+  }
 }

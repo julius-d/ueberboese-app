@@ -1049,5 +1049,204 @@ void main() {
         );
       });
     });
+
+    group('storeTuneInPreset', () {
+      test('should store TuneIn preset successfully', () async {
+        const ipAddress = '192.168.1.131';
+        const presetId = '3';
+        const stationId = 's288368';
+        const itemName = 'Radio Potsdam';
+        const containerArt = 'http://example.com/logo.png';
+
+        const responseBody = '''<?xml version="1.0" encoding="UTF-8"?>
+<presets>
+  <preset id="3" createdOn="1234567890" updatedOn="1234567890">
+    <ContentItem source="TUNEIN" type="stationurl" location="/v1/playback/station/s288368" isPresetable="true">
+      <itemName>$itemName</itemName>
+      <containerArt>$containerArt</containerArt>
+    </ContentItem>
+  </preset>
+</presets>''';
+
+        final mockResponse = http.Response(responseBody, 200);
+
+        when(mockClient.post(
+          Uri.parse('http://$ipAddress:8090/storePreset'),
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).thenAnswer((_) async => mockResponse);
+
+        final result = await apiService.storeTuneInPreset(
+          ipAddress,
+          presetId,
+          stationId,
+          itemName,
+          containerArt,
+        );
+
+        expect(result.length, 1);
+        expect(result[0].id, '3');
+        expect(result[0].itemName, itemName);
+        expect(result[0].source, 'TUNEIN');
+        expect(result[0].location, '/v1/playback/station/s288368');
+
+        verify(mockClient.post(
+          Uri.parse('http://$ipAddress:8090/storePreset'),
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).called(1);
+      });
+
+      test('should store TuneIn preset without containerArt', () async {
+        const ipAddress = '192.168.1.131';
+        const presetId = '3';
+        const stationId = 's288368';
+        const itemName = 'Radio Potsdam';
+
+        const responseBody = '''<?xml version="1.0" encoding="UTF-8"?>
+<presets>
+  <preset id="3" createdOn="1234567890" updatedOn="1234567890">
+    <ContentItem source="TUNEIN" type="stationurl" location="/v1/playback/station/s288368" isPresetable="true">
+      <itemName>$itemName</itemName>
+    </ContentItem>
+  </preset>
+</presets>''';
+
+        final mockResponse = http.Response(responseBody, 200);
+
+        when(mockClient.post(
+          Uri.parse('http://$ipAddress:8090/storePreset'),
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).thenAnswer((_) async => mockResponse);
+
+        final result = await apiService.storeTuneInPreset(
+          ipAddress,
+          presetId,
+          stationId,
+          itemName,
+          null,
+        );
+
+        expect(result.length, 1);
+        expect(result[0].id, '3');
+        expect(result[0].itemName, itemName);
+        expect(result[0].source, 'TUNEIN');
+
+        verify(mockClient.post(
+          Uri.parse('http://$ipAddress:8090/storePreset'),
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).called(1);
+      });
+
+      test('should include correct location format', () async {
+        const ipAddress = '192.168.1.131';
+        const presetId = '3';
+        const stationId = 's288368';
+        const itemName = 'Test';
+
+        const responseBody = '''<?xml version="1.0" encoding="UTF-8"?>
+<presets>
+  <preset id="3" createdOn="1234567890" updatedOn="1234567890">
+    <ContentItem source="TUNEIN" type="stationurl" location="/v1/playback/station/s288368" isPresetable="true">
+      <itemName>Test</itemName>
+    </ContentItem>
+  </preset>
+</presets>''';
+
+        final mockResponse = http.Response(responseBody, 200);
+
+        when(mockClient.post(
+          Uri.parse('http://$ipAddress:8090/storePreset'),
+          headers: anyNamed('headers'),
+          body: argThat(contains('/v1/playback/station/s288368'), named: 'body'),
+        )).thenAnswer((_) async => mockResponse);
+
+        await apiService.storeTuneInPreset(
+          ipAddress,
+          presetId,
+          stationId,
+          itemName,
+          null,
+        );
+
+        verify(mockClient.post(
+          Uri.parse('http://$ipAddress:8090/storePreset'),
+          headers: anyNamed('headers'),
+          body: argThat(contains('/v1/playback/station/s288368'), named: 'body'),
+        )).called(1);
+      });
+
+      test('should throw exception on non-200 status code', () async {
+        const ipAddress = '192.168.1.131';
+        final mockResponse = http.Response('Internal Server Error', 500);
+
+        when(mockClient.post(
+          Uri.parse('http://$ipAddress:8090/storePreset'),
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).thenAnswer((_) async => mockResponse);
+
+        expect(
+          () => apiService.storeTuneInPreset(
+            ipAddress,
+            '1',
+            's12345',
+            'Test',
+            null,
+          ),
+          throwsA(isA<Exception>()),
+        );
+      });
+
+      test('should throw exception on malformed XML', () async {
+        const ipAddress = '192.168.1.131';
+        final mockResponse = http.Response('not valid xml', 200);
+
+        when(mockClient.post(
+          Uri.parse('http://$ipAddress:8090/storePreset'),
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).thenAnswer((_) async => mockResponse);
+
+        expect(
+          () => apiService.storeTuneInPreset(
+            ipAddress,
+            '1',
+            's12345',
+            'Test',
+            null,
+          ),
+          throwsA(isA<Exception>()),
+        );
+      });
+
+      test('should throw exception on timeout', () async {
+        const ipAddress = '192.168.1.131';
+
+        when(mockClient.post(
+          Uri.parse('http://$ipAddress:8090/storePreset'),
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).thenAnswer(
+          (_) async => Future.delayed(
+            const Duration(seconds: 11),
+            () => http.Response('{}', 200),
+          ),
+        );
+
+        expect(
+          () => apiService.storeTuneInPreset(
+            ipAddress,
+            '1',
+            's12345',
+            'Test',
+            null,
+          ),
+          throwsA(isA<Exception>()),
+        );
+      });
+    });
   });
 }

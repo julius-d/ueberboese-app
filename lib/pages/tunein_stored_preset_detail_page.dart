@@ -1,37 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:ueberboese_app/main.dart';
 import 'package:ueberboese_app/models/preset.dart';
 import 'package:ueberboese_app/services/speaker_api_service.dart';
-import 'package:ueberboese_app/main.dart';
 import 'package:ueberboese_app/pages/edit_tunein_preset_page.dart';
 
-class PresetDetailPage extends StatefulWidget {
+class TuneInStoredPresetDetailPage extends StatefulWidget {
   final Preset preset;
 
-  const PresetDetailPage({
+  const TuneInStoredPresetDetailPage({
     super.key,
     required this.preset,
   });
 
   @override
-  State<PresetDetailPage> createState() => _PresetDetailPageState();
+  State<TuneInStoredPresetDetailPage> createState() => _TuneInStoredPresetDetailPageState();
 }
 
-class _PresetDetailPageState extends State<PresetDetailPage> {
+class _TuneInStoredPresetDetailPageState extends State<TuneInStoredPresetDetailPage> {
   final _speakerApiService = SpeakerApiService();
   bool _isDeleting = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  String _formatTimestamp(int? timestamp) {
-    if (timestamp == null) return 'N/A';
-    final date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-    return DateFormat('yyyy-MM-dd HH:mm:ss').format(date);
-  }
 
   Future<void> _showDeleteConfirmationDialog() async {
     final confirmed = await showDialog<bool>(
@@ -123,25 +111,34 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
   }
 
   void _onEditPressed() {
-    if (widget.preset.source == 'TUNEIN') {
-      Navigator.push(
-        context,
-        MaterialPageRoute<void>(
-          builder: (context) => EditTuneInPresetPage(preset: widget.preset),
-        ),
-      );
-    } else {
-      _showErrorDialog('Editing ${widget.preset.source} presets is not yet supported');
+    Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (context) => EditTuneInPresetPage(preset: widget.preset),
+      ),
+    );
+  }
+
+  String? _extractStationId() {
+    // Extract station ID from location format: /v1/playback/station/s288368
+    final location = widget.preset.location;
+    const prefix = '/v1/playback/station/';
+
+    if (location.startsWith(prefix)) {
+      return location.substring(prefix.length);
     }
+
+    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final stationId = _extractStationId();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Preset ${widget.preset.id}'),
+        title: Text('TuneIn Preset ${widget.preset.id}'),
         actions: [
           if (_isDeleting)
             const Center(
@@ -186,7 +183,7 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
                     child: Image.network(
                       widget.preset.containerArt!,
                       width: 200,
@@ -198,7 +195,7 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
                           height: 200,
                           color: theme.colorScheme.surfaceContainerHighest,
                           child: Icon(
-                            Icons.music_note,
+                            Icons.radio,
                             size: 100,
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
@@ -213,10 +210,13 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    widget.preset.itemName,
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                  Center(
+                    child: SelectableText(
+                      widget.preset.itemName,
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -233,13 +233,15 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
                     widget.preset.source,
                     Icons.source,
                   ),
-                  const Divider(),
-                  _buildDetailRow(
-                    context,
-                    'Type',
-                    widget.preset.type,
-                    Icons.category,
-                  ),
+                  if (stationId != null) ...[
+                    const Divider(),
+                    _buildDetailRow(
+                      context,
+                      'Station ID',
+                      stationId,
+                      Icons.radio,
+                    ),
+                  ],
                   const Divider(),
                   _buildDetailRow(
                     context,
@@ -247,24 +249,6 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
                     widget.preset.location,
                     Icons.location_on,
                   ),
-                  if (widget.preset.createdOn != null) ...[
-                    const Divider(),
-                    _buildDetailRow(
-                      context,
-                      'Created On',
-                      _formatTimestamp(widget.preset.createdOn),
-                      Icons.access_time,
-                    ),
-                  ],
-                  if (widget.preset.updatedOn != null) ...[
-                    const Divider(),
-                    _buildDetailRow(
-                      context,
-                      'Updated On',
-                      _formatTimestamp(widget.preset.updatedOn),
-                      Icons.update,
-                    ),
-                  ],
                 ],
               ),
             ),
@@ -287,13 +271,13 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
     final theme = Theme.of(context);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12.0),
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(
             icon,
-            size: 20,
+            size: 24,
             color: theme.colorScheme.primary,
           ),
           const SizedBox(width: 12),
