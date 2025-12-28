@@ -381,7 +381,7 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
             GestureDetector(
               onTap: _closeFab,
               child: Container(
-                color: Colors.black54,
+                color: theme.colorScheme.scrim.withValues(alpha: 0.4),
               ),
             ),
         ],

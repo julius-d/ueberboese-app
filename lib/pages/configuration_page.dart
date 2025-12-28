@@ -85,11 +85,14 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
       appBar: AppBar(
         title: const Text('Configuration'),
       ),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
             const SizedBox(height: 16),
             TextFormField(
               controller: _apiUrlController,
@@ -182,7 +185,9 @@ class _ConfigurationPageState extends State<ConfigurationPage> {
                 return null;
               },
             ),
-          ],
+              ],
+            ),
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(

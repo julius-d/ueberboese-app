@@ -66,10 +66,10 @@ class _PresetsPageState extends State<PresetsPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.error_outline,
                     size: 48,
-                    color: Colors.red,
+                    color: theme.colorScheme.error,
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -86,7 +86,7 @@ class _PresetsPageState extends State<PresetsPage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton.icon(
+                  FilledButton.icon(
                     onPressed: _retryLoad,
                     icon: const Icon(Icons.refresh),
                     label: const Text('Retry'),
@@ -169,7 +169,7 @@ class _PresetsPageState extends State<PresetsPage> {
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.2),
+                                  color: theme.colorScheme.shadow.withValues(alpha: 0.2),
                                   blurRadius: 4,
                                   offset: const Offset(2, 2),
                                 ),

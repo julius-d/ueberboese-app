@@ -850,18 +850,17 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                                       if (speaker != null) ...[
                                         const SizedBox(width: 16),
                                         SizedBox(
-                                          height: 32,
-                                          width: 32,
+                                          height: 40,
+                                          width: 40,
                                           child: FilledButton(
                                             onPressed: (isLoadingMemberVolume || memberVolume == null)
                                                 ? null
                                                 : () => _adjustMemberVolume(deviceId, -5),
                                             style: FilledButton.styleFrom(
                                               padding: EdgeInsets.zero,
-                                              minimumSize: const Size(32, 32),
-                                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                              minimumSize: const Size(40, 40),
                                             ),
-                                            child: const Icon(Icons.volume_down, size: 16),
+                                            child: const Icon(Icons.volume_down, size: 18),
                                           ),
                                         ),
                                         const SizedBox(width: 4),
@@ -892,25 +891,24 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                                           const SizedBox(width: 50),
                                         const SizedBox(width: 4),
                                         SizedBox(
-                                          height: 32,
-                                          width: 32,
+                                          height: 40,
+                                          width: 40,
                                           child: FilledButton(
                                             onPressed: (isLoadingMemberVolume || memberVolume == null)
                                                 ? null
                                                 : () => _adjustMemberVolume(deviceId, 5),
                                             style: FilledButton.styleFrom(
                                               padding: EdgeInsets.zero,
-                                              minimumSize: const Size(32, 32),
-                                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                              minimumSize: const Size(40, 40),
                                             ),
-                                            child: const Icon(Icons.volume_up, size: 16),
+                                            child: const Icon(Icons.volume_up, size: 18),
                                           ),
                                         ),
                                         // Remove button - fixed width to maintain alignment
                                         const SizedBox(width: 4),
                                         SizedBox(
-                                          width: 32,
-                                          height: 32,
+                                          width: 40,
+                                          height: 40,
                                           child: (!isCurrentSpeaker &&
                                                   !isMaster &&
                                                   _currentZone!.isMaster(widget.speaker.deviceId) &&
@@ -921,12 +919,11 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                                                       : () => _removeFromZone(member),
                                                   style: FilledButton.styleFrom(
                                                     padding: EdgeInsets.zero,
-                                                    minimumSize: const Size(32, 32),
-                                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                    minimumSize: const Size(40, 40),
                                                     backgroundColor: theme.colorScheme.errorContainer,
                                                     foregroundColor: theme.colorScheme.onErrorContainer,
                                                   ),
-                                                  child: const Icon(Icons.remove_circle_outline, size: 16),
+                                                  child: const Icon(Icons.remove_circle_outline, size: 18),
                                                 )
                                               : null,
                                         ),
