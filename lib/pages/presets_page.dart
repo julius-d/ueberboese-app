@@ -4,6 +4,7 @@ import 'package:ueberboese_app/main.dart';
 import 'package:ueberboese_app/models/preset.dart';
 import 'package:ueberboese_app/services/speaker_api_service.dart';
 import 'package:ueberboese_app/pages/preset_detail_page.dart';
+import 'package:ueberboese_app/pages/spotify_preset_detail_page.dart';
 
 class PresetsPage extends StatefulWidget {
   const PresetsPage({super.key});
@@ -206,12 +207,21 @@ class _PresetsPageState extends State<PresetsPage> {
                     color: theme.colorScheme.primary,
                   ),
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute<void>(
-                        builder: (context) => PresetDetailPage(preset: preset),
-                      ),
-                    );
+                    if (preset.source == 'SPOTIFY') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (context) => SpotifyPresetDetailPage(preset: preset),
+                        ),
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (context) => PresetDetailPage(preset: preset),
+                        ),
+                      );
+                    }
                   },
                 ),
               );
