@@ -135,38 +135,12 @@ jobs:
           custom_tag: ${{ needs.version.outputs.new_version }}
           tag_prefix: ''
 
-      - name: Generate changelog
-        id: changelog
-        run: |
-          VERSION="${{ needs.version.outputs.new_version }}"
-          PREV_VERSION="${{ needs.version.outputs.previous_version }}"
-
-          # If no previous version, get all commits
-          if [ -z "$PREV_VERSION" ] || [ "$PREV_VERSION" == "null" ]; then
-            COMMITS=$(git log --pretty=format:"- %s (%h)" --no-merges)
-          else
-            COMMITS=$(git log ${PREV_VERSION}..HEAD --pretty=format:"- %s (%h)" --no-merges)
-          fi
-
-          # Create changelog
-          CHANGELOG="## What's Changed
-
-          $COMMITS
-
-          **Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_VERSION}...${VERSION}"
-
-          # Save to file and environment
-          echo "$CHANGELOG" > changelog.md
-          echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGELOG" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ needs.version.outputs.new_version }}
           name: Release ${{ needs.version.outputs.new_version }}
-          body: ${{ steps.changelog.outputs.CHANGELOG }}
+          body: ${{ needs.version.outputs.changelog }}
           draft: false
           prerelease: false
           files: ./artifacts/ueberboese-app-*.apk
