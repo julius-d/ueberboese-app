@@ -7,6 +7,8 @@ class NowPlaying {
   final String? shuffleSetting;
   final String? repeatSetting;
   final String? playStatus;
+  final String? location;
+  final String? source;
 
   const NowPlaying({
     this.track,
@@ -17,5 +19,7 @@ class NowPlaying {
     this.shuffleSetting,
     this.repeatSetting,
     this.playStatus,
+    this.location,
+    this.source,
   });
 }

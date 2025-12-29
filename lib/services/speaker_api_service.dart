@@ -279,6 +279,16 @@ class SpeakerApiService {
         playStatus = playStatusElements.first.innerText;
       }
 
+      // Extract location and source from ContentItem if present
+      String? location;
+      String? source;
+      final contentItemElements = document.findAllElements('ContentItem');
+      if (contentItemElements.isNotEmpty) {
+        final contentItem = contentItemElements.first;
+        location = contentItem.getAttribute('location');
+        source = contentItem.getAttribute('source');
+      }
+
       return NowPlaying(
         track: track,
         artist: artist,
@@ -288,6 +298,8 @@ class SpeakerApiService {
         shuffleSetting: shuffleSetting,
         repeatSetting: repeatSetting,
         playStatus: playStatus,
+        location: location,
+        source: source,
       );
     } catch (e) {
       if (e is Exception) {

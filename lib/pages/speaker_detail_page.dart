@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:ueberboese_app/models/speaker.dart';
 import 'package:ueberboese_app/models/volume.dart';
 import 'package:ueberboese_app/models/now_playing.dart';
@@ -489,6 +491,88 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
     }
   }
 
+  String? _decodeSpotifyUri(String? location) {
+    if (location == null) return null;
+
+    try {
+      const prefix = '/playback/container/';
+      if (!location.startsWith(prefix)) {
+        return null;
+      }
+
+      final base64Part = location.substring(prefix.length);
+      final decodedBytes = base64Decode(base64Part);
+      final decodedUri = utf8.decode(decodedBytes);
+      return decodedUri;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  String? _convertSpotifyUriToWebUrl(String spotifyUri) {
+    // Convert spotify:type:id to https://open.spotify.com/type/id
+    final uriPattern = RegExp(r'^spotify:([a-z]+):(.+)$');
+    final match = uriPattern.firstMatch(spotifyUri);
+
+    if (match == null) {
+      return null;
+    }
+
+    final type = match.group(1); // playlist, album, track, etc.
+    final id = match.group(2);
+
+    return 'https://open.spotify.com/$type/$id';
+  }
+
+  Future<void> _openInSpotify() async {
+    if (_nowPlaying?.source != 'SPOTIFY' || _nowPlaying?.location == null) {
+      return;
+    }
+
+    try {
+      final spotifyUri = _decodeSpotifyUri(_nowPlaying!.location);
+      if (spotifyUri == null) {
+        _showErrorDialog('Failed to decode Spotify URI');
+        return;
+      }
+
+      final webUrl = _convertSpotifyUriToWebUrl(spotifyUri);
+      if (webUrl == null) {
+        _showErrorDialog('Invalid Spotify URI format');
+        return;
+      }
+
+      final uri = Uri.parse(webUrl);
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!launched && mounted) {
+        _showErrorDialog('Failed to open Spotify web player');
+      }
+    } catch (e) {
+      if (mounted) {
+        _showErrorDialog('Error opening Spotify: ${e.toString()}');
+      }
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1146,6 +1230,26 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                               ),
                             ],
                           ),
+                          // Open in Spotify button
+                          if (_nowPlaying!.source == 'SPOTIFY' &&
+                              _nowPlaying!.location != null &&
+                              _decodeSpotifyUri(_nowPlaying!.location) != null) ...[
+                            const SizedBox(height: 16),
+                            Center(
+                              child: OutlinedButton.icon(
+                                onPressed: _openInSpotify,
+                                icon: const Icon(Icons.open_in_new),
+                                label: const Text('Open in Spotify'),
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                          // Play/Pause button
                           if (_nowPlaying!.playStatus != null &&
                               (_nowPlaying!.playStatus == 'PLAY_STATE' ||
                                   _nowPlaying!.playStatus == 'PAUSE_STATE')) ...[

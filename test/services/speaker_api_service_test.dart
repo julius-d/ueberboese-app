@@ -1248,5 +1248,76 @@ void main() {
         );
       });
     });
+
+    group('getNowPlaying', () {
+      test('getNowPlaying parses ContentItem with location and source', () async {
+        const ipAddress = '192.168.1.100';
+        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8"?>
+<nowPlaying>
+  <ContentItem source="SPOTIFY" type="tracklisturl" location="/playback/container/c3BvdGlmeTp0cmFjazoxMjM0NTY=" isPresetable="true">
+    <itemName>Test Track</itemName>
+    <containerArt>https://example.com/art.jpg</containerArt>
+  </ContentItem>
+  <track>Test Track</track>
+  <artist>Test Artist</artist>
+  <album>Test Album</album>
+  <art>http://192.168.1.100:8090/image/1234567890</art>
+  <playStatus>PLAY_STATE</playStatus>
+  <shuffleSetting>SHUFFLE_OFF</shuffleSetting>
+  <repeatSetting>REPEAT_OFF</repeatSetting>
+</nowPlaying>''';
+
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        final result = await apiService.getNowPlaying(ipAddress);
+
+        expect(result.track, equals('Test Track'));
+        expect(result.artist, equals('Test Artist'));
+        expect(result.album, equals('Test Album'));
+        expect(result.art, equals('http://192.168.1.100:8090/image/1234567890'));
+        expect(result.playStatus, equals('PLAY_STATE'));
+        expect(result.shuffleSetting, equals('SHUFFLE_OFF'));
+        expect(result.repeatSetting, equals('REPEAT_OFF'));
+        expect(result.source, equals('SPOTIFY'));
+        expect(result.location, equals('/playback/container/c3BvdGlmeTp0cmFjazoxMjM0NTY='));
+      });
+
+      test('getNowPlaying handles missing ContentItem gracefully', () async {
+        const ipAddress = '192.168.1.100';
+        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8"?>
+<nowPlaying>
+  <track>Test Track</track>
+  <artist>Test Artist</artist>
+  <playStatus>PLAY_STATE</playStatus>
+</nowPlaying>''';
+
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        final result = await apiService.getNowPlaying(ipAddress);
+
+        expect(result.track, equals('Test Track'));
+        expect(result.artist, equals('Test Artist'));
+        expect(result.playStatus, equals('PLAY_STATE'));
+        expect(result.source, isNull);
+        expect(result.location, isNull);
+      });
+
+      test('getNowPlaying should throw exception on non-200 status code', () async {
+        const ipAddress = '192.168.1.100';
+        final mockResponse = http.Response('Internal Server Error', 500);
+
+        when(mockClient.get(Uri.parse('http://$ipAddress:8090/nowPlaying')))
+            .thenAnswer((_) async => mockResponse);
+
+        expect(
+          () => apiService.getNowPlaying(ipAddress),
+          throwsA(isA<Exception>()),
+        );
+      });
+    });
   });
 }

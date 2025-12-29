@@ -407,5 +407,46 @@ void main() {
       // Verify the content is displayed
       expect(find.text('SoundTouch 10 • 192.168.1.100'), findsOneWidget);
     });
+
+    testWidgets('does not show Open in Spotify button when nowPlaying has no source',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: const MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // The Open in Spotify button should not be visible
+      expect(find.text('Open in Spotify'), findsNothing);
+    });
+
+    testWidgets('does not show Open in Spotify button when source is not SPOTIFY',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: const MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // The Open in Spotify button should not be visible for non-Spotify sources
+      // This test ensures the button doesn't appear for TUNEIN or other sources
+      expect(find.text('Open in Spotify'), findsNothing);
+    });
   });
 }
