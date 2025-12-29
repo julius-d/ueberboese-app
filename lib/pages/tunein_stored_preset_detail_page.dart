@@ -242,13 +242,6 @@ class _TuneInStoredPresetDetailPageState extends State<TuneInStoredPresetDetailP
                       Icons.radio,
                     ),
                   ],
-                  const Divider(),
-                  _buildDetailRow(
-                    context,
-                    'Location',
-                    widget.preset.location,
-                    Icons.location_on,
-                  ),
                 ],
               ),
             ),
