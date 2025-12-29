@@ -10,6 +10,7 @@ import 'package:ueberboese_app/models/zone.dart';
 import 'package:ueberboese_app/services/speaker_api_service.dart';
 import 'package:ueberboese_app/main.dart';
 import 'package:ueberboese_app/pages/edit_speaker_page.dart';
+import 'package:ueberboese_app/pages/remote_control_page.dart';
 
 class SpeakerDetailPage extends StatefulWidget {
   final Speaker speaker;
@@ -636,6 +637,13 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                     builder: (context) => EditSpeakerPage(speaker: widget.speaker),
                   ),
                 );
+              } else if (value == 'remote') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (context) => RemoteControlPage(speaker: widget.speaker),
+                  ),
+                );
               } else if (value == 'standby') {
                 _sendToStandby();
               } else if (value == 'delete') {
@@ -650,6 +658,16 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                     Icon(Icons.edit),
                     SizedBox(width: 8),
                     Text('Edit speaker'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'remote',
+                child: Row(
+                  children: [
+                    Icon(Icons.settings_remote),
+                    SizedBox(width: 8),
+                    Text('Remote Control'),
                   ],
                 ),
               ),

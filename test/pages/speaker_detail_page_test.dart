@@ -74,9 +74,11 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Edit speaker'), findsOneWidget);
+      expect(find.text('Remote Control'), findsOneWidget);
       expect(find.text('Send to standby'), findsOneWidget);
       expect(find.text('Delete speaker'), findsOneWidget);
       expect(find.byIcon(Icons.edit), findsOneWidget);
+      expect(find.byIcon(Icons.settings_remote), findsOneWidget);
       expect(find.byIcon(Icons.bedtime), findsOneWidget);
       expect(find.byIcon(Icons.delete), findsOneWidget);
     });

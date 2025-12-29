@@ -1319,5 +1319,182 @@ void main() {
         );
       });
     });
+
+    group('sendKey', () {
+      test('sends key press with correct XML format', () async {
+        const ipAddress = '192.168.1.100';
+        const keyValue = 'POWER';
+        const state = 'press';
+        const expectedBody = '<key state="$state" sender="Gabbo">$keyValue</key>';
+
+        when(mockClient.post(
+          Uri.parse('http://$ipAddress:8090/key'),
+          headers: {'Content-Type': 'text/xml'},
+          body: expectedBody,
+        )).thenAnswer((_) async => http.Response('', 200));
+
+        await apiService.sendKey(ipAddress, keyValue, state);
+
+        verify(mockClient.post(
+          Uri.parse('http://$ipAddress:8090/key'),
+          headers: {'Content-Type': 'text/xml'},
+          body: expectedBody,
+        )).called(1);
+      });
+
+      test('sends key release with correct XML format', () async {
+        const ipAddress = '192.168.1.100';
+        const keyValue = 'VOLUME_UP';
+        const state = 'release';
+        const expectedBody = '<key state="$state" sender="Gabbo">$keyValue</key>';
+
+        when(mockClient.post(
+          Uri.parse('http://$ipAddress:8090/key'),
+          headers: {'Content-Type': 'text/xml'},
+          body: expectedBody,
+        )).thenAnswer((_) async => http.Response('', 200));
+
+        await apiService.sendKey(ipAddress, keyValue, state);
+
+        verify(mockClient.post(
+          Uri.parse('http://$ipAddress:8090/key'),
+          headers: {'Content-Type': 'text/xml'},
+          body: expectedBody,
+        )).called(1);
+      });
+
+      test('throws ArgumentError for invalid key value', () async {
+        const ipAddress = '192.168.1.100';
+        const invalidKey = 'INVALID_KEY';
+        const state = 'press';
+
+        expect(
+          () => apiService.sendKey(ipAddress, invalidKey, state),
+          throwsA(isA<ArgumentError>()),
+        );
+      });
+
+      test('throws ArgumentError for invalid state', () async {
+        const ipAddress = '192.168.1.100';
+        const keyValue = 'POWER';
+        const invalidState = 'invalid';
+
+        expect(
+          () => apiService.sendKey(ipAddress, keyValue, invalidState),
+          throwsA(isA<ArgumentError>()),
+        );
+      });
+
+      test('key values are case sensitive', () async {
+        const ipAddress = '192.168.1.100';
+        const lowercaseKey = 'power'; // lowercase version should be invalid
+        const state = 'press';
+
+        expect(
+          () => apiService.sendKey(ipAddress, lowercaseKey, state),
+          throwsA(isA<ArgumentError>()),
+        );
+      });
+
+      test('state values are case sensitive', () async {
+        const ipAddress = '192.168.1.100';
+        const keyValue = 'POWER';
+        const uppercaseState = 'PRESS'; // uppercase version should be invalid
+
+        expect(
+          () => apiService.sendKey(ipAddress, keyValue, uppercaseState),
+          throwsA(isA<ArgumentError>()),
+        );
+      });
+
+      test('throws exception when HTTP request fails', () async {
+        const ipAddress = '192.168.1.100';
+        const keyValue = 'POWER';
+        const state = 'press';
+
+        when(mockClient.post(
+          any,
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).thenAnswer((_) async => http.Response('Internal Server Error', 500));
+
+        expect(
+          () => apiService.sendKey(ipAddress, keyValue, state),
+          throwsA(isA<Exception>()),
+        );
+      });
+
+      test('accepts all valid key values', () async {
+        const ipAddress = '192.168.1.100';
+        const state = 'press';
+        const validKeys = [
+          'ADD_FAVORITE',
+          'AUX_INPUT',
+          'BOOKMARK',
+          'MUTE',
+          'NEXT_TRACK',
+          'PAUSE',
+          'PLAY',
+          'PLAY_PAUSE',
+          'POWER',
+          'PRESET_1',
+          'PRESET_2',
+          'PRESET_3',
+          'PRESET_4',
+          'PRESET_5',
+          'PRESET_6',
+          'PREV_TRACK',
+          'REMOVE_FAVORITE',
+          'REPEAT_ALL',
+          'REPEAT_OFF',
+          'REPEAT_ONE',
+          'SHUFFLE_OFF',
+          'SHUFFLE_ON',
+          'STOP',
+          'THUMBS_DOWN',
+          'THUMBS_UP',
+          'VOLUME_DOWN',
+          'VOLUME_UP',
+        ];
+
+        when(mockClient.post(
+          any,
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).thenAnswer((_) async => http.Response('', 200));
+
+        for (final key in validKeys) {
+          await apiService.sendKey(ipAddress, key, state);
+        }
+
+        verify(mockClient.post(
+          any,
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).called(validKeys.length);
+      });
+
+      test('accepts all valid states', () async {
+        const ipAddress = '192.168.1.100';
+        const keyValue = 'POWER';
+        const validStates = ['press', 'release', 'repeat'];
+
+        when(mockClient.post(
+          any,
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).thenAnswer((_) async => http.Response('', 200));
+
+        for (final state in validStates) {
+          await apiService.sendKey(ipAddress, keyValue, state);
+        }
+
+        verify(mockClient.post(
+          any,
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).called(validStates.length);
+      });
+    });
   });
 }

@@ -757,4 +757,77 @@ class SpeakerApiService {
       }
     }
   }
+
+  Future<void> sendKey(String ipAddress, String keyValue, String state) async {
+    // Valid key values (case sensitive)
+    const validKeys = [
+      'ADD_FAVORITE',
+      'AUX_INPUT',
+      'BOOKMARK',
+      'MUTE',
+      'NEXT_TRACK',
+      'PAUSE',
+      'PLAY',
+      'PLAY_PAUSE',
+      'POWER',
+      'PRESET_1',
+      'PRESET_2',
+      'PRESET_3',
+      'PRESET_4',
+      'PRESET_5',
+      'PRESET_6',
+      'PREV_TRACK',
+      'REMOVE_FAVORITE',
+      'REPEAT_ALL',
+      'REPEAT_OFF',
+      'REPEAT_ONE',
+      'SHUFFLE_OFF',
+      'SHUFFLE_ON',
+      'STOP',
+      'THUMBS_DOWN',
+      'THUMBS_UP',
+      'VOLUME_DOWN',
+      'VOLUME_UP',
+    ];
+
+    // Valid state values (case sensitive)
+    const validStates = ['press', 'release', 'repeat'];
+
+    if (!validKeys.contains(keyValue)) {
+      throw ArgumentError('Invalid key value: $keyValue. Must be one of: ${validKeys.join(", ")}');
+    }
+
+    if (!validStates.contains(state)) {
+      throw ArgumentError('Invalid state: $state. Must be one of: ${validStates.join(", ")}');
+    }
+
+    final url = Uri.parse('http://$ipAddress:8090/key');
+    final client = httpClient ?? http.Client();
+
+    try {
+      final body = '<key state="$state" sender="Gabbo">$keyValue</key>';
+      final response = await client
+          .post(
+            url,
+            headers: {'Content-Type': 'text/xml'},
+            body: body,
+          )
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          'Failed to send key: HTTP ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Failed to send key: $e');
+    } finally {
+      if (httpClient == null) {
+        client.close();
+      }
+    }
+  }
 }
