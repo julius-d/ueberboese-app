@@ -394,5 +394,153 @@ void main() {
       // Should show error dialog
       expect(find.text('Management password not configured'), findsOneWidget);
     });
+
+    testWidgets('displays disconnected chip when speaker status is not loaded',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initializeSpeakers();
+
+      appState.addSpeaker(const Speaker(
+        id: '1',
+        name: 'Test Speaker',
+        emoji: '🔊',
+        ipAddress: '192.168.1.100',
+        type: 'SoundTouch 10',
+        deviceId: 'device-123',
+      ));
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: const MaterialApp(
+            home: Scaffold(body: SpeakerListPage()),
+          ),
+        ),
+      );
+
+      // Wait for initial render
+      await tester.pump();
+
+      // Initially, speakers should show disconnected chip with wifi_off icon
+      expect(find.byIcon(Icons.wifi_off), findsOneWidget);
+    });
+
+    testWidgets('displays disconnected icon for disconnected speakers',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initializeSpeakers();
+
+      appState.addSpeaker(const Speaker(
+        id: '1',
+        name: 'Test Speaker',
+        emoji: '🔊',
+        ipAddress: '192.168.1.100',
+        type: 'SoundTouch 10',
+        deviceId: 'device-123',
+      ));
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: const MaterialApp(
+            home: Scaffold(body: SpeakerListPage()),
+          ),
+        ),
+      );
+
+      await tester.pump();
+
+      // Verify type text is displayed
+      expect(find.text('SoundTouch 10'), findsOneWidget);
+
+      // Verify disconnected icon
+      expect(find.byIcon(Icons.wifi_off), findsOneWidget);
+    });
+
+    testWidgets('applies gray background to disconnected speaker cards',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initializeSpeakers();
+
+      appState.addSpeaker(const Speaker(
+        id: '1',
+        name: 'Test Speaker',
+        emoji: '🔊',
+        ipAddress: '192.168.1.100',
+        type: 'SoundTouch 10',
+        deviceId: 'device-123',
+      ));
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: const MaterialApp(
+            home: Scaffold(body: SpeakerListPage()),
+          ),
+        ),
+      );
+
+      await tester.pump();
+
+      // Find the Container that should have gray background
+      final containerFinder = find.descendant(
+        of: find.byType(Card),
+        matching: find.byType(Container),
+      );
+
+      expect(containerFinder, findsWidgets);
+
+      // Verify at least one container has a gray color (disconnected state)
+      final containers = tester.widgetList<Container>(containerFinder);
+      final hasGrayContainer = containers.any((container) {
+        final color = container.color;
+        return color != null && (color.a * 255.0).round() > 0;
+      });
+
+      expect(hasGrayContainer, isTrue);
+    });
+
+    testWidgets('card uses Stack for layering',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initializeSpeakers();
+
+      appState.addSpeaker(const Speaker(
+        id: '1',
+        name: 'Test Speaker',
+        emoji: '🔊',
+        ipAddress: '192.168.1.100',
+        type: 'SoundTouch 10',
+        deviceId: 'device-123',
+      ));
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: const MaterialApp(
+            home: Scaffold(body: SpeakerListPage()),
+          ),
+        ),
+      );
+
+      await tester.pump();
+
+      // Verify Stack is used in the card structure
+      // Find the card containing the speaker
+      final cardFinder = find.ancestor(
+        of: find.text('Test Speaker'),
+        matching: find.byType(Card),
+      );
+
+      expect(cardFinder, findsOneWidget);
+
+      // Verify this card contains at least one Stack (used for layering background)
+      final stackInCard = find.descendant(
+        of: cardFinder,
+        matching: find.byType(Stack),
+      );
+
+      expect(stackInCard, findsAtLeastNWidgets(1));
+    });
   });
 }

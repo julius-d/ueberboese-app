@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ueberboese_app/main.dart';
 import 'package:ueberboese_app/models/speaker.dart';
+import 'package:ueberboese_app/models/now_playing.dart';
 import 'package:ueberboese_app/widgets/emoji_selector.dart';
 import 'package:ueberboese_app/services/speaker_api_service.dart';
 import 'package:ueberboese_app/services/management_api_service.dart';
@@ -26,6 +28,11 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
   final _speakerApiService = SpeakerApiService();
   final _managementApiService = ManagementApiService();
 
+  // Speaker status tracking
+  final Map<String, NowPlaying?> _speakerNowPlaying = {};
+  final Map<String, bool> _speakerConnectionStatus = {};
+  Timer? _pollingTimer;
+
   @override
   void initState() {
     super.initState();
@@ -40,10 +47,13 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
       parent: _animationController,
       curve: Curves.easeInOut,
     );
+    _loadAllSpeakerStatuses();
+    _startPolling();
   }
 
   @override
   void dispose() {
+    _stopPolling();
     _animationController.dispose();
     super.dispose();
   }
@@ -78,6 +88,48 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
     }
 
     return EmojiSelector.availableEmojis.first;
+  }
+
+  Future<void> _loadSpeakerStatus(Speaker speaker) async {
+    try {
+      final nowPlaying = await _speakerApiService.getNowPlaying(speaker.ipAddress);
+      if (!mounted) return;
+      setState(() {
+        _speakerNowPlaying[speaker.id] = nowPlaying;
+        _speakerConnectionStatus[speaker.id] = true;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _speakerNowPlaying[speaker.id] = null;
+        _speakerConnectionStatus[speaker.id] = false;
+      });
+    }
+  }
+
+  Future<void> _loadAllSpeakerStatuses() async {
+    final appState = context.read<MyAppState>();
+    for (final speaker in appState.speakers) {
+      _loadSpeakerStatus(speaker);
+    }
+  }
+
+  void _startPolling() {
+    _pollingTimer = Timer.periodic(const Duration(seconds: 8), (timer) {
+      _loadAllSpeakerStatuses();
+    });
+  }
+
+  void _stopPolling() {
+    _pollingTimer?.cancel();
+    _pollingTimer = null;
+  }
+
+  String? _getFullArtworkUrl(Speaker speaker, NowPlaying? nowPlaying) {
+    if (nowPlaying?.art == null || nowPlaying!.art!.isEmpty) return null;
+    final art = nowPlaying.art!;
+    if (art.startsWith('http')) return art;
+    return 'http://${speaker.ipAddress}:8090$art';
   }
 
   Future<void> _addAllSpeakersFromAccount() async {
@@ -333,40 +385,105 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
         itemCount: appState.speakers.length,
         itemBuilder: (context, index) {
           final speaker = appState.speakers[index];
+          final nowPlaying = _speakerNowPlaying[speaker.id];
+          final isConnected = _speakerConnectionStatus[speaker.id] ?? false;
+          final isPlaying = nowPlaying?.playStatus == 'PLAY_STATE';
+          final artworkUrl = _getFullArtworkUrl(speaker, nowPlaying);
+          final hasArtwork = artworkUrl != null && artworkUrl.isNotEmpty;
+          final cardTheme = Theme.of(context);
+
           return Card(
             margin: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 8,
             ),
-            child: ListTile(
-              leading: Text(
-                speaker.emoji,
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              title: Text(
-                speaker.name,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              subtitle: Text(
-                speaker.type,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
-              ),
-              trailing: Icon(
-                Icons.chevron_right,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (context) => SpeakerDetailPage(speaker: speaker),
+            clipBehavior: Clip.antiAlias,
+            child: Stack(
+              children: [
+                // Background image with overlay (if playing and has art)
+                if (isPlaying && hasArtwork)
+                  Positioned.fill(
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        Image.network(
+                          artworkUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => const SizedBox(),
+                          frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+                            // Only show the image with overlay if it loaded successfully
+                            if (frame == null) {
+                              return const SizedBox();
+                            }
+                            return Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                child,
+                                Container(
+                                  color: cardTheme.colorScheme.scrim.withValues(alpha: 0.6),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                );
-              },
+                // Actual content
+                Container(
+                  color: !isConnected ? cardTheme.colorScheme.surfaceContainerHighest : null,
+                  child: ListTile(
+                    leading: Text(
+                      speaker.emoji,
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                    title: Text(
+                      speaker.name,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: isPlaying && hasArtwork ? cardTheme.colorScheme.surface : null,
+                      ),
+                    ),
+                    subtitle: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            speaker.type,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: isPlaying && hasArtwork
+                                  ? cardTheme.colorScheme.surface.withValues(alpha: 0.7)
+                                  : Theme.of(context).colorScheme.secondary,
+                            ),
+                          ),
+                        ),
+                        if (!isConnected) ...[
+                          const SizedBox(width: 8),
+                          Icon(
+                            Icons.wifi_off,
+                            size: 16,
+                            color: cardTheme.colorScheme.error,
+                          ),
+                        ],
+                      ],
+                    ),
+                    trailing: Icon(
+                      Icons.chevron_right,
+                      color: isPlaying && hasArtwork
+                          ? cardTheme.colorScheme.surface
+                          : Theme.of(context).colorScheme.primary,
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (context) => SpeakerDetailPage(speaker: speaker),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
           );
         },
