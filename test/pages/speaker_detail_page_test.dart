@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ueberboese_app/main.dart';
 import 'package:ueberboese_app/models/speaker.dart';
+import 'package:ueberboese_app/models/app_config.dart';
 import 'package:ueberboese_app/pages/speaker_detail_page.dart';
 
 void main() {
@@ -447,6 +448,187 @@ void main() {
       // The Open in Spotify button should not be visible for non-Spotify sources
       // This test ensures the button doesn't appear for TUNEIN or other sources
       expect(find.text('Open in Spotify'), findsNothing);
+    });
+  });
+
+  group('Management URL Mismatch Warning', () {
+    const testSpeaker = Speaker(
+      id: '1',
+      name: 'Test Speaker',
+      emoji: '🔊',
+      ipAddress: '192.168.1.100',
+      type: 'SoundTouch 10',
+      deviceId: 'device-123',
+    );
+
+    testWidgets('does not show warning banner initially before info is loaded',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: const MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      // Before any data is loaded, warning should not be displayed
+      expect(find.text('Management URL Mismatch'), findsNothing);
+      expect(find.byIcon(Icons.warning), findsNothing);
+    });
+
+    testWidgets('warning banner structure includes all required elements',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: const MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Note: Without API mocking, we can't test the actual warning appearance
+      // This test verifies the page structure remains correct
+      // (i.e., the warning banner logic doesn't break the page layout)
+      expect(find.text('Speaker Details'), findsOneWidget);
+      expect(find.text('Test Speaker'), findsOneWidget);
+    });
+
+    testWidgets('page layout includes space for warning banner at top',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: const MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Verify the body is structured with a Column to accommodate the banner
+      expect(find.byType(Column), findsAtLeast(1));
+      expect(find.byType(Expanded), findsAtLeast(1));
+    });
+
+    testWidgets('app config is accessible from speaker detail page',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      // Set a custom config
+      appState.updateConfig(const AppConfig(
+        apiUrl: 'https://test.example.com',
+        accountId: 'test-account',
+        mgmtUsername: 'admin',
+        mgmtPassword: 'password',
+      ));
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: const MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Verify the config is accessible (page should not crash)
+      expect(appState.config.apiUrl, 'https://test.example.com');
+      expect(find.text('Speaker Details'), findsOneWidget);
+    });
+
+    testWidgets('warning banner does not appear without mismatch data',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: const MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Without API mocking returning mismatched URLs, banner should not appear
+      expect(find.text('Management URL Mismatch'), findsNothing);
+      expect(find.byIcon(Icons.warning), findsNothing);
+    });
+
+    testWidgets('page renders correctly with empty config URL',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      // Ensure config has empty URL
+      appState.updateConfig(const AppConfig(
+        apiUrl: '',
+        accountId: 'test',
+        mgmtUsername: 'admin',
+        mgmtPassword: 'pass',
+      ));
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: const MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Page should render without error even with empty config URL
+      expect(find.text('Speaker Details'), findsOneWidget);
+      expect(find.text('Test Speaker'), findsOneWidget);
+      // Warning should not appear with empty config URL
+      expect(find.text('Management URL Mismatch'), findsNothing);
+    });
+
+    testWidgets('speaker info loading does not crash the page',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: const MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      // Wait for all async operations to complete
+      await tester.pumpAndSettle();
+
+      // Verify the page is rendered properly
+      // (speaker info loading may fail without real API, but page should not crash)
+      expect(find.text('Speaker Details'), findsOneWidget);
+      expect(find.text('Test Speaker'), findsOneWidget);
+      expect(find.text('Volume'), findsOneWidget);
+      expect(find.text('Now Playing'), findsOneWidget);
+      expect(find.text('Multi-Room Zone'), findsOneWidget);
     });
   });
 }

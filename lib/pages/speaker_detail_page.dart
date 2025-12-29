@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:ueberboese_app/models/speaker.dart';
+import 'package:ueberboese_app/models/speaker_info.dart';
 import 'package:ueberboese_app/models/volume.dart';
 import 'package:ueberboese_app/models/now_playing.dart';
 import 'package:ueberboese_app/models/zone.dart';
@@ -36,6 +37,10 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
   String? _nowPlayingErrorMessage;
   String? _zoneErrorMessage;
 
+  // Speaker info state
+  SpeakerInfo? _speakerInfo;
+  bool _hasMargeUrlMismatch = false;
+
   // Zone member volume state
   final Map<String, Volume?> _zoneMemberVolumes = {};
   final Map<String, bool> _loadingVolumes = {};
@@ -47,6 +52,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
     _loadVolume();
     _loadNowPlaying();
     _loadZone();
+    _loadSpeakerInfo();
   }
 
   Future<void> _loadVolume() async {
@@ -117,6 +123,36 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
         _zoneErrorMessage = 'Failed to load zone: ${e.toString()}';
         _isLoadingZone = false;
       });
+    }
+  }
+
+  Future<void> _loadSpeakerInfo() async {
+    try {
+      final speakerInfo = await _apiService.fetchSpeakerInfo(widget.speaker.ipAddress);
+      if (!mounted) return;
+
+      // Get configured API URL from app settings
+      final appState = context.read<MyAppState>();
+      final configuredApiUrl = appState.config.apiUrl;
+
+      // Normalize URLs for comparison (remove trailing slashes, convert to lowercase)
+      final normalizedMargeUrl = speakerInfo.margeUrl?.trim().toLowerCase().replaceAll(RegExp(r'/+$'), '');
+      final normalizedConfigUrl = configuredApiUrl.trim().toLowerCase().replaceAll(RegExp(r'/+$'), '');
+
+      // Check for mismatch: both must be non-empty and different
+      final hasMismatch = normalizedMargeUrl != null &&
+                          normalizedMargeUrl.isNotEmpty &&
+                          normalizedConfigUrl.isNotEmpty &&
+                          normalizedMargeUrl != normalizedConfigUrl;
+
+      setState(() {
+        _speakerInfo = speakerInfo;
+        _hasMargeUrlMismatch = hasMismatch;
+      });
+    } catch (e) {
+      // Silently ignore errors - if we can't fetch speaker info,
+      // we simply won't show a warning banner
+      if (!mounted) return;
     }
   }
 
@@ -577,6 +613,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final appState = context.read<MyAppState>();
 
     return Scaffold(
       appBar: AppBar(
@@ -633,12 +670,53 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+      body: Column(
+        children: [
+          // Warning banner (only shown when there's a mismatch)
+          if (_hasMargeUrlMismatch && _speakerInfo?.margeUrl != null)
+            Container(
+              width: double.infinity,
+              color: theme.colorScheme.errorContainer,
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.warning,
+                    color: theme.colorScheme.onErrorContainer,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Management URL Mismatch',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            color: theme.colorScheme.onErrorContainer,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Speaker: ${_speakerInfo!.margeUrl}\nSettings: ${appState.config.apiUrl}',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onErrorContainer,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          // Existing content
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
             Center(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -1291,9 +1369,12 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                 ),
               ),
             ),
-          ],
-        ),
-        ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
