@@ -115,7 +115,9 @@ void main() {
       await tester.pump(const Duration(seconds: 1)); // Allow animation
 
       expect(find.byType(SpeakerDetailPage), findsOneWidget);
-      expect(find.text('Speaker Details'), findsOneWidget);
+      // AppBar shows speaker name and emoji, not "Speaker Details"
+      expect(find.text('Test Speaker'), findsAtLeast(1));
+      expect(find.text('🔊'), findsAtLeast(1));
     });
 
     testWidgets('displays speaker emoji with correct size',

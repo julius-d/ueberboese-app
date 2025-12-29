@@ -617,7 +617,14 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Speaker Details'),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(widget.speaker.emoji),
+            const SizedBox(width: 8),
+            Text(widget.speaker.name),
+          ],
+        ),
         actions: [
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert),

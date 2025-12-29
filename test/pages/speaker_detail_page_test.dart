@@ -35,9 +35,9 @@ void main() {
         ),
       );
 
-      expect(find.text('Speaker Details'), findsOneWidget);
-      expect(find.text('Test Speaker'), findsOneWidget);
-      expect(find.text('🔊'), findsOneWidget);
+      // AppBar should show emoji and name
+      expect(find.text('Test Speaker'), findsAtLeast(1));
+      expect(find.text('🔊'), findsAtLeast(1));
     });
 
     testWidgets('displays three-dot menu button', (WidgetTester tester) async {
@@ -499,8 +499,8 @@ void main() {
       // Note: Without API mocking, we can't test the actual warning appearance
       // This test verifies the page structure remains correct
       // (i.e., the warning banner logic doesn't break the page layout)
-      expect(find.text('Speaker Details'), findsOneWidget);
-      expect(find.text('Test Speaker'), findsOneWidget);
+      expect(find.text('Test Speaker'), findsAtLeast(1));
+      expect(find.text('🔊'), findsAtLeast(1));
     });
 
     testWidgets('page layout includes space for warning banner at top',
@@ -550,7 +550,7 @@ void main() {
 
       // Verify the config is accessible (page should not crash)
       expect(appState.config.apiUrl, 'https://test.example.com');
-      expect(find.text('Speaker Details'), findsOneWidget);
+      expect(find.text('Test Speaker'), findsAtLeast(1));
     });
 
     testWidgets('warning banner does not appear without mismatch data',
@@ -599,8 +599,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // Page should render without error even with empty config URL
-      expect(find.text('Speaker Details'), findsOneWidget);
-      expect(find.text('Test Speaker'), findsOneWidget);
+      expect(find.text('Test Speaker'), findsAtLeast(1));
+      expect(find.text('🔊'), findsAtLeast(1));
       // Warning should not appear with empty config URL
       expect(find.text('Management URL Mismatch'), findsNothing);
     });
@@ -624,8 +624,8 @@ void main() {
 
       // Verify the page is rendered properly
       // (speaker info loading may fail without real API, but page should not crash)
-      expect(find.text('Speaker Details'), findsOneWidget);
-      expect(find.text('Test Speaker'), findsOneWidget);
+      expect(find.text('Test Speaker'), findsAtLeast(1));
+      expect(find.text('🔊'), findsAtLeast(1));
       expect(find.text('Volume'), findsOneWidget);
       expect(find.text('Now Playing'), findsOneWidget);
       expect(find.text('Multi-Room Zone'), findsOneWidget);
