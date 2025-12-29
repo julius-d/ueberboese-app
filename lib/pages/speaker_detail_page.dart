@@ -1230,49 +1230,58 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                               ),
                             ],
                           ),
-                          // Open in Spotify button
-                          if (_nowPlaying!.source == 'SPOTIFY' &&
-                              _nowPlaying!.location != null &&
-                              _decodeSpotifyUri(_nowPlaying!.location) != null) ...[
+                          // Action buttons (Play/Pause and Open in Spotify)
+                          if ((_nowPlaying!.playStatus == 'PLAY_STATE' ||
+                                  _nowPlaying!.playStatus == 'PAUSE_STATE') ||
+                              (_nowPlaying!.source == 'SPOTIFY' &&
+                                  _nowPlaying!.location != null &&
+                                  _decodeSpotifyUri(_nowPlaying!.location) != null)) ...[
                             const SizedBox(height: 16),
                             Center(
-                              child: OutlinedButton.icon(
-                                onPressed: _openInSpotify,
-                                icon: const Icon(Icons.open_in_new),
-                                label: const Text('Open in Spotify'),
-                                style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                    vertical: 16,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                          // Play/Pause button
-                          if (_nowPlaying!.playStatus != null &&
-                              (_nowPlaying!.playStatus == 'PLAY_STATE' ||
-                                  _nowPlaying!.playStatus == 'PAUSE_STATE')) ...[
-                            const SizedBox(height: 16),
-                            Center(
-                              child: FilledButton.icon(
-                                onPressed: _isLoadingNowPlaying ? null : _togglePlayPause,
-                                icon: Icon(
-                                  _nowPlaying!.playStatus == 'PLAY_STATE'
-                                      ? Icons.pause
-                                      : Icons.play_arrow,
-                                ),
-                                label: Text(
-                                  _nowPlaying!.playStatus == 'PLAY_STATE'
-                                      ? 'Pause'
-                                      : 'Play',
-                                ),
-                                style: FilledButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 32,
-                                    vertical: 16,
-                                  ),
-                                ),
+                              child: Wrap(
+                                spacing: 12,
+                                runSpacing: 12,
+                                alignment: WrapAlignment.center,
+                                children: [
+                                  // Play/Pause button
+                                  if (_nowPlaying!.playStatus != null &&
+                                      (_nowPlaying!.playStatus == 'PLAY_STATE' ||
+                                          _nowPlaying!.playStatus == 'PAUSE_STATE'))
+                                    FilledButton.icon(
+                                      onPressed: _isLoadingNowPlaying ? null : _togglePlayPause,
+                                      icon: Icon(
+                                        _nowPlaying!.playStatus == 'PLAY_STATE'
+                                            ? Icons.pause
+                                            : Icons.play_arrow,
+                                      ),
+                                      label: Text(
+                                        _nowPlaying!.playStatus == 'PLAY_STATE'
+                                            ? 'Pause'
+                                            : 'Play',
+                                      ),
+                                      style: FilledButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 32,
+                                          vertical: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  // Open in Spotify button
+                                  if (_nowPlaying!.source == 'SPOTIFY' &&
+                                      _nowPlaying!.location != null &&
+                                      _decodeSpotifyUri(_nowPlaying!.location) != null)
+                                    OutlinedButton.icon(
+                                      onPressed: _openInSpotify,
+                                      icon: const Icon(Icons.open_in_new),
+                                      label: const Text('Open in Spotify'),
+                                      style: OutlinedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 24,
+                                          vertical: 16,
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
                           ],
