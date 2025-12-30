@@ -1477,20 +1477,9 @@ class _ZoneDialogState extends State<_ZoneDialog> {
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                speaker.name,
-                                style: theme.textTheme.bodyLarge,
-                              ),
-                              Text(
-                                speaker.ipAddress,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
+                          child: Text(
+                            speaker.name,
+                            style: theme.textTheme.bodyLarge,
                           ),
                         ),
                         if (isInZone)
