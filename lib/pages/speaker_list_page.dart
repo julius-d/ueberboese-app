@@ -452,7 +452,7 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
                             speaker.type,
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: isPlaying && hasArtwork
-                                  ? cardTheme.colorScheme.surface.withValues(alpha: 0.7)
+                                  ? cardTheme.colorScheme.surface
                                   : Theme.of(context).colorScheme.secondary,
                             ),
                           ),
