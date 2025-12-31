@@ -738,7 +738,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.all(24.0),
+                padding: const EdgeInsets.fromLTRB(24.0, 24.0, 24.0, 24.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -1394,6 +1394,8 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                 ),
               ),
             ),
+                    // Safe area padding for modern Android gesture navigation
+                    const SizedBox(height: 80),
                   ],
                 ),
               ),

@@ -632,6 +632,41 @@ void main() {
       expect(find.text('Now Playing'), findsOneWidget);
       expect(find.text('Multi-Room Zone'), findsOneWidget);
     });
+
+    testWidgets('includes safe space at bottom for Android gesture navigation',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: const MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Verify the scrollable content includes proper bottom padding
+      final singleChildScrollView = tester.widget<SingleChildScrollView>(
+        find.byType(SingleChildScrollView).first,
+      );
+      final padding = singleChildScrollView.child as Padding;
+      expect(padding.padding, isNotNull);
+
+      // Verify a SizedBox with safe space height exists at the bottom
+      final sizedBoxes = find.byType(SizedBox);
+      expect(sizedBoxes, findsAtLeast(1));
+
+      // Check that at least one SizedBox has the expected height for safe space (80 pixels)
+      final hasSafeSpace = tester
+          .widgetList<SizedBox>(sizedBoxes)
+          .any((box) => box.height == 80);
+      expect(hasSafeSpace, isTrue,
+          reason: 'Should have a SizedBox with height 80 for safe space');
+    });
   });
 
 }
