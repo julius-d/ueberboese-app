@@ -27,6 +27,7 @@ class MyApp extends StatelessWidget {
       value: appState,
       child: MaterialApp(
         title: 'Überböse App',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),

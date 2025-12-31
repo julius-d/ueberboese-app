@@ -14,6 +14,14 @@ The app has two main purposes:
    - **Volume Control**: Adjust volume levels for individual speakers
    - **Now Playing**: See what's currently playing on your speakers
 
+## Screenshots
+
+<p align="center">
+  <img src="docs/img/Screenshot_1767190198-left.png" width="30%" />
+  <img src="docs/img/Screenshot_1767190031-left.png" width="30%" />
+  <img src="docs/img/Screenshot_1767190163-left.png" width="30%" />
+</p>
+
 ## Installation
 
 ### Via Obtainium (Recommended)
