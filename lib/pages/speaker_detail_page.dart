@@ -11,10 +11,10 @@ import 'package:ueberboese_app/services/speaker_api_service.dart';
 import 'package:ueberboese_app/main.dart';
 import 'package:ueberboese_app/pages/edit_speaker_page.dart';
 import 'package:ueberboese_app/pages/remote_control_page.dart';
+import 'package:ueberboese_app/pages/album_art_viewer_page.dart';
 
 class SpeakerDetailPage extends StatefulWidget {
   final Speaker speaker;
-
 
 
   const SpeakerDetailPage({
@@ -607,6 +607,23 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
             child: const Text('OK'),
           ),
         ],
+      ),
+    );
+  }
+
+  void _openAlbumArtFullScreen() {
+    if (_nowPlaying?.art == null) return;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (context) => AlbumArtViewerPage(
+          imageUrl: _nowPlaying!.art!,
+          heroTag: 'album-art-${widget.speaker.id}',
+          track: _nowPlaying!.track,
+          artist: _nowPlaying!.artist,
+          album: _nowPlaying!.album,
+        ),
       ),
     );
   }
@@ -1252,28 +1269,34 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                             children: [
                               if (_nowPlaying!.art != null &&
                                   _nowPlaying!.artImageStatus == 'IMAGE_PRESENT')
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    _nowPlaying!.art!,
-                                    width: 100,
-                                    height: 100,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Container(
+                                GestureDetector(
+                                  onTap: _openAlbumArtFullScreen,
+                                  child: Hero(
+                                    tag: 'album-art-${widget.speaker.id}',
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.network(
+                                        _nowPlaying!.art!,
                                         width: 100,
                                         height: 100,
-                                        decoration: BoxDecoration(
-                                          color: theme.colorScheme.surfaceContainerHighest,
-                                          borderRadius: BorderRadius.circular(8),
-                                        ),
-                                        child: Icon(
-                                          Icons.music_note,
-                                          size: 48,
-                                          color: theme.colorScheme.onSurfaceVariant,
-                                        ),
-                                      );
-                                    },
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (context, error, stackTrace) {
+                                          return Container(
+                                            width: 100,
+                                            height: 100,
+                                            decoration: BoxDecoration(
+                                              color: theme.colorScheme.surfaceContainerHighest,
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: Icon(
+                                              Icons.music_note,
+                                              size: 48,
+                                              color: theme.colorScheme.onSurfaceVariant,
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
                                   ),
                                 ),
                               const SizedBox(width: 16),
