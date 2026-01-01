@@ -1135,5 +1135,257 @@ void main() {
         expect(dropdown.initialValue, isNull);
       });
     });
+
+    group('URL to URI Conversion', () {
+      testWidgets('converts Spotify URL to URI automatically on text change', (WidgetTester tester) async {
+        const spotifyUri = 'spotify:playlist:test123';
+        final base64Encoded = base64Encode(utf8.encode(spotifyUri));
+        final location = '/playback/container/$base64Encoded';
+
+        final testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: location,
+          type: 'playlist',
+          isPresetable: true,
+        );
+
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => []);
+
+        when(mockApiService.getSpotifyEntity(any, any))
+            .thenAnswer((_) async => const SpotifyEntity(name: 'Test', imageUrl: null));
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Enter a Spotify URL
+        await tester.enterText(
+          find.byType(TextField),
+          'https://open.spotify.com/playlist/23SMdyOHA6KkzHoPOJ5KQ9',
+        );
+
+        await tester.pump();
+
+        // Should automatically convert to URI
+        final textField = tester.widget<TextField>(find.byType(TextField));
+        expect(textField.controller?.text, equals('spotify:playlist:23SMdyOHA6KkzHoPOJ5KQ9'));
+      });
+
+      testWidgets('handles URL with query parameters', (WidgetTester tester) async {
+        const spotifyUri = 'spotify:playlist:test123';
+        final base64Encoded = base64Encode(utf8.encode(spotifyUri));
+        final location = '/playback/container/$base64Encoded';
+
+        final testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: location,
+          type: 'playlist',
+          isPresetable: true,
+        );
+
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => []);
+
+        when(mockApiService.getSpotifyEntity(any, any))
+            .thenAnswer((_) async => const SpotifyEntity(name: 'Test', imageUrl: null));
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Enter a Spotify URL with query parameters
+        await tester.enterText(
+          find.byType(TextField),
+          'https://open.spotify.com/playlist/23SMdyOHA6KkzHoPOJ5KQ9?si=abc123xyz',
+        );
+
+        await tester.pump();
+
+        // Should convert to URI without query params
+        final textField = tester.widget<TextField>(find.byType(TextField));
+        expect(textField.controller?.text, equals('spotify:playlist:23SMdyOHA6KkzHoPOJ5KQ9'));
+      });
+
+      testWidgets('keeps URI format unchanged', (WidgetTester tester) async {
+        const spotifyUri = 'spotify:playlist:test123';
+        final base64Encoded = base64Encode(utf8.encode(spotifyUri));
+        final location = '/playback/container/$base64Encoded';
+
+        final testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: location,
+          type: 'playlist',
+          isPresetable: true,
+        );
+
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => []);
+
+        when(mockApiService.getSpotifyEntity(any, any))
+            .thenAnswer((_) async => const SpotifyEntity(name: 'Test', imageUrl: null));
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Enter a Spotify URI
+        await tester.enterText(
+          find.byType(TextField),
+          'spotify:playlist:newPlaylist123',
+        );
+
+        await tester.pump();
+
+        // Should stay as URI
+        final textField = tester.widget<TextField>(find.byType(TextField));
+        expect(textField.controller?.text, equals('spotify:playlist:newPlaylist123'));
+      });
+
+      testWidgets('supports different content types', (WidgetTester tester) async {
+        const spotifyUri = 'spotify:playlist:test123';
+        final base64Encoded = base64Encode(utf8.encode(spotifyUri));
+        final location = '/playback/container/$base64Encoded';
+
+        final testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: location,
+          type: 'playlist',
+          isPresetable: true,
+        );
+
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => []);
+
+        when(mockApiService.getSpotifyEntity(any, any))
+            .thenAnswer((_) async => const SpotifyEntity(name: 'Test', imageUrl: null));
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Test track
+        await tester.enterText(
+          find.byType(TextField),
+          'https://open.spotify.com/track/6rqhFgbbKwnb9MLmUQDhG6',
+        );
+        await tester.pump();
+        var textField = tester.widget<TextField>(find.byType(TextField));
+        expect(textField.controller?.text, equals('spotify:track:6rqhFgbbKwnb9MLmUQDhG6'));
+
+        // Test album
+        await tester.enterText(
+          find.byType(TextField),
+          'https://open.spotify.com/album/1DFixLWuPkv3KT3TnV35m3',
+        );
+        await tester.pump();
+        textField = tester.widget<TextField>(find.byType(TextField));
+        expect(textField.controller?.text, equals('spotify:album:1DFixLWuPkv3KT3TnV35m3'));
+
+        // Test artist
+        await tester.enterText(
+          find.byType(TextField),
+          'https://open.spotify.com/artist/1vCWHaC5f2uS3yhpwWbIA6',
+        );
+        await tester.pump();
+        textField = tester.widget<TextField>(find.byType(TextField));
+        expect(textField.controller?.text, equals('spotify:artist:1vCWHaC5f2uS3yhpwWbIA6'));
+
+        // Test show
+        await tester.enterText(
+          find.byType(TextField),
+          'https://open.spotify.com/show/6ups0LMt1G8n81XLlkbsPo',
+        );
+        await tester.pump();
+        textField = tester.widget<TextField>(find.byType(TextField));
+        expect(textField.controller?.text, equals('spotify:show:6ups0LMt1G8n81XLlkbsPo'));
+
+        // Test episode
+        await tester.enterText(
+          find.byType(TextField),
+          'https://open.spotify.com/episode/512ojhOuo1ktJprKbVcKyQ',
+        );
+        await tester.pump();
+        textField = tester.widget<TextField>(find.byType(TextField));
+        expect(textField.controller?.text, equals('spotify:episode:512ojhOuo1ktJprKbVcKyQ'));
+      });
+
+      testWidgets('handles invalid URLs gracefully', (WidgetTester tester) async {
+        const spotifyUri = 'spotify:playlist:test123';
+        final base64Encoded = base64Encode(utf8.encode(spotifyUri));
+        final location = '/playback/container/$base64Encoded';
+
+        final testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: location,
+          type: 'playlist',
+          isPresetable: true,
+        );
+
+        when(mockApiService.listSpotifyAccounts(any))
+            .thenAnswer((_) async => []);
+
+        when(mockApiService.getSpotifyEntity(any, any))
+            .thenAnswer((_) async => const SpotifyEntity(name: 'Test', imageUrl: null));
+
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            EditSpotifyPresetPage(preset: testPreset, apiService: mockApiService),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Enter an invalid URL (not a Spotify URL)
+        await tester.enterText(
+          find.byType(TextField),
+          'https://example.com/playlist/123',
+        );
+
+        await tester.pump();
+
+        // Should remain unchanged (no conversion)
+        final textField = tester.widget<TextField>(find.byType(TextField));
+        expect(textField.controller?.text, equals('https://example.com/playlist/123'));
+
+        // Enter an invalid Spotify URL (missing ID)
+        await tester.enterText(
+          find.byType(TextField),
+          'https://open.spotify.com/playlist/',
+        );
+
+        await tester.pump();
+
+        // Should remain unchanged
+        final textField2 = tester.widget<TextField>(find.byType(TextField));
+        expect(textField2.controller?.text, equals('https://open.spotify.com/playlist/'));
+      });
+    });
   });
 }

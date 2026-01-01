@@ -112,6 +112,21 @@ class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
     // Cancel existing timer
     _debounceTimer?.cancel();
 
+    // Try to convert URL to URI if needed
+    final currentText = _spotifyUriController.text.trim();
+    if (currentText.isNotEmpty) {
+      final convertedUri = _convertSpotifyUrlToUri(currentText);
+      if (convertedUri != null && convertedUri != currentText) {
+        // Update the text field without triggering this listener again
+        _spotifyUriController.removeListener(_onUriChanged);
+        _spotifyUriController.text = convertedUri;
+        _spotifyUriController.selection = TextSelection.fromPosition(
+          TextPosition(offset: convertedUri.length),
+        );
+        _spotifyUriController.addListener(_onUriChanged);
+      }
+    }
+
     // Set a new timer to fetch entity info after 500ms of no changes
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
       _fetchEntityInfo();
@@ -232,6 +247,43 @@ class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
     final id = match.group(2);
 
     return 'https://open.spotify.com/$type/$id';
+  }
+
+  String? _convertSpotifyUrlToUri(String input) {
+    final trimmed = input.trim();
+
+    // If already a URI, return as-is
+    if (trimmed.startsWith('spotify:')) {
+      return trimmed;
+    }
+
+    // Try to parse as Spotify URL
+    try {
+      final uri = Uri.parse(trimmed);
+
+      // Check if it's a Spotify URL
+      if (uri.host != 'open.spotify.com') {
+        return null;
+      }
+
+      // Extract path segments: /type/id or /type/id?params
+      final segments = uri.pathSegments;
+      if (segments.length < 2) {
+        return null;
+      }
+
+      final type = segments[0]; // playlist, track, album, artist, show, episode
+      final id = segments[1];
+
+      // Check that ID is not empty
+      if (id.isEmpty) {
+        return null;
+      }
+
+      return 'spotify:$type:$id';
+    } catch (e) {
+      return null;
+    }
   }
 
   Future<void> _openInSpotify() async {
@@ -555,7 +607,7 @@ class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
               decoration: const InputDecoration(
                 labelText: 'Spotify URI',
                 border: OutlineInputBorder(),
-                helperText: 'e.g., spotify:playlist:23SMdyOHA6KkzHoPOJ5KQ9',
+                helperText: 'e.g., spotify:playlist:... or https://open.spotify.com/playlist/...',
               ),
             ),
             const SizedBox(height: 16),
