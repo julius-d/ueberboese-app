@@ -70,7 +70,7 @@ void main() {
       expect(speakerInfo.name, 'Küche');
       expect(speakerInfo.type, 'SoundTouch 10');
       expect(speakerInfo.margeUrl, 'https://ueberboese.familie-dannert.de');
-      expect(speakerInfo.accountId, '587A628A4073');
+      expect(speakerInfo.accountId, '6921073');
     });
 
     test('fetchSpeakerInfo handles Bose domain margeURL', () async {
@@ -94,21 +94,22 @@ void main() {
       expect(speakerInfo.name, 'Bedroom');
       expect(speakerInfo.type, 'SoundTouch 20');
       expect(speakerInfo.margeUrl, 'https://worldwide.bose.com/updates/soundtouch');
-      expect(speakerInfo.accountId, '123456789ABC');
+      expect(speakerInfo.accountId, isNull);
     });
 
-    test('fetchSpeakerInfo extracts macAddress from correct networkInfo', () async {
+    test('fetchSpeakerInfo extracts accountId from margeAccountUUID', () async {
       const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
 <info deviceID="TEST123">
   <name>Test Speaker</name>
   <type>SoundTouch 30</type>
+  <margeAccountUUID>ACCOUNT789</margeAccountUUID>
   <margeURL>https://custom.domain.com</margeURL>
   <networkInfo type="SMSC">
     <macAddress>WRONG123</macAddress>
     <ipAddress>192.168.1.1</ipAddress>
   </networkInfo>
   <networkInfo type="SCM">
-    <macAddress>CORRECT456</macAddress>
+    <macAddress>DIFFERENT456</macAddress>
     <ipAddress>192.168.1.2</ipAddress>
   </networkInfo>
 </info>''';
@@ -119,7 +120,28 @@ void main() {
 
       final speakerInfo = await apiService.fetchSpeakerInfo('192.168.1.2');
 
-      expect(speakerInfo.accountId, 'CORRECT456');
+      expect(speakerInfo.accountId, 'ACCOUNT789');
+    });
+
+    test('fetchSpeakerInfo returns null accountId when margeAccountUUID is missing', () async {
+      const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
+<info deviceID="TEST456">
+  <name>Speaker Without Account</name>
+  <type>SoundTouch 20</type>
+  <margeURL>https://example.com</margeURL>
+  <networkInfo type="SCM">
+    <macAddress>ABCD1234</macAddress>
+    <ipAddress>192.168.1.5</ipAddress>
+  </networkInfo>
+</info>''';
+
+      when(mockClient.get(any)).thenAnswer(
+        (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+      );
+
+      final speakerInfo = await apiService.fetchSpeakerInfo('192.168.1.5');
+
+      expect(speakerInfo.accountId, isNull);
     });
 
     test('fetchSpeakerInfo throws exception when name is missing', () async {

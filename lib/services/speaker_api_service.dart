@@ -52,17 +52,11 @@ class SpeakerApiService {
         margeUrl = margeUrlElements.first.innerText;
       }
 
-      // Find macAddress from networkInfo with type="SCM" (optional)
+      // Find margeAccountUUID element (optional)
       String? accountId;
-      final networkInfoElements = document.findAllElements('networkInfo');
-      for (final networkInfo in networkInfoElements) {
-        if (networkInfo.getAttribute('type') == 'SCM') {
-          final macAddressElements = networkInfo.findElements('macAddress');
-          if (macAddressElements.isNotEmpty) {
-            accountId = macAddressElements.first.innerText;
-            break;
-          }
-        }
+      final margeAccountUUIDElements = document.findAllElements('margeAccountUUID');
+      if (margeAccountUUIDElements.isNotEmpty) {
+        accountId = margeAccountUUIDElements.first.innerText;
       }
 
       return SpeakerInfo(
