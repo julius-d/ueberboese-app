@@ -1,0 +1,14 @@
+Überböse App is the companion app for the Überböse API server (https://github.com/julius-d/ueberboese-api).
+
+The app has two main purposes:
+
+1. Set up Spotify authentication for your self-hosted Überböse API server.
+Note: For this to work, you need a Spotify account and the self-hosted Überböse API.
+
+2. Control your Bose SoundTouch speakers directly via the SoundTouch WebServices API that is provided by each speaker.
+Note: For this to work, no Spotify account is needed.
+Features:
+- Multi-Room Audio: Control and view speaker zones for synchronized playback
+- Volume Control: Adjust volume levels for individual speakers
+- Now Playing: See what's currently playing on your speakers
+- Preset Management: Configure and manage Spotify presets on your speakers
