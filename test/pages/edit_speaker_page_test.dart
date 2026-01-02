@@ -49,7 +49,7 @@ void main() {
       expect(find.text('🔊'), findsOneWidget);
     });
 
-    testWidgets('displays read-only speaker name', (WidgetTester tester) async {
+    testWidgets('displays editable speaker name', (WidgetTester tester) async {
       await tester.pumpWidget(
         ChangeNotifierProvider(
           create: (_) => MyAppState(),
@@ -60,7 +60,9 @@ void main() {
       );
 
       expect(find.text('Speaker Name'), findsOneWidget);
-      expect(find.text('Test Speaker'), findsOneWidget);
+      // Check that it's a TextField with the correct initial value
+      final textField = tester.widget<TextField>(find.byType(TextField));
+      expect(textField.controller?.text, 'Test Speaker');
     });
 
     testWidgets('displays read-only speaker type', (WidgetTester tester) async {
@@ -291,5 +293,81 @@ void main() {
       expect(find.text('Edit Speaker'), findsNothing);
       expect(find.text('Open Edit'), findsOneWidget);
     });
+
+    testWidgets('allows editing speaker name', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        ChangeNotifierProvider(
+          create: (_) => MyAppState(),
+          child: MaterialApp(
+            home: EditSpeakerPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      // Find the TextField and change the text
+      final textFieldFinder = find.byType(TextField);
+      await tester.enterText(textFieldFinder, 'New Speaker Name');
+      await tester.pumpAndSettle();
+
+      // Verify the text was changed
+      final textField = tester.widget<TextField>(textFieldFinder);
+      expect(textField.controller?.text, 'New Speaker Name');
+    });
+
+    testWidgets('validates name is not empty', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        ChangeNotifierProvider(
+          create: (_) => MyAppState(),
+          child: MaterialApp(
+            home: EditSpeakerPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      // Clear the name field
+      final textFieldFinder = find.byType(TextField);
+      await tester.enterText(textFieldFinder, '');
+      await tester.pumpAndSettle();
+
+      // Try to save
+      await tester.tap(find.text('Save Changes'));
+      await tester.pumpAndSettle();
+
+      // Should show a snackbar with error message
+      expect(find.text('Speaker name cannot be empty'), findsOneWidget);
+
+      // Should not navigate back
+      expect(find.text('Edit Speaker'), findsOneWidget);
+    });
+
+    testWidgets('updates emoji without API call', (WidgetTester tester) async {
+      final appState = MyAppState();
+      appState.addSpeaker(testSpeaker);
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: MaterialApp(
+            home: EditSpeakerPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      // Change emoji (no name change, so no API call needed)
+      await tester.tap(find.text('Tap to change emoji'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('🎵').last);
+      await tester.pumpAndSettle();
+
+      // Save
+      await tester.tap(find.text('Save Changes'));
+      await tester.pumpAndSettle();
+
+      // Verify the speaker was updated
+      final updatedSpeaker = appState.speakers.firstWhere((s) => s.id == testSpeaker.id);
+      expect(updatedSpeaker.name, 'Test Speaker'); // Name unchanged
+      expect(updatedSpeaker.emoji, '🎵'); // Emoji changed
+    });
+
   });
 }

@@ -1496,5 +1496,92 @@ void main() {
         )).called(validStates.length);
       });
     });
+
+    group('setSpeakerName', () {
+      const ipAddress = '192.168.1.100';
+      const speakerName = 'Living Room';
+
+      test('successfully sets speaker name', () async {
+        when(mockClient.post(
+          any,
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).thenAnswer((_) async => http.Response('', 200));
+
+        await apiService.setSpeakerName(ipAddress, speakerName);
+
+        final captured = verify(mockClient.post(
+          captureAny,
+          headers: captureAnyNamed('headers'),
+          body: captureAnyNamed('body'),
+        )).captured;
+
+        expect(captured[0].toString(), 'http://$ipAddress:8090/name');
+        expect(captured[1], {'Content-Type': 'text/xml'});
+        expect(captured[2], '<name>$speakerName</name>');
+      });
+
+      test('throws exception on HTTP error', () async {
+        when(mockClient.post(
+          any,
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).thenAnswer((_) async => http.Response('Error', 500));
+
+        expect(
+          () => apiService.setSpeakerName(ipAddress, speakerName),
+          throwsException,
+        );
+      });
+
+      test('throws exception on timeout', () async {
+        when(mockClient.post(
+          any,
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).thenAnswer((_) async {
+          await Future<void>.delayed(const Duration(seconds: 35));
+          return http.Response('', 200);
+        });
+
+        expect(
+          () => apiService.setSpeakerName(ipAddress, speakerName),
+          throwsException,
+        );
+      }, timeout: const Timeout(Duration(seconds: 40)));
+
+      test('throws exception on network error', () async {
+        when(mockClient.post(
+          any,
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).thenThrow(Exception('Network error'));
+
+        expect(
+          () => apiService.setSpeakerName(ipAddress, speakerName),
+          throwsException,
+        );
+      });
+
+      test('handles special characters in name', () async {
+        const specialName = 'Living Room & Kitchen';
+
+        when(mockClient.post(
+          any,
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        )).thenAnswer((_) async => http.Response('', 200));
+
+        await apiService.setSpeakerName(ipAddress, specialName);
+
+        final captured = verify(mockClient.post(
+          captureAny,
+          headers: captureAnyNamed('headers'),
+          body: captureAnyNamed('body'),
+        )).captured;
+
+        expect(captured[2], '<name>$specialName</name>');
+      });
+    });
   });
 }

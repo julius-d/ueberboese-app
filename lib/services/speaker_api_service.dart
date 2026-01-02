@@ -830,4 +830,35 @@ class SpeakerApiService {
       }
     }
   }
+
+  Future<void> setSpeakerName(String ipAddress, String name) async {
+    final url = Uri.parse('http://$ipAddress:8090/name');
+    final client = httpClient ?? http.Client();
+
+    try {
+      final body = '<name>$name</name>';
+      final response = await client
+          .post(
+            url,
+            headers: {'Content-Type': 'text/xml'},
+            body: body,
+          )
+          .timeout(const Duration(seconds: 30));
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          'Failed to set speaker name: HTTP ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Failed to set speaker name: $e');
+    } finally {
+      if (httpClient == null) {
+        client.close();
+      }
+    }
+  }
 }
