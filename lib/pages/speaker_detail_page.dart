@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +9,7 @@ import 'package:ueberboese_app/models/volume.dart';
 import 'package:ueberboese_app/models/now_playing.dart';
 import 'package:ueberboese_app/models/zone.dart';
 import 'package:ueberboese_app/services/speaker_api_service.dart';
+import 'package:ueberboese_app/services/speaker_websocket_service.dart';
 import 'package:ueberboese_app/main.dart';
 import 'package:ueberboese_app/pages/edit_speaker_page.dart';
 import 'package:ueberboese_app/pages/remote_control_page.dart';
@@ -15,7 +17,6 @@ import 'package:ueberboese_app/pages/album_art_viewer_page.dart';
 
 class SpeakerDetailPage extends StatefulWidget {
   final Speaker speaker;
-
 
   const SpeakerDetailPage({
     super.key,
@@ -28,6 +29,10 @@ class SpeakerDetailPage extends StatefulWidget {
 
 class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
   final SpeakerApiService _apiService = SpeakerApiService();
+  SpeakerWebsocketService? _websocketService;
+  StreamSubscription<Volume>? _volumeSubscription;
+  StreamSubscription<NowPlaying>? _nowPlayingSubscription;
+
   Volume? _currentVolume;
   NowPlaying? _nowPlaying;
   Zone? _currentZone;
@@ -54,6 +59,52 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
     _loadNowPlaying();
     _loadZone();
     _loadSpeakerInfo();
+    _initializeWebSocket();
+  }
+
+  void _initializeWebSocket() {
+    _websocketService = SpeakerWebsocketService(widget.speaker.ipAddress);
+
+    // Subscribe to volume updates
+    _volumeSubscription = _websocketService!.volumeStream.listen(
+      (volume) {
+        if (!mounted) return;
+        setState(() {
+          _currentVolume = volume;
+          // Also update zone member volume if speaker is in a zone
+          if (_currentZone != null && _currentZone!.isInZone(widget.speaker.deviceId)) {
+            _zoneMemberVolumes[widget.speaker.deviceId] = volume;
+          }
+        });
+      },
+      onError: (error) {
+        // Errors are logged in the service
+      },
+    );
+
+    // Subscribe to now playing updates
+    _nowPlayingSubscription = _websocketService!.nowPlayingStream.listen(
+      (nowPlaying) {
+        if (!mounted) return;
+        setState(() {
+          _nowPlaying = nowPlaying;
+        });
+      },
+      onError: (error) {
+        // Errors are logged in the service
+      },
+    );
+
+    // Connect to the WebSocket
+    _websocketService!.connect();
+  }
+
+  @override
+  void dispose() {
+    _volumeSubscription?.cancel();
+    _nowPlayingSubscription?.cancel();
+    _websocketService?.dispose();
+    super.dispose();
   }
 
   Future<void> _loadVolume() async {

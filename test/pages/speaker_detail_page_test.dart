@@ -711,4 +711,75 @@ void main() {
     });
   });
 
+  group('WebSocket Integration', () {
+    const testSpeaker = Speaker(
+      id: '1',
+      name: 'Test Speaker',
+      emoji: '🔊',
+      ipAddress: '192.168.1.100',
+      type: 'SoundTouch 10',
+      deviceId: 'device-123',
+    );
+
+    testWidgets('page initializes without errors with WebSocket', (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: const MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker),
+          ),
+        ),
+      );
+
+      // Verify page builds successfully
+      expect(find.byType(SpeakerDetailPage), findsOneWidget);
+      expect(find.text('Test Speaker'), findsAtLeast(1));
+    });
+
+    testWidgets('page disposes properly with WebSocket', (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: MaterialApp(
+            home: Scaffold(
+              body: Builder(
+                builder: (context) => ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (context) =>
+                            const SpeakerDetailPage(speaker: testSpeaker),
+                      ),
+                    );
+                  },
+                  child: const Text('Open Details'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      // Open the detail page
+      await tester.tap(find.text('Open Details'));
+      await tester.pumpAndSettle();
+
+      // Verify page is shown
+      expect(find.byType(SpeakerDetailPage), findsOneWidget);
+
+      // Go back to dispose the page
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+
+      // Verify page is disposed without errors
+      expect(find.byType(SpeakerDetailPage), findsNothing);
+    });
+  });
+
 }
