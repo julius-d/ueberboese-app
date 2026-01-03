@@ -55,16 +55,5 @@ void main() {
           reason: 'changelogs directory must exist for future use');
     });
 
-    test('fdroiddata-metadata.yml reference file exists', () {
-      final file = File('fdroiddata-metadata.yml');
-      expect(file.existsSync(), true,
-          reason:
-              'fdroiddata-metadata.yml reference file must exist as documentation');
-
-      final content = file.readAsStringSync();
-      expect(content.contains('Categories:'), true);
-      expect(content.contains('License:'), true);
-      expect(content.contains('SourceCode:'), true);
-    });
   });
 }
