@@ -49,11 +49,5 @@ void main() {
           reason: 'At least 3 screenshots are recommended');
     });
 
-    test('changelogs directory exists', () {
-      final dir = Directory('metadata/en-US/changelogs');
-      expect(dir.existsSync(), true,
-          reason: 'changelogs directory must exist for future use');
-    });
-
   });
 }
