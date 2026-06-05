@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:ueberboese_app/main.dart';
 import 'package:ueberboese_app/models/speaker.dart';
@@ -212,6 +213,11 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
     if (accountId.isEmpty || authToken.isEmpty) {
       setState(
           () => _margeAccountError = 'Account ID and auth token are required.');
+      return;
+    }
+    if (accountId.length < 3) {
+      setState(() =>
+          _margeAccountError = 'Account ID must be at least 3 characters.');
       return;
     }
     setState(() {
@@ -589,6 +595,10 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
                 labelText: 'Marge Account ID',
                 border: OutlineInputBorder(),
               ),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
+                LengthLimitingTextInputFormatter(42),
+              ],
             ),
             const SizedBox(height: 12),
             TextField(

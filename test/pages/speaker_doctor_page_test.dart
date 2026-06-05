@@ -614,6 +614,95 @@ void main() {
 
       expect(find.textContaining('HTTP 500'), findsOneWidget);
     });
+
+    testWidgets('account ID field blocks invalid characters',
+        (tester) async {
+      final service = _buildService(configResponseText: _configResponse);
+
+      await tester.pumpWidget(_wrap(
+        SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: service,
+            apiService: _successApiService()),
+      ));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+          find.widgetWithText(TextField, 'Marge Account ID'), 'abc!@#123');
+
+      final accountIdField = tester.widget<TextField>(
+        find.widgetWithText(TextField, 'Marge Account ID'),
+      );
+      expect(accountIdField.controller?.text, 'abc123');
+    });
+
+    testWidgets('account ID field allows letters and digits',
+        (tester) async {
+      final service = _buildService(configResponseText: _configResponse);
+
+      await tester.pumpWidget(_wrap(
+        SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: service,
+            apiService: _successApiService()),
+      ));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+          find.widgetWithText(TextField, 'Marge Account ID'), 'abcXYZ123');
+
+      final accountIdField = tester.widget<TextField>(
+        find.widgetWithText(TextField, 'Marge Account ID'),
+      );
+      expect(accountIdField.controller?.text, 'abcXYZ123');
+    });
+
+    testWidgets('account ID field rejects input beyond 42 characters',
+        (tester) async {
+      final service = _buildService(configResponseText: _configResponse);
+
+      await tester.pumpWidget(_wrap(
+        SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: service,
+            apiService: _successApiService()),
+      ));
+      await tester.pumpAndSettle();
+
+      final longInput = 'a' * 50;
+      await tester.enterText(
+          find.widgetWithText(TextField, 'Marge Account ID'), longInput);
+
+      final accountIdField = tester.widget<TextField>(
+        find.widgetWithText(TextField, 'Marge Account ID'),
+      );
+      expect(accountIdField.controller?.text.length, 42);
+    });
+
+    testWidgets('link account shows error when account ID is shorter than 3 chars',
+        (tester) async {
+      final service = _buildService(configResponseText: _configResponse);
+
+      await tester.pumpWidget(_wrap(
+        SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: service,
+            apiService: _successApiService()),
+      ));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(
+          find.widgetWithText(TextField, 'Marge Account ID'), 'ab');
+      await tester.enterText(
+          find.widgetWithText(TextField, 'Auth Token'), 'token456');
+      await tester
+          .ensureVisible(find.widgetWithText(AsyncFilledButton, 'Link Account'));
+      await tester.tap(find.widgetWithText(AsyncFilledButton, 'Link Account'));
+      await tester.pump();
+
+      expect(find.text('Account ID must be at least 3 characters.'),
+          findsOneWidget);
+    });
   });
 }
 
