@@ -1,0 +1,9 @@
+Features:
+- add AUX/Bluetooth source selection card
+
+Build Systems:
+- Upgrade Flutter
+- Upgrade Flutter to 3.44.1 and all dependencies to latest
+
+Documentation:
+- Add macOS screenshot
