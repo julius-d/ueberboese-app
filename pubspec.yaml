@@ -4,18 +4,18 @@ publish_to: "none"
 version: 0.36.0+38
 
 environment:
-  sdk: ^3.9.0
-  flutter: 3.38.6
+  sdk: ^3.12.1
+  flutter: 3.44.1
 
 dependencies:
   flutter:
     sdk: flutter
   provider: ^6.1.5+1
   http: ^1.6.0
-  xml: ^6.6.1
+  xml: ^7.0.1
   shared_preferences: ^2.5.4
   url_launcher: ^6.3.2
-  app_links: ^7.0.0
+  app_links: ^7.1.1
   intl: ^0.20.2
   web_socket_channel: ^3.0.3
   udp: ^5.0.3
@@ -24,7 +24,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  mockito: ^5.6.3
+  mockito: ^5.7.0
   build_runner: ^2.11.0
   flutter_launcher_icons: 0.14.4
 
