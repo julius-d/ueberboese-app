@@ -10,6 +10,7 @@ import 'package:ueberboese_app/models/now_playing.dart';
 import 'package:ueberboese_app/models/zone.dart';
 import 'package:ueberboese_app/models/preset.dart';
 import 'package:ueberboese_app/models/recent.dart';
+import 'package:ueberboese_app/models/speaker_source.dart';
 
 class SpeakerApiService {
   final http.Client? httpClient;
@@ -1385,6 +1386,62 @@ class SpeakerApiService {
     } catch (e) {
       if (e is Exception) rethrow;
       throw Exception('Failed to set clock display: $e');
+    } finally {
+      if (httpClient == null) client.close();
+    }
+  }
+
+  Future<List<SpeakerSource>> getSources(String ipAddress) async {
+    final url = Uri.parse('http://$ipAddress:8090/sources');
+    final client = httpClient ?? http.Client();
+
+    try {
+      final response = await client.get(url).timeout(timeout);
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to get sources: HTTP ${response.statusCode}');
+      }
+
+      final bodyText = utf8.decode(response.bodyBytes);
+      final document = XmlDocument.parse(bodyText);
+
+      return document
+          .findAllElements('sourceItem')
+          .map(SpeakerSource.fromXml)
+          .toList();
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception('Failed to get sources: $e');
+    } finally {
+      if (httpClient == null) client.close();
+    }
+  }
+
+  Future<void> selectSource(String ipAddress, SpeakerSource source) async {
+    final url = Uri.parse('http://$ipAddress:8090/select');
+    final client = httpClient ?? http.Client();
+
+    try {
+      final builder = XmlBuilder();
+      builder.element('ContentItem', nest: () {
+        builder.attribute('source', source.source);
+        final account = source.sourceAccount;
+        if (account != null && account.isNotEmpty) {
+          builder.attribute('sourceAccount', account);
+        }
+      });
+      final body = builder.buildDocument().toXmlString();
+
+      final response = await client
+          .post(url, headers: {'Content-Type': 'text/xml'}, body: body)
+          .timeout(timeout);
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to select source: HTTP ${response.statusCode}');
+      }
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception('Failed to select source: $e');
     } finally {
       if (httpClient == null) client.close();
     }

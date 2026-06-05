@@ -1607,4 +1607,129 @@ void main() {
     });
   });
 
+  group('Source card', () {
+    const testSpeaker = Speaker(
+      id: '1',
+      name: 'Test Speaker',
+      emoji: '🔊',
+      ipAddress: '192.168.1.100',
+      type: 'SoundTouch 10',
+      deviceId: 'device-123',
+    );
+
+    const sourcesXml = '''<?xml version="1.0" encoding="UTF-8" ?>
+<sources deviceID="9884E39E1EA8">
+  <sourceItem source="AUX" sourceAccount="AUX" status="READY" isLocal="true" multiroomallowed="true">AUX IN</sourceItem>
+  <sourceItem source="BLUETOOTH" status="UNAVAILABLE" isLocal="true" multiroomallowed="true"/>
+  <sourceItem source="TUNEIN" status="READY" isLocal="false" multiroomallowed="true"/>
+  <sourceItem source="NOTIFICATION" status="UNAVAILABLE" isLocal="false" multiroomallowed="true"/>
+</sources>''';
+
+    http.Response responseForUrl(Uri url) {
+      if (url.path == '/sources') {
+        return http.Response(sourcesXml, 200,
+            headers: {'content-type': 'text/xml; charset=utf-8'});
+      }
+      return http.Response('', 200,
+          headers: {'content-type': 'text/xml; charset=utf-8'});
+    }
+
+    testWidgets('shows source chips after loading', (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      final mockClient = MockClient();
+      final apiService = SpeakerApiService(httpClient: mockClient);
+
+      when(mockClient.get(any)).thenAnswer((inv) async =>
+          responseForUrl(inv.positionalArguments[0] as Uri));
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker, apiService: apiService),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('AUX IN'), findsOneWidget);
+      // Bluetooth is icon-only — no label text
+      expect(find.text('BLUETOOTH'), findsNothing);
+      expect(find.byIcon(Icons.bluetooth), findsOneWidget);
+      // filtered-out sources must not appear
+      expect(find.text('TUNEIN'), findsNothing);
+      expect(find.text('NOTIFICATION'), findsNothing);
+    });
+
+    testWidgets('shows loading indicator while sources are loading',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      final mockClient = MockClient();
+      final apiService = SpeakerApiService(
+        httpClient: mockClient,
+        timeout: const Duration(seconds: 5),
+      );
+
+      // Never complete synchronously — use a Completer so we control resolution
+      when(mockClient.get(any)).thenAnswer((_) async {
+        await Future<void>.delayed(const Duration(seconds: 4));
+        return http.Response('', 200);
+      });
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker, apiService: apiService),
+          ),
+        ),
+      );
+
+      // After first pump (before any async completes), loading indicators should be visible
+      await tester.pump();
+      expect(find.byType(CircularProgressIndicator), findsAtLeast(1));
+
+      // Let all timers expire so the widget can be disposed cleanly
+      await tester.pumpAndSettle(const Duration(seconds: 10));
+    });
+
+    testWidgets('shows error and retry on source load failure',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      final mockClient = MockClient();
+      final apiService = SpeakerApiService(httpClient: mockClient);
+
+      when(mockClient.get(argThat(
+        predicate<Uri>((u) => u.path == '/sources'),
+      ))).thenAnswer((_) async => http.Response('', 500));
+
+      // Other GET calls succeed with empty/minimal responses
+      when(mockClient.get(argThat(
+        predicate<Uri>((u) => u.path != '/sources'),
+      ))).thenAnswer((_) async => http.Response('', 200,
+          headers: {'content-type': 'text/xml; charset=utf-8'}));
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: MaterialApp(
+            home: SpeakerDetailPage(speaker: testSpeaker, apiService: apiService),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('Retry'), findsAtLeast(1));
+    });
+
+  });
+
 }

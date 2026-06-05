@@ -8,6 +8,7 @@ import 'package:ueberboese_app/services/speaker_api_service.dart';
 import 'package:ueberboese_app/models/zone.dart';
 import 'package:ueberboese_app/models/recent.dart';
 import 'package:ueberboese_app/models/preset.dart';
+import 'package:ueberboese_app/models/speaker_source.dart';
 
 import 'speaker_api_service_test.mocks.dart';
 
@@ -2893,6 +2894,171 @@ void main() {
 
         expect(
           () => apiService.setClockDisplay('192.168.1.131', config),
+          throwsA(isA<Exception>()),
+        );
+      });
+    });
+
+    group('getSources', () {
+      const singleAuxXml = '''<?xml version="1.0" encoding="UTF-8" ?>
+<sources deviceID="9884E39E1EA8">
+  <sourceItem source="AUX" sourceAccount="AUX" status="READY" isLocal="true" multiroomallowed="true">AUX IN</sourceItem>
+  <sourceItem source="AIRPLAY" sourceAccount="AirPlay2DefaultUserName" status="UNAVAILABLE" isLocal="false" multiroomallowed="false">AirPlay2DefaultUserName</sourceItem>
+  <sourceItem source="STORED_MUSIC_MEDIA_RENDERER" sourceAccount="StoredMusicUserName" status="UNAVAILABLE" isLocal="false" multiroomallowed="true">StoredMusicUserName</sourceItem>
+  <sourceItem source="QPLAY" sourceAccount="QPlay1UserName" status="UNAVAILABLE" isLocal="true" multiroomallowed="true">QPlay1UserName</sourceItem>
+  <sourceItem source="BLUETOOTH" status="UNAVAILABLE" isLocal="true" multiroomallowed="true"/>
+  <sourceItem source="UPNP" sourceAccount="UPnPUserName" status="UNAVAILABLE" isLocal="false" multiroomallowed="true">UPnPUserName</sourceItem>
+  <sourceItem source="NOTIFICATION" status="UNAVAILABLE" isLocal="false" multiroomallowed="true"/>
+  <sourceItem source="SPOTIFY" sourceAccount="z5zt8py3wuxytbza4cxa431ge" status="READY" isLocal="false" multiroomallowed="true">Julius</sourceItem>
+  <sourceItem source="SPOTIFY" sourceAccount="SpotifyConnectUserName" status="UNAVAILABLE" isLocal="false" multiroomallowed="true">SpotifyConnectUserName</sourceItem>
+  <sourceItem source="ALEXA" status="READY" isLocal="false" multiroomallowed="true"/>
+  <sourceItem source="TUNEIN" status="READY" isLocal="false" multiroomallowed="true"/>
+</sources>''';
+
+      const threeAuxXml = '''<?xml version="1.0" encoding="UTF-8" ?>
+<sources deviceID="EC24B88118C4">
+  <sourceItem source="AUX" sourceAccount="AUX1" status="READY" isLocal="true" multiroomallowed="true">AUX IN 1</sourceItem>
+  <sourceItem source="AUX" sourceAccount="AUX2" status="READY" isLocal="true" multiroomallowed="true">AUX IN 2</sourceItem>
+  <sourceItem source="AUX" sourceAccount="AUX3" status="READY" isLocal="true" multiroomallowed="true">AUX IN 3</sourceItem>
+  <sourceItem source="STORED_MUSIC_MEDIA_RENDERER" sourceAccount="StoredMusicUserName" status="UNAVAILABLE" isLocal="false" multiroomallowed="true">StoredMusicUserName</sourceItem>
+  <sourceItem source="BLUETOOTH" status="UNAVAILABLE" isLocal="true" multiroomallowed="true"/>
+  <sourceItem source="UPNP" sourceAccount="UPnPUserName" status="UNAVAILABLE" isLocal="false" multiroomallowed="true">UPnPUserName</sourceItem>
+  <sourceItem source="NOTIFICATION" status="UNAVAILABLE" isLocal="false" multiroomallowed="true"/>
+  <sourceItem source="SPOTIFY" sourceAccount="SpotifyConnectUserName" status="UNAVAILABLE" isLocal="false" multiroomallowed="true">SpotifyConnectUserName</sourceItem>
+  <sourceItem source="ALEXA" status="READY" isLocal="false" multiroomallowed="true"/>
+</sources>''';
+
+      test('returns all source types from the device without filtering', () async {
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(singleAuxXml, 200,
+              headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        final sources = await apiService.getSources('192.168.1.131');
+
+        final sourceTypes = sources.map((s) => s.source).toSet();
+        expect(sourceTypes, containsAll({'AUX', 'BLUETOOTH', 'TUNEIN', 'SPOTIFY', 'UPNP'}));
+        expect(sourceTypes, contains('AIRPLAY'));
+        expect(sourceTypes, contains('NOTIFICATION'));
+      });
+
+      test('parses single AUX with display name', () async {
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(singleAuxXml, 200,
+              headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        final sources = await apiService.getSources('192.168.1.131');
+        final aux = sources.firstWhere((s) => s.source == 'AUX');
+
+        expect(aux.sourceAccount, 'AUX');
+        expect(aux.displayName, 'AUX IN');
+        expect(aux.status, 'READY');
+      });
+
+      test('uses source name as fallback when inner text is blank (BLUETOOTH)', () async {
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(singleAuxXml, 200,
+              headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        final sources = await apiService.getSources('192.168.1.131');
+        final bluetooth = sources.firstWhere((s) => s.source == 'BLUETOOTH');
+
+        expect(bluetooth.displayName, 'BLUETOOTH');
+        expect(bluetooth.sourceAccount, isNull);
+      });
+
+      test('returns three separate AUX entries for a three-AUX device', () async {
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(threeAuxXml, 200,
+              headers: {'content-type': 'text/xml; charset=utf-8'}),
+        );
+
+        final sources = await apiService.getSources('192.168.1.131');
+        final auxSources = sources.where((s) => s.source == 'AUX').toList();
+
+        expect(auxSources.length, 3);
+        expect(auxSources[0].sourceAccount, 'AUX1');
+        expect(auxSources[0].displayName, 'AUX IN 1');
+        expect(auxSources[1].sourceAccount, 'AUX2');
+        expect(auxSources[1].displayName, 'AUX IN 2');
+        expect(auxSources[2].sourceAccount, 'AUX3');
+        expect(auxSources[2].displayName, 'AUX IN 3');
+      });
+
+      test('throws on non-200 response', () async {
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response('', 500),
+        );
+
+        expect(
+          () => apiService.getSources('192.168.1.131'),
+          throwsA(isA<Exception>()),
+        );
+      });
+    });
+
+    group('selectSource', () {
+      test('sends correct XML for source without sourceAccount (BLUETOOTH)', () async {
+        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body')))
+            .thenAnswer((_) async => http.Response('', 200));
+
+        const source = SpeakerSource(
+          source: 'BLUETOOTH',
+          displayName: 'BLUETOOTH',
+        );
+
+        await apiService.selectSource('192.168.1.131', source);
+
+        final captured = verify(
+          mockClient.post(
+            any,
+            headers: captureAnyNamed('headers'),
+            body: captureAnyNamed('body'),
+          ),
+        ).captured;
+
+        expect(captured[0], {'Content-Type': 'text/xml'});
+        final body = captured[1] as String;
+        expect(body, contains('<ContentItem'));
+        expect(body, contains('source="BLUETOOTH"'));
+        expect(body, isNot(contains('sourceAccount')));
+      });
+
+      test('sends correct XML for AUX source with sourceAccount', () async {
+        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body')))
+            .thenAnswer((_) async => http.Response('', 200));
+
+        const source = SpeakerSource(
+          source: 'AUX',
+          sourceAccount: 'AUX1',
+          displayName: 'AUX IN 1',
+        );
+
+        await apiService.selectSource('192.168.1.131', source);
+
+        final captured = verify(
+          mockClient.post(
+            any,
+            headers: captureAnyNamed('headers'),
+            body: captureAnyNamed('body'),
+          ),
+        ).captured;
+
+        final body = captured[1] as String;
+        expect(body, contains('source="AUX"'));
+        expect(body, contains('sourceAccount="AUX1"'));
+      });
+
+      test('throws on non-200 response', () async {
+        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body')))
+            .thenAnswer((_) async => http.Response('', 500));
+
+        const source = SpeakerSource(source: 'TUNEIN', displayName: 'TuneIn');
+
+        expect(
+          () => apiService.selectSource('192.168.1.131', source),
           throwsA(isA<Exception>()),
         );
       });

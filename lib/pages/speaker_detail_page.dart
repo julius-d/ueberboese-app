@@ -10,6 +10,7 @@ import 'package:ueberboese_app/models/volume.dart';
 import 'package:ueberboese_app/models/now_playing.dart';
 import 'package:ueberboese_app/models/zone.dart';
 import 'package:ueberboese_app/models/preset.dart';
+import 'package:ueberboese_app/models/speaker_source.dart';
 import 'package:ueberboese_app/services/speaker_api_service.dart';
 import 'package:ueberboese_app/services/speaker_websocket_service.dart';
 import 'package:ueberboese_app/main.dart';
@@ -56,6 +57,10 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
   String? _volumeErrorMessage;
   String? _zoneErrorMessage;
 
+  List<SpeakerSource>? _sources;
+  bool _isLoadingSources = true;
+  String? _sourcesErrorMessage;
+
   // Speaker info state
   SpeakerInfo? _speakerInfo;
   bool _hasMargeUrlMismatch = false;
@@ -81,6 +86,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
     _apiService = widget.apiService ?? SpeakerApiService();
     _loadVolume();
     _loadZone();
+    _loadSources();
     _loadSpeakerInfo();
     _initializeWebSocket();
   }
@@ -203,6 +209,36 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
     }
   }
 
+
+  static const _displayedSources = {'AUX', 'BLUETOOTH'};
+  static const _sourceOrder = ['AUX', 'BLUETOOTH'];
+
+  Future<void> _loadSources() async {
+    setState(() {
+      _isLoadingSources = true;
+      _sourcesErrorMessage = null;
+    });
+
+    try {
+      final all = await _apiService.getSources(widget.speaker.ipAddress);
+      final filtered = all
+          .where((s) => _displayedSources.contains(s.source))
+          .toList()
+        ..sort((a, b) => _sourceOrder.indexOf(a.source)
+            .compareTo(_sourceOrder.indexOf(b.source)));
+      if (!mounted) return;
+      setState(() {
+        _sources = filtered;
+        _isLoadingSources = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _sourcesErrorMessage = 'Failed to load sources: ${e.toString()}';
+        _isLoadingSources = false;
+      });
+    }
+  }
 
   Future<void> _loadSpeakerInfo() async {
     try {
@@ -1607,6 +1643,9 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                         const SizedBox(height: 16),
                         // Presets Section
                         _buildPresetsCard(context, theme),
+                        const SizedBox(height: 16),
+                        // Source Selection Section
+                        _buildSourceCard(context, theme),
                         // Safe area padding for modern Android gesture navigation
                         const SizedBox(height: 80),
                       ],
@@ -1617,6 +1656,120 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  IconData _sourceIcon(String source) {
+    switch (source) {
+      case 'AUX':
+        return Icons.cable;
+      case 'BLUETOOTH':
+        return Icons.bluetooth;
+      default:
+        return Icons.input;
+    }
+  }
+
+  Widget _buildSourceCard(BuildContext context, ThemeData theme) {
+    return Card(
+      elevation: 1,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.input, color: theme.colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  'Source',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            if (_isLoadingSources && _sources == null)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            else if (_sourcesErrorMessage != null)
+              Column(
+                children: [
+                  Text(
+                    _sourcesErrorMessage!,
+                    style: TextStyle(
+                      color: theme.colorScheme.error,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: _loadSources,
+                    child: const Text('Retry'),
+                  ),
+                ],
+              )
+            else if (_sources == null || _sources!.isEmpty)
+              Text(
+                'No sources available',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              )
+            else
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _sources!.map((source) {
+                  final isIconOnly = source.source == 'BLUETOOTH';
+                  void onPressed() async {
+                    try {
+                      await _apiService.selectSource(
+                        widget.speaker.ipAddress,
+                        source,
+                      );
+                    } catch (e) {
+                      if (!mounted) return;
+                      ScaffoldMessenger.of(this.context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Failed to select source: ${e.toString()}',
+                          ),
+                        ),
+                      );
+                    }
+                  }
+
+                  if (isIconOnly) {
+                    return OutlinedButton(
+                      onPressed: onPressed,
+                      style: OutlinedButton.styleFrom(
+                        shape: const StadiumBorder(),
+                        padding: const EdgeInsets.all(12),
+                        minimumSize: Size.zero,
+                      ),
+                      child: Icon(_sourceIcon(source.source), size: 20),
+                    );
+                  }
+                  return OutlinedButton.icon(
+                    onPressed: onPressed,
+                    style: OutlinedButton.styleFrom(
+                      shape: const StadiumBorder(),
+                    ),
+                    icon: Icon(_sourceIcon(source.source), size: 18),
+                    label: Text(source.displayName),
+                  );
+                }).toList(),
+              ),
+          ],
+        ),
       ),
     );
   }
