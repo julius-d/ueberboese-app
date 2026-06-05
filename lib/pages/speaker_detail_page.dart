@@ -22,6 +22,7 @@ import 'package:ueberboese_app/utils/url_utils.dart';
 import 'package:ueberboese_app/pages/presets/presets_page.dart';
 import 'package:ueberboese_app/pages/speaker_settings_page.dart';
 import 'package:ueberboese_app/pages/speaker_doctor_page.dart';
+import 'package:ueberboese_app/widgets/speaker_warning_banner.dart';
 
 class SpeakerDetailPage extends StatefulWidget {
   final Speaker speaker;
@@ -1185,13 +1186,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
             ),
           );
         } else if (value == 'doctor') {
-          Navigator.push(
-            context,
-            MaterialPageRoute<void>(
-              builder: (context) =>
-                  SpeakerDoctorPage(speaker: widget.speaker),
-            ),
-          );
+          _navigateToDoctor(context);
         } else if (value == 'standby') {
           _sendToStandby();
         } else if (value == 'delete') {
@@ -1294,42 +1289,11 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
     );
   }
 
-  Widget _buildWarningBanner(BuildContext context, ThemeData theme) {
-    final appState = context.read<MyAppState>();
-    return Container(
-      width: double.infinity,
-      color: theme.colorScheme.errorContainer,
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Icon(
-            Icons.warning,
-            color: theme.colorScheme.onErrorContainer,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Management URL Mismatch',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: theme.colorScheme.onErrorContainer,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                SelectableText(
-                  'Speaker: ${_speakerInfo!
-                      .margeUrl}\nSettings: ${appState.config.apiUrl}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onErrorContainer,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+  void _navigateToDoctor(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder: (context) => SpeakerDoctorPage(speaker: widget.speaker),
       ),
     );
   }
@@ -1594,11 +1558,27 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
       ),
       body: Column(
         children: [
-          // Warning banner (only shown when there's a mismatch)
+          // Priority 1: URL mismatch banner
           if (_hasMargeUrlMismatch && _speakerInfo?.margeUrl != null)
             Selector<MyAppState, AppConfig>(
               selector: (_, appState) => appState.config,
-              builder: (context, config, child) => _buildWarningBanner(context, theme),
+              builder: (context, config, child) => SpeakerWarningBanner(
+                title: 'Management URL Mismatch',
+                body:
+                    'Speaker: ${_speakerInfo!.margeUrl}\nSettings: ${config.apiUrl}',
+                onOpenDoctor: () => _navigateToDoctor(context),
+              ),
+            ),
+          // Priority 2: no Marge account linked (only when no mismatch and margeUrl is set)
+          if (!_hasMargeUrlMismatch &&
+              _speakerInfo?.margeUrl != null &&
+              (_speakerInfo?.accountId == null ||
+                  _speakerInfo!.accountId!.isEmpty))
+            SpeakerWarningBanner(
+              title: 'No Marge Account Id set',
+              body:
+                  'This speaker is not linked to a Marge account. Open the Doctor page to link one.',
+              onOpenDoctor: () => _navigateToDoctor(context),
             ),
           // Use Selector to only rebuild when this speaker's nowPlaying changes
           Expanded(

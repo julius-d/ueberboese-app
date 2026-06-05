@@ -10,6 +10,7 @@ import 'package:ueberboese_app/models/app_config.dart';
 import 'package:ueberboese_app/models/now_playing.dart';
 import 'package:ueberboese_app/pages/speaker_detail_page.dart';
 import 'package:ueberboese_app/services/speaker_api_service.dart';
+import 'package:ueberboese_app/widgets/speaker_warning_banner.dart';
 import '../services/speaker_api_service_test.mocks.dart';
 
 void main() {
@@ -1281,6 +1282,223 @@ void main() {
         find.widgetWithIcon(IconButton, Icons.settings),
       );
       expect(iconButton.tooltip, 'Manage Presets');
+    });
+  });
+
+  group('Warning Banners', () {
+    const testSpeaker = Speaker(
+      id: '1',
+      name: 'Test Speaker',
+      emoji: '🔊',
+      ipAddress: '192.168.1.100',
+      type: 'SoundTouch 10',
+      deviceId: 'device-123',
+    );
+
+    String infoXml({String? margeUrl, String? accountId}) => '''<?xml version="1.0" encoding="UTF-8" ?>
+<info deviceID="device-123">
+  <name>Test Speaker</name>
+  <type>SoundTouch 10</type>
+  ${margeUrl != null ? '<margeURL>$margeUrl</margeURL>' : ''}
+  ${accountId != null ? '<margeAccountUUID>$accountId</margeAccountUUID>' : ''}
+</info>''';
+
+    testWidgets('shows URL mismatch banner when URLs differ',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+      appState.updateConfig(const AppConfig(
+        apiUrl: 'http://settings.example.com',
+        accountId: '',
+        mgmtUsername: '',
+        mgmtPassword: '',
+      ));
+
+      final mockClient = MockClient();
+      final apiService = SpeakerApiService(httpClient: mockClient);
+
+      when(mockClient.get(any)).thenAnswer(
+        (_) async => http.Response(
+          infoXml(margeUrl: 'http://speaker.example.com', accountId: 'acc-123'),
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
+      );
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: MaterialApp(
+            home: SpeakerDetailPage(
+              speaker: testSpeaker,
+              apiService: apiService,
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SpeakerWarningBanner), findsOneWidget);
+      expect(find.text('Management URL Mismatch'), findsOneWidget);
+      expect(find.text('No Marge Account Id set'), findsNothing);
+      expect(find.text('Doctor'), findsOneWidget);
+    });
+
+    testWidgets('shows no-account banner when margeUrl set but accountId empty',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+      appState.updateConfig(const AppConfig(
+        apiUrl: 'http://same.example.com',
+        accountId: '',
+        mgmtUsername: '',
+        mgmtPassword: '',
+      ));
+
+      final mockClient = MockClient();
+      final apiService = SpeakerApiService(httpClient: mockClient);
+
+      when(mockClient.get(any)).thenAnswer(
+        (_) async => http.Response(
+          infoXml(margeUrl: 'http://same.example.com'),
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
+      );
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: MaterialApp(
+            home: SpeakerDetailPage(
+              speaker: testSpeaker,
+              apiService: apiService,
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SpeakerWarningBanner), findsOneWidget);
+      expect(find.text('No Marge Account Id set'), findsOneWidget);
+      expect(find.text('Management URL Mismatch'), findsNothing);
+      expect(find.text('Doctor'), findsOneWidget);
+    });
+
+    testWidgets(
+        'shows only URL mismatch banner when both mismatch and empty accountId',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+      appState.updateConfig(const AppConfig(
+        apiUrl: 'http://settings.example.com',
+        accountId: '',
+        mgmtUsername: '',
+        mgmtPassword: '',
+      ));
+
+      final mockClient = MockClient();
+      final apiService = SpeakerApiService(httpClient: mockClient);
+
+      when(mockClient.get(any)).thenAnswer(
+        (_) async => http.Response(
+          infoXml(margeUrl: 'http://speaker.example.com'),
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
+      );
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: MaterialApp(
+            home: SpeakerDetailPage(
+              speaker: testSpeaker,
+              apiService: apiService,
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SpeakerWarningBanner), findsOneWidget);
+      expect(find.text('Management URL Mismatch'), findsOneWidget);
+      expect(find.text('No Marge Account Id set'), findsNothing);
+    });
+
+    testWidgets('shows no banner when URLs match and accountId is set',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+      appState.updateConfig(const AppConfig(
+        apiUrl: 'http://same.example.com',
+        accountId: '',
+        mgmtUsername: '',
+        mgmtPassword: '',
+      ));
+
+      final mockClient = MockClient();
+      final apiService = SpeakerApiService(httpClient: mockClient);
+
+      when(mockClient.get(any)).thenAnswer(
+        (_) async => http.Response(
+          infoXml(margeUrl: 'http://same.example.com', accountId: 'acc-123'),
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
+      );
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: MaterialApp(
+            home: SpeakerDetailPage(
+              speaker: testSpeaker,
+              apiService: apiService,
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SpeakerWarningBanner), findsNothing);
+    });
+
+    testWidgets('shows no banner when margeUrl is not set',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initialize();
+
+      final mockClient = MockClient();
+      final apiService = SpeakerApiService(httpClient: mockClient);
+
+      when(mockClient.get(any)).thenAnswer(
+        (_) async => http.Response(
+          infoXml(),
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
+      );
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: MaterialApp(
+            home: SpeakerDetailPage(
+              speaker: testSpeaker,
+              apiService: apiService,
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SpeakerWarningBanner), findsNothing);
     });
   });
 
