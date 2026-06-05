@@ -1,0 +1,7 @@
+Features:
+- Add no-Marge-account-Id warning banner
+- add input validation to Marge Account ID field
+- highlight empty Marge Account ID row with warning styling
+
+Performance Improvements:
+- parallelize now-playing fetch and notify progressively
