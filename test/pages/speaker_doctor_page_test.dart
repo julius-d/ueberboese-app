@@ -418,6 +418,43 @@ void main() {
       expect(find.text('—'), findsOneWidget);
     });
 
+    testWidgets('info card shows warning styling when accountId is empty',
+        (tester) async {
+      final service = _buildService(configResponseText: _configResponse);
+      final apiService = _FakeApiService((_) async => const SpeakerInfo(
+            name: 'Test Speaker',
+            type: 'SoundTouch 10',
+            deviceId: 'AABBCCDDEEFF',
+          ));
+
+      await tester.pumpWidget(_wrap(
+        SpeakerDoctorPage(
+          speaker: _testSpeaker,
+          setupService: service,
+          apiService: apiService,
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.warning), findsOneWidget);
+    });
+
+    testWidgets('info card shows no warning icon when accountId is set',
+        (tester) async {
+      final service = _buildService(configResponseText: _configResponse);
+
+      await tester.pumpWidget(_wrap(
+        SpeakerDoctorPage(
+          speaker: _testSpeaker,
+          setupService: service,
+          apiService: _successApiService(),
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.warning), findsNothing);
+    });
+
     testWidgets('info card shows error and retry on failure', (tester) async {
       final service = _buildService(configResponseText: _configResponse);
 

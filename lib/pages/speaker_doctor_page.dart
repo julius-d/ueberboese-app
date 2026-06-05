@@ -312,6 +312,9 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
       ('Marge Account ID', _info!.accountId ?? '—'),
     ];
 
+    final accountIdEmpty =
+        _info!.accountId == null || _info!.accountId!.isEmpty;
+
     return Table(
       border: TableBorder.all(
         color: theme.colorScheme.outlineVariant,
@@ -322,20 +325,44 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
         1: FlexColumnWidth(),
       },
       children: rows.map((row) {
+        final isAccountIdRow = row.$1 == 'Marge Account ID';
+        final warn = isAccountIdRow && accountIdEmpty;
+        final decoration = warn
+            ? BoxDecoration(color: theme.colorScheme.errorContainer)
+            : null;
         return TableRow(
+          decoration: decoration,
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
               child: SelectableText(
                 row.$1,
-                style: theme.textTheme.bodySmall
-                    ?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: warn ? theme.colorScheme.onErrorContainer : null,
+                ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              child: SelectableText(row.$2,
-                  style: theme.textTheme.bodySmall),
+              child: warn
+                  ? Row(
+                      children: [
+                        Icon(
+                          Icons.warning,
+                          size: 14,
+                          color: theme.colorScheme.onErrorContainer,
+                        ),
+                        const SizedBox(width: 4),
+                        SelectableText(
+                          row.$2,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onErrorContainer,
+                          ),
+                        ),
+                      ],
+                    )
+                  : SelectableText(row.$2, style: theme.textTheme.bodySmall),
             ),
           ],
         );
