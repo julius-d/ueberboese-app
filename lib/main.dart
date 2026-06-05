@@ -98,7 +98,10 @@ class _NowPlayingCacheEntry {
 class MyAppState extends ChangeNotifier {
   final SpeakerStorageService _storageService = SpeakerStorageService();
   final ConfigStorageService _configStorageService = ConfigStorageService();
-  final SpeakerApiService _speakerApiService = SpeakerApiService();
+  late final SpeakerApiService _speakerApiService;
+
+  MyAppState({SpeakerApiService? speakerApiService})
+      : _speakerApiService = speakerApiService ?? SpeakerApiService();
 
   List<Speaker> speakers = [];
   AppConfig config = const AppConfig();
@@ -261,7 +264,7 @@ class MyAppState extends ChangeNotifier {
 
   /// Poll all speakers' now playing status (called by list page)
   Future<void> pollAllSpeakersNowPlaying() async {
-    for (final speaker in speakers) {
+    await Future.wait(speakers.map((speaker) async {
       try {
         final nowPlaying =
             await _speakerApiService.getNowPlaying(speaker.ipAddress);
@@ -278,7 +281,7 @@ class MyAppState extends ChangeNotifier {
           timestamp: DateTime.now(),
         );
       }
-    }
-    notifyListeners();
+      notifyListeners();
+    }));
   }
 }
