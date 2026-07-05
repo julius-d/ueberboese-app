@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:ueberboese_app/main.dart';
 import 'package:ueberboese_app/models/speaker.dart';
 import 'package:ueberboese_app/models/speaker_info.dart';
-import 'package:ueberboese_app/pages/configuration_page.dart';
+import 'package:ueberboese_app/pages/ueberboese_api_setup_page.dart';
 import 'package:ueberboese_app/services/speaker_api_service.dart';
 import 'package:ueberboese_app/services/speaker_setup_service.dart';
 import 'package:ueberboese_app/widgets/async_filled_button.dart';
@@ -520,7 +520,7 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
                               context,
                               MaterialPageRoute<void>(
                                   builder: (context) =>
-                                      const ConfigurationPage()),
+                                      const UeberboesApiSetupPage()),
                             ),
                             child: const Text('Open Settings to configure it'),
                           ),

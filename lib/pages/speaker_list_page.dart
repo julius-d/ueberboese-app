@@ -197,7 +197,8 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
           final isPlaying = nowPlaying?.playStatus == 'PLAY_STATE';
           final artworkUrl = _getFullArtworkUrl(speaker, nowPlaying);
           // Show artwork if present, regardless of play status (consistent with detail page)
-          final hasArtwork = artworkUrl != null &&
+          final hasArtwork = appState.config.showAlbumArtInList &&
+                            artworkUrl != null &&
                             artworkUrl.isNotEmpty &&
                             nowPlaying?.artImageStatus == 'IMAGE_PRESENT';
           final cardTheme = Theme.of(context);

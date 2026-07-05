@@ -686,5 +686,110 @@ void main() {
       );
       expect(speakerInfoHeroFinder, findsNothing);
     });
+
+    testWidgets('hides album art Hero when showAlbumArtInList is false',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initializeSpeakers();
+      appState.updateConfig(
+        appState.config.copyWith(showAlbumArtInList: false),
+      );
+
+      const testSpeaker = Speaker(
+        id: '1',
+        name: 'Test Speaker',
+        emoji: '🔊',
+        ipAddress: '192.168.1.100',
+        type: 'SoundTouch 10',
+        deviceId: 'device-123',
+      );
+      appState.addSpeaker(testSpeaker);
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: const MaterialApp(
+            home: Scaffold(body: SpeakerListPage()),
+          ),
+        ),
+      );
+
+      appState.updateNowPlayingForSpeaker(
+        testSpeaker.ipAddress,
+        const NowPlaying(
+          source: 'SPOTIFY',
+          track: 'Test Track',
+          artist: 'Test Artist',
+          album: 'Test Album',
+          art: 'https://example.com/art.jpg',
+          artImageStatus: 'IMAGE_PRESENT',
+          playStatus: 'PLAY_STATE',
+        ),
+        true,
+      );
+
+      await tester.pumpAndSettle();
+
+      // Album art hero should NOT appear when toggle is off
+      final albumArtHeroFinder = find.byWidgetPredicate(
+        (widget) => widget is Hero && widget.tag.toString().startsWith('album-art-'),
+      );
+      expect(albumArtHeroFinder, findsNothing);
+
+      // Speaker info hero should be shown instead
+      final speakerInfoHeroFinder = find.byWidgetPredicate(
+        (widget) => widget is Hero && widget.tag == 'speaker-info-1',
+      );
+      expect(speakerInfoHeroFinder, findsOneWidget);
+    });
+
+    testWidgets('shows album art Hero when showAlbumArtInList is true',
+        (WidgetTester tester) async {
+      final appState = MyAppState();
+      await appState.initializeSpeakers();
+      appState.updateConfig(
+        appState.config.copyWith(showAlbumArtInList: true),
+      );
+
+      const testSpeaker = Speaker(
+        id: '1',
+        name: 'Test Speaker',
+        emoji: '🔊',
+        ipAddress: '192.168.1.100',
+        type: 'SoundTouch 10',
+        deviceId: 'device-123',
+      );
+      appState.addSpeaker(testSpeaker);
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider.value(
+          value: appState,
+          child: const MaterialApp(
+            home: Scaffold(body: SpeakerListPage()),
+          ),
+        ),
+      );
+
+      appState.updateNowPlayingForSpeaker(
+        testSpeaker.ipAddress,
+        const NowPlaying(
+          source: 'SPOTIFY',
+          track: 'Test Track',
+          artist: 'Test Artist',
+          album: 'Test Album',
+          art: 'https://example.com/art.jpg',
+          artImageStatus: 'IMAGE_PRESENT',
+          playStatus: 'PLAY_STATE',
+        ),
+        true,
+      );
+
+      await tester.pumpAndSettle();
+
+      final albumArtHeroFinder = find.byWidgetPredicate(
+        (widget) => widget is Hero && widget.tag == 'album-art-1',
+      );
+      expect(albumArtHeroFinder, findsOneWidget);
+    });
   });
 }
