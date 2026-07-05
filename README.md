@@ -50,3 +50,10 @@ The app is also available as a macOS App.
 It can be downloaded from the [Releases page](https://github.com/julius-d/ueberboese-app/releases/latest)
 
 <img src="docs/img/mac-os-screenshot-1.png" width="90%"  alt="screenshot of the mac os version"/>
+
+
+### Windows 
+
+Same is true for Windows.
+
+<img src="docs/img/windows-screenshot-1.png" width="90%"  alt="screenshot of the windows version"/>
