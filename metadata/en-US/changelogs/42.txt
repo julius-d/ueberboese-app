@@ -1,0 +1,7 @@
+Documentation:
+- Update screenshots
+
+Build Systems:
+- Add Windows build config
+- Add Windows build job to release pipeline
+- Add Windows icon
