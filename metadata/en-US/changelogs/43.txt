@@ -1,0 +1,3 @@
+Build Systems:
+- Upgrade package_info_plus to ^10.2.0
+- bundle VC++ redistributables in release ZIP
