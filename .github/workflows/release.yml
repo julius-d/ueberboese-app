@@ -286,6 +286,14 @@ jobs:
       - name: Build Windows app
         run: flutter build windows --release
 
+      - name: Bundle Visual C++ Redistributables
+        shell: pwsh
+        run: |
+          $releaseDir = "build\windows\x64\runner\Release"
+          Copy-Item "C:\Windows\System32\msvcp140.dll"    -Destination $releaseDir
+          Copy-Item "C:\Windows\System32\vcruntime140.dll"  -Destination $releaseDir
+          Copy-Item "C:\Windows\System32\vcruntime140_1.dll" -Destination $releaseDir
+
       - name: Create ZIP
         shell: pwsh
         run: |
