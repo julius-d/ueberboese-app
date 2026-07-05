@@ -1,0 +1,7 @@
+Features:
+- add About card with version, license and links
+- add Settings hub with API setup card and album art toggle
+
+Build Systems:
+- Bump Flutter 3.44.1 → 3.44.4
+- Updated deps
