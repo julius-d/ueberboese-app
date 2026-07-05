@@ -254,9 +254,54 @@ jobs:
           path: ueberboese-app-*-linux-x64.tar.gz
           retention-days: 90
 
+  build-windows:
+    name: Build Windows ZIP
+    needs: version
+    runs-on: windows-latest
+    if: needs.version.outputs.new_version != ''
+
+    steps:
+      - name: Checkout code with version bump
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+      - name: Pull latest changes
+        run: git pull origin ${{ github.ref_name }}
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+          flutter-version-file: pubspec.yaml
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Generate mock files
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Build Windows app
+        run: flutter build windows --release
+
+      - name: Create ZIP
+        shell: pwsh
+        run: |
+          $version = "${{ needs.version.outputs.new_version }}" -replace '^v', ''
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath "ueberboese-app-$version-windows.zip"
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-windows
+          path: ueberboese-app-*-windows.zip
+          retention-days: 90
+
   release:
     name: Create GitHub Release
-    needs: [version, build-android, build-macos, build-linux]
+    needs: [version, build-android, build-macos, build-linux, build-windows]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -292,6 +337,12 @@ jobs:
           name: release-linux
           path: ./artifacts
 
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-windows
+          path: ./artifacts
+
       - name: Create Release Tag
         id: create_tag
         run: |
@@ -314,6 +365,7 @@ jobs:
             ./artifacts/ueberboese-app-*.apk
             ./artifacts/ueberboese-app-*-macos.dmg
             ./artifacts/ueberboese-app-*-linux-x64.tar.gz
+            ./artifacts/ueberboese-app-*-windows.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -323,4 +375,5 @@ jobs:
           echo "📦 Android APK uploaded"
           echo "📦 macOS DMG uploaded"
           echo "📦 Linux tarball uploaded"
+          echo "📦 Windows ZIP uploaded"
           echo "🔗 Release URL: https://github.com/${{ github.repository }}/releases/tag/${{ needs.version.outputs.new_version }}"
