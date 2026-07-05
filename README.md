@@ -20,9 +20,9 @@ The app has two main purposes:
 ## Screenshots
 
 <p align="center">
-  <img src="docs/img/Screenshot_1767190198-left.png" width="30%" />
-  <img src="docs/img/Screenshot_1767190031-left.png" width="30%" />
-  <img src="docs/img/Screenshot_1767190163-left.png" width="30%" />
+  <img src="docs/img/Screenshot_1783279323-left.png" width="30%" />
+  <img src="docs/img/Screenshot_1783279482-left.png" width="30%" />
+  <img src="docs/img/Screenshot_1783279515-left.png" width="30%" />
 </p>
 
 ## Installation
