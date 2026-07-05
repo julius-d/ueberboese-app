@@ -15,10 +15,12 @@ dependencies:
   xml: ^7.0.1
   shared_preferences: ^2.5.4
   url_launcher: ^6.3.2
+  package_info_plus: ^8.3.0
   app_links: ^7.1.1
   intl: ^0.20.2
   web_socket_channel: ^3.0.3
   udp: ^5.0.3
+  font_awesome_flutter: ^11.0.0
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ueberboese_app/main.dart';
@@ -13,6 +14,13 @@ void main() {
 
     setUp(() async {
       SharedPreferences.setMockInitialValues({});
+      PackageInfo.setMockInitialValues(
+        appName: 'Überböse App',
+        packageName: 'de.juliusdannert.ueberboese_app',
+        version: '1.2.3',
+        buildNumber: '42',
+        buildSignature: '',
+      );
       appState = MyAppState();
       await appState.initialize();
     });
@@ -132,6 +140,41 @@ void main() {
       await tester.pump();
 
       expect(appState.config.showAlbumArtInList, isTrue);
+    });
+
+    testWidgets('About card displays app name, license and title',
+        (WidgetTester tester) async {
+      await pumpSettingsPage(tester);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Überböse App'), findsOneWidget);
+      expect(find.text('MIT License'), findsOneWidget);
+    });
+
+    testWidgets('About card shows version from PackageInfo',
+        (WidgetTester tester) async {
+      await pumpSettingsPage(tester);
+      await tester.pumpAndSettle();
+
+      expect(find.text('v1.2.3'), findsOneWidget);
+    });
+
+    testWidgets('About card shows ActionChips for F-Droid and GitHub',
+        (WidgetTester tester) async {
+      await pumpSettingsPage(tester);
+      await tester.pumpAndSettle();
+
+      expect(find.text('F-Droid'), findsOneWidget);
+      expect(find.text('App on GitHub'), findsOneWidget);
+      expect(find.text('API on GitHub'), findsOneWidget);
+    });
+
+    testWidgets('About card link chips are tappable (ActionChip present)',
+        (WidgetTester tester) async {
+      await pumpSettingsPage(tester);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ActionChip), findsWidgets);
     });
   });
 }
