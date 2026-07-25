@@ -141,7 +141,7 @@ jobs:
              build/app/outputs/flutter-apk/ueberboese-app-$VERSION.apk
 
       - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-apk
           path: build/app/outputs/flutter-apk/ueberboese-app-*.apk
@@ -196,7 +196,7 @@ jobs:
             "build/macos/Build/Products/Release/ueberboese.app"
 
       - name: Upload DMG artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-dmg
           path: ueberboese-app-*-macos.dmg
@@ -248,7 +248,7 @@ jobs:
           cd ../../../../../
 
       - name: Upload Linux artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-linux
           path: ueberboese-app-*-linux-x64.tar.gz
@@ -301,7 +301,7 @@ jobs:
           Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath "ueberboese-app-$version-windows.zip"
 
       - name: Upload Windows artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-windows
           path: ueberboese-app-*-windows.zip
@@ -328,25 +328,25 @@ jobs:
           git log -1 --oneline
 
       - name: Download APK artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: release-apk
           path: ./artifacts
 
       - name: Download DMG artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: release-dmg
           path: ./artifacts
 
       - name: Download Linux artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: release-linux
           path: ./artifacts
 
       - name: Download Windows artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: release-windows
           path: ./artifacts
