@@ -362,7 +362,7 @@ jobs:
           echo "tag=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ needs.version.outputs.new_version }}
           name: Release ${{ needs.version.outputs.new_version }}
