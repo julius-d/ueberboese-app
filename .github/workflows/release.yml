@@ -99,7 +99,7 @@ jobs:
         run: git pull origin ${{ github.ref_name }}
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
