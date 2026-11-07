@@ -50,3 +50,6 @@ android/app/upload-keystore.jks
 android/upload-keystore.jks
 *.jks
 *.keystore
+
+# FVM Version Cache
+.fvm/

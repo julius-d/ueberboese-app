@@ -9,6 +9,15 @@ Before opening a pull request, please open an issue explaining the changes you w
 ## Local set up
 This project uses flutter to create an Android app, a Mac app and a Linux app and potentially in the future also an iOS app.
 
+### Flutter version
+The Flutter version is pinned in `.fvmrc` and managed with [FVM](https://fvm.app). Install it once with:
+```shell
+fvm install
+```
+On Windows, FVM creates symlinks. This requires Developer Mode (Settings → System → For developers) or an elevated shell.
+
+Then prefix commands with `fvm` (e.g. `fvm flutter run`, `fvm dart format`). FVM links the pinned SDK to `.fvm/flutter_sdk`, which stays valid when the version changes. Point your IDE to that path; the Dart extension for VS Code usually detects it automatically.
+
 ### Android
 See https://docs.flutter.dev/platform-integration/android/setup
 
