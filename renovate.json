@@ -2,5 +2,12 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "packageRules": [
+    {
+      "description": "Update Flutter in .fvmrc (developers) and pubspec.yaml (CI) together",
+      "matchDepNames": ["flutter"],
+      "groupName": "flutter"
+    }
   ]
 }

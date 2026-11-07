@@ -1,0 +1,3 @@
+# Use LF line endings for all text files, independent of each developer's
+# core.autocrlf setting. Git detects binary files (images, fonts, ...) itself.
+* text=auto eol=lf
