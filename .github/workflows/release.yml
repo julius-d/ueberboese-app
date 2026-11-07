@@ -112,7 +112,7 @@ jobs:
           flutter-version-file: pubspec.yaml
 
       - name: Get dependencies
-        run: flutter pub get
+        run: flutter pub get --enforce-lockfile
 
       - name: Generate mock files
         run: dart run build_runner build --delete-conflicting-outputs
@@ -171,7 +171,7 @@ jobs:
           flutter-version-file: pubspec.yaml
 
       - name: Get dependencies
-        run: flutter pub get
+        run: flutter pub get --enforce-lockfile
 
       - name: Generate mock files
         run: dart run build_runner build --delete-conflicting-outputs
@@ -231,7 +231,7 @@ jobs:
           flutter-version-file: pubspec.yaml
 
       - name: Get dependencies
-        run: flutter pub get
+        run: flutter pub get --enforce-lockfile
 
       - name: Generate mock files
         run: dart run build_runner build --delete-conflicting-outputs
@@ -278,7 +278,7 @@ jobs:
           flutter-version-file: pubspec.yaml
 
       - name: Get dependencies
-        run: flutter pub get
+        run: flutter pub get --enforce-lockfile
 
       - name: Generate mock files
         run: dart run build_runner build --delete-conflicting-outputs

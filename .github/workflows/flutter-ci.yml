@@ -29,7 +29,7 @@ jobs:
           flutter-version-file: pubspec.yaml
 
       - name: Get dependencies
-        run: flutter pub get
+        run: flutter pub get --enforce-lockfile
 
       # Runs before mock generation so it checks the committed files as they are.
       - name: Check formatting
@@ -67,7 +67,7 @@ jobs:
           flutter-version-file: pubspec.yaml
 
       - name: Get dependencies
-        run: flutter pub get
+        run: flutter pub get --enforce-lockfile
 
       - name: Build APK
         run: flutter build apk --release
