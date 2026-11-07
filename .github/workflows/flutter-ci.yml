@@ -31,6 +31,10 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
+      # Runs before mock generation so it checks the committed files as they are.
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed lib test
+
       - name: Generate mock files
         run: dart run build_runner build --delete-conflicting-outputs
 
