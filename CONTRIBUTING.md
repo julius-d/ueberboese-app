@@ -7,7 +7,9 @@ Contributions are more than welcome :)
 Before opening a pull request, please open an issue explaining the changes you want to make.
 
 ## Local set up
-This project uses flutter to create an Android app, a Mac app and a Linux app and potentially in the future also an iOS app.
+This project uses flutter to create an Android app, a macOS app, a Linux app and a Windows app and potentially in the future also an iOS app.
+
+You only need the toolchain for the platform you want to run the app on. Tests and `flutter analyze` work on any OS without platform toolchains.
 
 ### Flutter version
 The Flutter version is pinned in `.fvmrc` and managed with [FVM](https://fvm.app). Install it once with:
@@ -31,6 +33,8 @@ dart run build_runner watch --delete-conflicting-outputs
 ### Android
 See https://docs.flutter.dev/platform-integration/android/setup
 
+The Android build requires **JDK 17** (the same version CI uses). Check with `java -version`.
+
 Start an emulator by name
 ```shell
 flutter emulators --launch Pixel_9
@@ -42,6 +46,41 @@ flutter run
 ```
 
 Hot reload: press `r` in the console were you started flutter
+
+### Linux
+See https://docs.flutter.dev/platform-integration/linux/setup
+
+Install the build dependencies (Debian/Ubuntu, same packages as in CI):
+```shell
+sudo apt-get install clang cmake ninja-build pkg-config libgtk-3-dev
+```
+
+Run the app with
+```shell
+flutter run -d linux
+```
+
+### macOS
+See https://docs.flutter.dev/platform-integration/macos/setup
+
+Requires Xcode and CocoaPods. The minimum supported macOS version is 10.15.
+
+Run the app with
+```shell
+flutter run -d macos
+```
+
+### Windows
+See https://docs.flutter.dev/platform-integration/windows/setup
+
+Requires Visual Studio (not VS Code) with the workload "Desktop development with C++".
+
+Run the app with
+```shell
+flutter run -d windows
+```
+
+`flutter doctor` shows which of these toolchains are set up on your machine.
 
 ## Before you commit
 
