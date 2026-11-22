@@ -21,7 +21,7 @@ jobs:
       # The release GitHub App is a bypass actor, so we push the version bump with its token.
       - name: Generate release app token
         id: app-token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ vars.RELEASE_APP_ID }}
           private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
