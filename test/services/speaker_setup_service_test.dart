@@ -228,6 +228,49 @@ void main() {
       });
     });
 
+    group('addWirelessProfile error messages', () {
+      Future<Object> failWith(String body) async {
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response(body, 500));
+        try {
+          await service.addWirelessProfile('YAWL6', 'pw', 'wpa_or_wpa2');
+        } catch (e) {
+          return e;
+        }
+        fail('expected an exception');
+      }
+
+      test('explains authentication failures', () async {
+        final error = await failWith(
+            '<errors deviceID="X"><error value="1035" '
+            'name="WIFI_PROFILE_SETUP_FAILED" severity="Unknown">'
+            'AUTHENTICATION_FAILED</error><ancillary>&lt;x/&gt;</ancillary>'
+            '</errors>');
+
+        expect(error, isA<WirelessProfileException>());
+        expect(error.toString(), contains('check the password'));
+        expect(error.toString(), contains('"YAWL6"'));
+      });
+
+      test('includes other error codes', () async {
+        final error = await failWith(
+            '<errors><error name="X">NO_AP_FOUND</error></errors>');
+
+        expect(error.toString(), contains('NO_AP_FOUND'));
+      });
+
+      test('falls back to the status code for unparsable bodies', () async {
+        final error = await failWith('<html>oops');
+
+        expect(error.toString(), contains('HTTP 500'));
+      });
+    });
+
     group('setMargeAccount', () {
       test('sends correct POST request', () async {
         when(

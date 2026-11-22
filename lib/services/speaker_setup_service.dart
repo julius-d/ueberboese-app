@@ -8,6 +8,17 @@ import 'package:ueberboese_app/models/wireless_network.dart';
 /// IP address used by the speaker in access-point / setup mode.
 const String kSetupSpeakerIp = '192.0.2.1';
 
+/// Error returned when the speaker rejects or fails to apply a Wi-Fi profile.
+/// [toString] yields the user-facing message without an "Exception:" prefix.
+class WirelessProfileException implements Exception {
+  final String message;
+
+  const WirelessProfileException(this.message);
+
+  @override
+  String toString() => message;
+}
+
 typedef SocketConnect =
     Future<Socket> Function(String host, int port, {Duration? timeout});
 
@@ -104,10 +115,12 @@ class SpeakerSetupService {
           .post(url, headers: {'Content-Type': 'text/xml'}, body: body)
           .timeout(const Duration(seconds: 60));
       if (response.statusCode != 200) {
-        final responseBody = utf8.decode(response.bodyBytes).trim();
-        final detail = responseBody.isNotEmpty ? '\n$responseBody' : '';
-        throw Exception(
-          'Add wireless profile failed: HTTP ${response.statusCode}$detail',
+        throw WirelessProfileException(
+          _describeProfileError(
+            ssid,
+            response.statusCode,
+            utf8.decode(response.bodyBytes),
+          ),
         );
       }
     } catch (e) {
@@ -115,6 +128,29 @@ class SpeakerSetupService {
       throw Exception('Failed to add wireless profile: $e');
     } finally {
       if (_ownClient()) client.close();
+    }
+  }
+
+  /// Turns the speaker's `<errors>` response into a readable message, e.g.
+  /// `AUTHENTICATION_FAILED` becomes a hint to check the password.
+  static String _describeProfileError(
+      String ssid, int statusCode, String responseBody) {
+    String? detail;
+    try {
+      final error = XmlDocument.parse(responseBody).findAllElements('error');
+      if (error.isNotEmpty) detail = error.first.innerText.trim();
+    } catch (_) {
+      // Not XML; fall through to the generic message.
+    }
+    switch (detail) {
+      case 'AUTHENTICATION_FAILED':
+        return 'The speaker could not connect to "$ssid". '
+            'Please check the password and the security type.';
+      case null:
+      case '':
+        return 'Failed to save the Wi-Fi profile (HTTP $statusCode).';
+      default:
+        return 'The speaker could not connect to "$ssid" ($detail).';
     }
   }
 
