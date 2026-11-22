@@ -120,10 +120,11 @@ class _DiscoverSpeakersPageState extends State<DiscoverSpeakersPage> {
     if (!mounted) return;
 
     final parts = <String>[];
-    if (addedCount > 0)
+    if (addedCount > 0) {
       parts.add(
         'Added $addedCount ${addedCount == 1 ? 'speaker' : 'speakers'}',
       );
+    }
     if (failedCount > 0) parts.add('$failedCount failed');
 
     ScaffoldMessenger.of(context).showSnackBar(

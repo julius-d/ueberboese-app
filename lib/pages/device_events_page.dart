@@ -168,8 +168,9 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
       icon: Icons.play_arrow,
       getSummary: (data) {
         final origin = data['origin'] as String?;
-        if (origin != null && origin.isNotEmpty)
+        if (origin != null && origin.isNotEmpty) {
           return 'Play/Pause via $origin';
+        }
         return 'Play/Pause pressed';
       },
     ),
@@ -225,10 +226,11 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
         final brightness = data['brightness'];
         if (brightness != null) parts.add('Brightness: $brightness');
         final enabled = data['enabled'];
-        if (enabled != null)
+        if (enabled != null) {
           parts.add(
             'Display: ${enabled == 'true' || enabled == true ? 'on' : 'off'}',
           );
+        }
         final useroffset = data['useroffset'];
         if (useroffset != null) parts.add('Offset: $useroffset');
         final usertime = data['usertime'];
@@ -254,8 +256,9 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
         final preset = data['preset'] as String?;
         final origin = data['origin'] as String?;
         if (preset != null && preset.isNotEmpty) {
-          if (origin != null && origin.isNotEmpty)
+          if (origin != null && origin.isNotEmpty) {
             return '$preset assigned via $origin';
+          }
           return '$preset assigned';
         }
         return 'Preset assigned';
@@ -329,8 +332,9 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
         if (data.containsKey('volume-change')) {
           final volumeChange = data['volume-change'];
           if (volumeChange is List && volumeChange.isNotEmpty) {
-            if (volumeChange.length >= 2)
+            if (volumeChange.length >= 2) {
               return 'Volume: ${volumeChange.first} → ${volumeChange.last}';
+            }
             return 'Volume: ${volumeChange.first}';
           }
         }
