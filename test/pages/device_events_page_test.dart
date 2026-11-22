@@ -51,20 +51,24 @@ void main() {
       );
     }
 
-    testWidgets('shows loading indicator initially', (WidgetTester tester) async {
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => <DeviceEvent>[],
-      );
+    testWidgets('shows loading indicator initially', (
+      WidgetTester tester,
+    ) async {
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => <DeviceEvent>[]);
 
       await tester.pumpWidget(createWidgetUnderTest());
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
-    testWidgets('displays "No events found" when list is empty', (WidgetTester tester) async {
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => <DeviceEvent>[],
-      );
+    testWidgets('displays "No events found" when list is empty', (
+      WidgetTester tester,
+    ) async {
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => <DeviceEvent>[]);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -72,7 +76,9 @@ void main() {
       expect(find.text('No events found'), findsOneWidget);
     });
 
-    testWidgets('displays events list when data is loaded', (WidgetTester tester) async {
+    testWidgets('displays events list when data is loaded', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {'volume': 50},
@@ -88,9 +94,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -101,7 +107,9 @@ void main() {
       expect(find.byType(Divider), findsOneWidget);
     });
 
-    testWidgets('displays error message and retry button on error', (WidgetTester tester) async {
+    testWidgets('displays error message and retry button on error', (
+      WidgetTester tester,
+    ) async {
       when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
         (_) async => throw Exception('Failed to fetch device events: HTTP 500'),
       );
@@ -135,9 +143,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       // Tap retry button
       await tester.tap(find.text('Retry'));
@@ -147,36 +155,45 @@ void main() {
       expect(find.text('Failed to load events'), findsNothing);
     });
 
-    testWidgets('displays speaker emoji and name in app bar and Device Events title on page', (WidgetTester tester) async {
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => <DeviceEvent>[],
-      );
+    testWidgets(
+      'displays speaker emoji and name in app bar and Device Events title on page',
+      (WidgetTester tester) async {
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => <DeviceEvent>[]);
+
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
+
+        expect(find.text('🔊'), findsOneWidget);
+        expect(find.text('Test Speaker'), findsOneWidget);
+        expect(find.text('Device Events'), findsOneWidget);
+      },
+    );
+
+    testWidgets('calls fetchDeviceEvents with correct parameters', (
+      WidgetTester tester,
+    ) async {
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => <DeviceEvent>[]);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
 
-      expect(find.text('🔊'), findsOneWidget);
-      expect(find.text('Test Speaker'), findsOneWidget);
-      expect(find.text('Device Events'), findsOneWidget);
+      verify(
+        mockApiService.fetchDeviceEvents(
+          'http://localhost:3000',
+          'device-123',
+          'testuser',
+          'testpass',
+        ),
+      ).called(1);
     });
 
-    testWidgets('calls fetchDeviceEvents with correct parameters', (WidgetTester tester) async {
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => <DeviceEvent>[],
-      );
-
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
-
-      verify(mockApiService.fetchDeviceEvents(
-        'http://localhost:3000',
-        'device-123',
-        'testuser',
-        'testpass',
-      )).called(1);
-    });
-
-    testWidgets('displays volume icon for volume events', (WidgetTester tester) async {
+    testWidgets('displays volume icon for volume events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {'volume': 50},
@@ -186,9 +203,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -196,7 +213,9 @@ void main() {
       expect(find.byIcon(Icons.volume_up), findsOneWidget);
     });
 
-    testWidgets('displays play icon for playback events', (WidgetTester tester) async {
+    testWidgets('displays play icon for playback events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {'playState': 'PLAY_STATE'},
@@ -206,9 +225,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -216,7 +235,9 @@ void main() {
       expect(find.byIcon(Icons.play_arrow), findsOneWidget);
     });
 
-    testWidgets('displays source icon for source events', (WidgetTester tester) async {
+    testWidgets('displays source icon for source events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {'source': 'SPOTIFY'},
@@ -226,9 +247,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -236,7 +257,9 @@ void main() {
       expect(find.byIcon(Icons.input), findsOneWidget);
     });
 
-    testWidgets('displays speaker group icon for zone-state-changed events', (WidgetTester tester) async {
+    testWidgets('displays speaker group icon for zone-state-changed events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {
@@ -252,9 +275,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -262,7 +285,9 @@ void main() {
       expect(find.byIcon(Icons.speaker_group), findsOneWidget);
     });
 
-    testWidgets('displays shuffle icon for shuffle-state-changed events', (WidgetTester tester) async {
+    testWidgets('displays shuffle icon for shuffle-state-changed events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {'shuffle-state': 'SHUFFLE_ON'},
@@ -272,9 +297,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -282,7 +307,9 @@ void main() {
       expect(find.byIcon(Icons.shuffle), findsOneWidget);
     });
 
-    testWidgets('displays settings icon for system events', (WidgetTester tester) async {
+    testWidgets('displays settings icon for system events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {},
@@ -292,9 +319,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -302,7 +329,9 @@ void main() {
       expect(find.byIcon(Icons.settings), findsOneWidget);
     });
 
-    testWidgets('displays default icon for unknown events', (WidgetTester tester) async {
+    testWidgets('displays default icon for unknown events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {},
@@ -312,9 +341,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -322,7 +351,9 @@ void main() {
       expect(find.byIcon(Icons.event), findsOneWidget);
     });
 
-    testWidgets('formats timestamp as "Just now" for recent events', (WidgetTester tester) async {
+    testWidgets('formats timestamp as "Just now" for recent events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {'volume': 50},
@@ -332,9 +363,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -342,7 +373,9 @@ void main() {
       expect(find.text('Just now'), findsOneWidget);
     });
 
-    testWidgets('formats timestamp as minutes ago', (WidgetTester tester) async {
+    testWidgets('formats timestamp as minutes ago', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {'volume': 50},
@@ -352,9 +385,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -372,9 +405,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -382,7 +415,9 @@ void main() {
       expect(find.text('Volume: 50'), findsOneWidget);
     });
 
-    testWidgets('displays volume change with old and new values', (WidgetTester tester) async {
+    testWidgets('displays volume change with old and new values', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {
@@ -395,9 +430,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -405,30 +440,35 @@ void main() {
       expect(find.text('Volume: 17 → 22'), findsOneWidget);
     });
 
-    testWidgets('displays volume change with first and last values for multi-step changes', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {
-            'volume-change': [33, 32, 31, 30, 29, 28, 27, 26, 25, 24],
-            'startTime': '2026-01-01T00:00:00.000000+00:00',
-          },
-          monoTime: 12345,
-          time: DateTime.now(),
-          type: 'volume-change',
-        ),
-      ];
+    testWidgets(
+      'displays volume change with first and last values for multi-step changes',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {
+              'volume-change': [33, 32, 31, 30, 29, 28, 27, 26, 25, 24],
+              'startTime': '2026-01-01T00:00:00.000000+00:00',
+            },
+            monoTime: 12345,
+            time: DateTime.now(),
+            type: 'volume-change',
+          ),
+        ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
 
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
 
-      expect(find.text('Volume: 33 → 24'), findsOneWidget);
-    });
+        expect(find.text('Volume: 33 → 24'), findsOneWidget);
+      },
+    );
 
-    testWidgets('displays volume change with single value', (WidgetTester tester) async {
+    testWidgets('displays volume change with single value', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {
@@ -440,9 +480,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -450,7 +490,9 @@ void main() {
       expect(find.text('Volume: 30'), findsOneWidget);
     });
 
-    testWidgets('displays "No additional data" for empty event data', (WidgetTester tester) async {
+    testWidgets('displays "No additional data" for empty event data', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {},
@@ -460,9 +502,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -470,22 +512,21 @@ void main() {
       expect(find.text('No additional data'), findsOneWidget);
     });
 
-    testWidgets('displays play/pause summary for playpause-pressed events', (WidgetTester tester) async {
+    testWidgets('displays play/pause summary for playpause-pressed events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
-          data: {
-            'buttonId': 'PLAY_PAUSE',
-            'origin': 'ir-remote',
-          },
+          data: {'buttonId': 'PLAY_PAUSE', 'origin': 'ir-remote'},
           monoTime: 12345,
           time: DateTime.now(),
           type: 'playpause-pressed',
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -493,7 +534,9 @@ void main() {
       expect(find.text('Play/Pause via ir-remote'), findsOneWidget);
     });
 
-    testWidgets('displays album art for art-changed events', (WidgetTester tester) async {
+    testWidgets('displays album art for art-changed events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {
@@ -506,9 +549,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -517,7 +560,9 @@ void main() {
       expect(find.byType(Image), findsOneWidget);
     });
 
-    testWidgets('displays skip next icon for skip-forward events', (WidgetTester tester) async {
+    testWidgets('displays skip next icon for skip-forward events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {},
@@ -527,9 +572,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -537,7 +582,9 @@ void main() {
       expect(find.byIcon(Icons.skip_next), findsOneWidget);
     });
 
-    testWidgets('displays skip previous icon for skip-backward events', (WidgetTester tester) async {
+    testWidgets('displays skip previous icon for skip-backward events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {},
@@ -547,9 +594,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -557,7 +604,9 @@ void main() {
       expect(find.byIcon(Icons.skip_previous), findsOneWidget);
     });
 
-    testWidgets('displays volume off icon for mute events', (WidgetTester tester) async {
+    testWidgets('displays volume off icon for mute events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {},
@@ -567,9 +616,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -577,7 +626,9 @@ void main() {
       expect(find.byIcon(Icons.volume_off), findsOneWidget);
     });
 
-    testWidgets('displays star icon for preset events', (WidgetTester tester) async {
+    testWidgets('displays star icon for preset events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {},
@@ -587,9 +638,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -597,21 +648,21 @@ void main() {
       expect(find.byIcon(Icons.star), findsOneWidget);
     });
 
-    testWidgets('displays heart icon for favorite events', (WidgetTester tester) async {
+    testWidgets('displays heart icon for favorite events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
-          data: {
-            'favorite-value': 'true',
-          },
+          data: {'favorite-value': 'true'},
           monoTime: 1703310240,
           time: DateTime.now(),
           type: 'favorite-changed',
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -620,21 +671,21 @@ void main() {
       expect(find.text('Marked as favorite'), findsOneWidget);
     });
 
-    testWidgets('displays icon when art-uri is missing', (WidgetTester tester) async {
+    testWidgets('displays icon when art-uri is missing', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
-          data: {
-            'art-status': 'IMAGE_PRESENT',
-          },
+          data: {'art-status': 'IMAGE_PRESENT'},
           monoTime: 1702908329,
           time: DateTime.now(),
           type: 'art-changed',
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -644,9 +695,12 @@ void main() {
       expect(find.byType(Image), findsNothing);
     });
 
-    testWidgets('displays context info for playable events', (WidgetTester tester) async {
+    testWidgets('displays context info for playable events', (
+      WidgetTester tester,
+    ) async {
       // Base64 encoded XML with TUNEIN source
-      const contentItemBase64 = 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiID8+CjxDb250ZW50SXRlbSBzb3VyY2U9IlRVTkVJTiIgdHlwZT0ic3RhdGlvbnVybCIgbG9jYXRpb249Ii92MS9wbGF5YmFjay9zdGF0aW9uL3M4MDA0NCIgaXNQcmVzZXRhYmxlPSJ0cnVlIj4KICAgIDxpdGVtTmFtZT5SYWRpbyBURUREWTwvaXRlbU5hbWU+CjwvQ29udGVudEl0ZW0+Cg==';
+      const contentItemBase64 =
+          'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiID8+CjxDb250ZW50SXRlbSBzb3VyY2U9IlRVTkVJTiIgdHlwZT0ic3RhdGlvbnVybCIgbG9jYXRpb249Ii92MS9wbGF5YmFjay9zdGF0aW9uL3M4MDA0NCIgaXNQcmVzZXRhYmxlPSJ0cnVlIj4KICAgIDxpdGVtTmFtZT5SYWRpbyBURUREWTwvaXRlbU5hbWU+CjwvQ29udGVudEl0ZW0+Cg==';
 
       final testEvents = [
         DeviceEvent(
@@ -661,9 +715,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -674,9 +728,12 @@ void main() {
       expect(find.textContaining('Preset 1'), findsOneWidget);
     });
 
-    testWidgets('displays event with contentItem as playable', (WidgetTester tester) async {
+    testWidgets('displays event with contentItem as playable', (
+      WidgetTester tester,
+    ) async {
       // Base64 encoded XML: <ContentItem source="TUNEIN" type="stationurl" location="/v1/playback/station/s80044" isPresetable="true"><itemName>Radio TEDDY</itemName></ContentItem>
-      const contentItemBase64 = 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiID8+CjxDb250ZW50SXRlbSBzb3VyY2U9IlRVTkVJTiIgdHlwZT0ic3RhdGlvbnVybCIgbG9jYXRpb249Ii92MS9wbGF5YmFjay9zdGF0aW9uL3M4MDA0NCIgaXNQcmVzZXRhYmxlPSJ0cnVlIj4KICAgIDxpdGVtTmFtZT5SYWRpbyBURUREWTwvaXRlbU5hbWU+CjwvQ29udGVudEl0ZW0+Cg==';
+      const contentItemBase64 =
+          'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiID8+CjxDb250ZW50SXRlbSBzb3VyY2U9IlRVTkVJTiIgdHlwZT0ic3RhdGlvbnVybCIgbG9jYXRpb249Ii92MS9wbGF5YmFjay9zdGF0aW9uL3M4MDA0NCIgaXNQcmVzZXRhYmxlPSJ0cnVlIj4KICAgIDxpdGVtTmFtZT5SYWRpbyBURUREWTwvaXRlbU5hbWU+CjwvQ29udGVudEl0ZW0+Cg==';
 
       final testEvents = [
         DeviceEvent(
@@ -691,9 +748,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -704,7 +761,9 @@ void main() {
       expect(find.byType(IconButton), findsOneWidget); // Has play button
     });
 
-    testWidgets('displays item-started with empty data as regular event', (WidgetTester tester) async {
+    testWidgets('displays item-started with empty data as regular event', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {
@@ -722,86 +781,98 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
 
       // Should display as regular event, not as playable
       expect(find.text('Playback stopped'), findsOneWidget);
-      expect(find.byIcon(Icons.play_arrow), findsOneWidget); // Icon, not play button
+      expect(
+        find.byIcon(Icons.play_arrow),
+        findsOneWidget,
+      ); // Icon, not play button
       expect(find.byType(IconButton), findsNothing); // No play button
     });
 
-    testWidgets('displays Bluetooth device name and status for item-started Bluetooth events', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {
-            'contentItem': '',
-            'nowPlaying': {
-              'track': {'text': ''},
-              'artist': {'text': ''},
-              'source': 'BLUETOOTH',
-              'connectionStatusInfo': {
-                'deviceName': 'Test Phone',
-                'status': 'CONNECTING',
+    testWidgets(
+      'displays Bluetooth device name and status for item-started Bluetooth events',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {
+              'contentItem': '',
+              'nowPlaying': {
+                'track': {'text': ''},
+                'artist': {'text': ''},
+                'source': 'BLUETOOTH',
+                'connectionStatusInfo': {
+                  'deviceName': 'Test Phone',
+                  'status': 'CONNECTING',
+                },
               },
+              'play-state': 'INVALID_PLAY_STATUS',
             },
-            'play-state': 'INVALID_PLAY_STATUS',
-          },
-          monoTime: 12345,
-          time: DateTime.now(),
-          type: 'item-started',
-        ),
-      ];
+            monoTime: 12345,
+            time: DateTime.now(),
+            type: 'item-started',
+          ),
+        ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
 
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
 
-      expect(find.text('Bluetooth: Test Phone (Connecting)'), findsOneWidget);
-      expect(find.byType(IconButton), findsNothing); // Not playable
-    });
+        expect(find.text('Bluetooth: Test Phone (Connecting)'), findsOneWidget);
+        expect(find.byType(IconButton), findsNothing); // Not playable
+      },
+    );
 
-    testWidgets('displays Bluetooth device name without status when status is empty for item-started Bluetooth events', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {
-            'contentItem': '',
-            'nowPlaying': {
-              'track': {'text': ''},
-              'source': 'BLUETOOTH',
-              'connectionStatusInfo': {
-                'deviceName': 'My Speaker',
-                'status': '',
+    testWidgets(
+      'displays Bluetooth device name without status when status is empty for item-started Bluetooth events',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {
+              'contentItem': '',
+              'nowPlaying': {
+                'track': {'text': ''},
+                'source': 'BLUETOOTH',
+                'connectionStatusInfo': {
+                  'deviceName': 'My Speaker',
+                  'status': '',
+                },
               },
+              'play-state': '',
             },
-            'play-state': '',
-          },
-          monoTime: 12345,
-          time: DateTime.now(),
-          type: 'item-started',
-        ),
-      ];
+            monoTime: 12345,
+            time: DateTime.now(),
+            type: 'item-started',
+          ),
+        ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
 
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
 
-      expect(find.text('Bluetooth: My Speaker'), findsOneWidget);
-    });
+        expect(find.text('Bluetooth: My Speaker'), findsOneWidget);
+      },
+    );
 
-    testWidgets('displays album name for item-started events with album info', (WidgetTester tester) async {
+    testWidgets('displays album name for item-started events with album info', (
+      WidgetTester tester,
+    ) async {
       // Base64 encoded XML with SPOTIFY source
-      const contentItemBase64 = 'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiID8+CjxDb250ZW50SXRlbSBzb3VyY2U9IlNQT1RJRlkiIHR5cGU9InRyYWNrIiBsb2NhdGlvbj0ic3BvdGlmeTp0cmFjazo0NklrbzdBNkhldGJBcDlZaWE2N1lwIiBpc1ByZXNldGFibGU9InRydWUiPgogICAgPGl0ZW1OYW1lPldlc3RlcmxhbmQ8L2l0ZW1OYW1lPgo8L0NvbnRlbnRJdGVtPgo=';
+      const contentItemBase64 =
+          'PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiID8+CjxDb250ZW50SXRlbSBzb3VyY2U9IlNQT1RJRlkiIHR5cGU9InRyYWNrIiBsb2NhdGlvbj0ic3BvdGlmeTp0cmFjazo0NklrbzdBNkhldGJBcDlZaWE2N1lwIiBpc1ByZXNldGFibGU9InRydWUiPgogICAgPGl0ZW1OYW1lPldlc3RlcmxhbmQ8L2l0ZW1OYW1lPgo8L0NvbnRlbnRJdGVtPgo=';
 
       final testEvents = [
         DeviceEvent(
@@ -821,9 +892,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -834,7 +905,9 @@ void main() {
       expect(find.text('Das Ist Nicht Die Ganze Wahrheit...'), findsOneWidget);
     });
 
-    testWidgets('displays formatted play state for play-state-changed events', (WidgetTester tester) async {
+    testWidgets('displays formatted play state for play-state-changed events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {'play-state': 'PLAY_STATE'},
@@ -844,9 +917,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -854,7 +927,9 @@ void main() {
       expect(find.text('Playing'), findsOneWidget);
     });
 
-    testWidgets('displays formatted play state for paused state', (WidgetTester tester) async {
+    testWidgets('displays formatted play state for paused state', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {'play-state': 'PAUSE_STATE'},
@@ -864,9 +939,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -874,7 +949,9 @@ void main() {
       expect(find.text('Paused'), findsOneWidget);
     });
 
-    testWidgets('displays formatted play state for buffering state', (WidgetTester tester) async {
+    testWidgets('displays formatted play state for buffering state', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {'play-state': 'BUFFERING_STATE'},
@@ -884,9 +961,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -894,27 +971,32 @@ void main() {
       expect(find.text('Buffering'), findsOneWidget);
     });
 
-    testWidgets('displays formatted source name for source-state-changed events', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {'source-state': 'SPOTIFY'},
-          monoTime: 12345,
-          time: DateTime.now(),
-          type: 'source-state-changed',
-        ),
-      ];
+    testWidgets(
+      'displays formatted source name for source-state-changed events',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {'source-state': 'SPOTIFY'},
+            monoTime: 12345,
+            time: DateTime.now(),
+            type: 'source-state-changed',
+          ),
+        ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
 
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
 
-      expect(find.text('Source: Spotify'), findsOneWidget);
-    });
+        expect(find.text('Source: Spotify'), findsOneWidget);
+      },
+    );
 
-    testWidgets('displays formatted source name for TuneIn', (WidgetTester tester) async {
+    testWidgets('displays formatted source name for TuneIn', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {'source-state': 'TUNEIN'},
@@ -924,9 +1006,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -934,130 +1016,142 @@ void main() {
       expect(find.text('Source: TuneIn'), findsOneWidget);
     });
 
-    testWidgets('displays art status message for art-changed events with IMAGE_PRESENT', (WidgetTester tester) async {
+    testWidgets(
+      'displays art status message for art-changed events with IMAGE_PRESENT',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {
+              'art-status': 'IMAGE_PRESENT',
+              'art-uri': 'https://example.com/album-art.jpg',
+            },
+            monoTime: 1702908329,
+            time: DateTime.now(),
+            type: 'art-changed',
+          ),
+        ];
+
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
+
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
+
+        expect(find.text('Album art updated'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'displays art status message for art-changed events with SHOW_DEFAULT_IMAGE',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {'art-status': 'SHOW_DEFAULT_IMAGE'},
+            monoTime: 1702908329,
+            time: DateTime.now(),
+            type: 'art-changed',
+          ),
+        ];
+
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
+
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
+
+        expect(find.text('Using default image'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'displays balance icon and summary for balance-changed events',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {'balance': 0},
+            monoTime: 12345,
+            time: DateTime.now(),
+            type: 'balance-changed',
+          ),
+        ];
+
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
+
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
+
+        expect(find.byIcon(Icons.tune), findsOneWidget);
+        expect(find.text('Balance: 0'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'displays language icon and summary for language-changed events',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {'language': 'DISPLAY_LANGUAGE_GERMAN'},
+            monoTime: 12345,
+            time: DateTime.now(),
+            type: 'language-changed',
+          ),
+        ];
+
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
+
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
+
+        expect(find.byIcon(Icons.language), findsOneWidget);
+        expect(find.text('Language: German'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'displays settings icon and master device summary for masterdevice-changed events',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {'masterDeviceId': 'AABBCCDDEEFF'},
+            monoTime: 12345,
+            time: DateTime.now(),
+            type: 'masterdevice-changed',
+          ),
+        ];
+
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
+
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
+
+        expect(find.byIcon(Icons.settings), findsOneWidget);
+        expect(find.text('Master: AABBCCDDEEFF'), findsOneWidget);
+      },
+    );
+
+    testWidgets('displays play icon for play-item events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
-          data: {
-            'art-status': 'IMAGE_PRESENT',
-            'art-uri': 'https://example.com/album-art.jpg',
-          },
-          monoTime: 1702908329,
-          time: DateTime.now(),
-          type: 'art-changed',
-        ),
-      ];
-
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
-
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
-
-      expect(find.text('Album art updated'), findsOneWidget);
-    });
-
-    testWidgets('displays art status message for art-changed events with SHOW_DEFAULT_IMAGE', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {
-            'art-status': 'SHOW_DEFAULT_IMAGE',
-          },
-          monoTime: 1702908329,
-          time: DateTime.now(),
-          type: 'art-changed',
-        ),
-      ];
-
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
-
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
-
-      expect(find.text('Using default image'), findsOneWidget);
-    });
-
-    testWidgets('displays balance icon and summary for balance-changed events', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {'balance': 0},
-          monoTime: 12345,
-          time: DateTime.now(),
-          type: 'balance-changed',
-        ),
-      ];
-
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
-
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
-
-      expect(find.byIcon(Icons.tune), findsOneWidget);
-      expect(find.text('Balance: 0'), findsOneWidget);
-    });
-
-    testWidgets('displays language icon and summary for language-changed events', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {'language': 'DISPLAY_LANGUAGE_GERMAN'},
-          monoTime: 12345,
-          time: DateTime.now(),
-          type: 'language-changed',
-        ),
-      ];
-
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
-
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
-
-      expect(find.byIcon(Icons.language), findsOneWidget);
-      expect(find.text('Language: German'), findsOneWidget);
-    });
-
-    testWidgets('displays settings icon and master device summary for masterdevice-changed events', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {'masterDeviceId': 'AABBCCDDEEFF'},
-          monoTime: 12345,
-          time: DateTime.now(),
-          type: 'masterdevice-changed',
-        ),
-      ];
-
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
-
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
-
-      expect(find.byIcon(Icons.settings), findsOneWidget);
-      expect(find.text('Master: AABBCCDDEEFF'), findsOneWidget);
-    });
-
-    testWidgets('displays play icon for play-item events', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {
-            'origin': 'device',
-            'preset': 'none',
-          },
+          data: {'origin': 'device', 'preset': 'none'},
           monoTime: 12345,
           time: DateTime.now(),
           type: 'play-item',
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -1066,7 +1160,9 @@ void main() {
       expect(find.text('Played from device'), findsOneWidget);
     });
 
-    testWidgets('displays power icon and summary for power-pressed events', (WidgetTester tester) async {
+    testWidgets('displays power icon and summary for power-pressed events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {'buttonId': 'POWER', 'origin': 'console'},
@@ -1076,9 +1172,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -1087,181 +1183,204 @@ void main() {
       expect(find.text('Power via console'), findsOneWidget);
     });
 
-    testWidgets('displays preset number from buttonId for preset-pressed events', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {'buttonId': 'PRESET_6', 'origin': 'console'},
-          monoTime: 12345,
-          time: DateTime.now(),
-          type: 'preset-pressed',
-        ),
-      ];
+    testWidgets(
+      'displays preset number from buttonId for preset-pressed events',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {'buttonId': 'PRESET_6', 'origin': 'console'},
+            monoTime: 12345,
+            time: DateTime.now(),
+            type: 'preset-pressed',
+          ),
+        ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
 
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
 
-      expect(find.text('Preset 6'), findsOneWidget);
-    });
+        expect(find.text('Preset 6'), findsOneWidget);
+      },
+    );
 
-    testWidgets('displays shuffle on summary for shuffle-state-changed events', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {'shuffle-state': 'SHUFFLE_ON'},
-          monoTime: 12345,
-          time: DateTime.now(),
-          type: 'shuffle-state-changed',
-        ),
-      ];
+    testWidgets(
+      'displays shuffle on summary for shuffle-state-changed events',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {'shuffle-state': 'SHUFFLE_ON'},
+            monoTime: 12345,
+            time: DateTime.now(),
+            type: 'shuffle-state-changed',
+          ),
+        ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
 
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
 
-      expect(find.text('Shuffle on'), findsOneWidget);
-    });
+        expect(find.text('Shuffle on'), findsOneWidget);
+      },
+    );
 
-    testWidgets('displays skip forward summary for skip-forward-pressed events', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {},
-          monoTime: 12345,
-          time: DateTime.now(),
-          type: 'skip-forward-pressed',
-        ),
-      ];
+    testWidgets(
+      'displays skip forward summary for skip-forward-pressed events',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {},
+            monoTime: 12345,
+            time: DateTime.now(),
+            type: 'skip-forward-pressed',
+          ),
+        ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
 
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
 
-      expect(find.text('Skip forward'), findsOneWidget);
-    });
+        expect(find.text('Skip forward'), findsOneWidget);
+      },
+    );
 
-    testWidgets('displays skip backward summary for skip-backward-pressed events', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {},
-          monoTime: 12345,
-          time: DateTime.now(),
-          type: 'skip-backward-pressed',
-        ),
-      ];
+    testWidgets(
+      'displays skip backward summary for skip-backward-pressed events',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {},
+            monoTime: 12345,
+            time: DateTime.now(),
+            type: 'skip-backward-pressed',
+          ),
+        ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
 
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
 
-      expect(find.text('Skip backward'), findsOneWidget);
-    });
+        expect(find.text('Skip backward'), findsOneWidget);
+      },
+    );
 
-    testWidgets('displays system state summary for system-state-changed events', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {'system-state': 'Standby'},
-          monoTime: 12345,
-          time: DateTime.now(),
-          type: 'system-state-changed',
-        ),
-      ];
+    testWidgets(
+      'displays system state summary for system-state-changed events',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {'system-state': 'Standby'},
+            monoTime: 12345,
+            time: DateTime.now(),
+            type: 'system-state-changed',
+          ),
+        ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
 
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
 
-      expect(find.text('System: Standby'), findsOneWidget);
-    });
+        expect(find.text('System: Standby'), findsOneWidget);
+      },
+    );
 
-    testWidgets('displays master device id and device count for zone-state-changed events with multiple devices', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {
-            'masterDeviceId': 'MASTER000001',
-            'roles': [
-              {'deviceId': 'MASTER000001', 'role': 'MASTER'},
-              {'deviceId': 'SLAVE0000001', 'role': 'SLAVE'},
-            ],
-          },
-          monoTime: 12345,
-          time: DateTime.now(),
-          type: 'zone-state-changed',
-        ),
-      ];
+    testWidgets(
+      'displays master device id and device count for zone-state-changed events with multiple devices',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {
+              'masterDeviceId': 'MASTER000001',
+              'roles': [
+                {'deviceId': 'MASTER000001', 'role': 'MASTER'},
+                {'deviceId': 'SLAVE0000001', 'role': 'SLAVE'},
+              ],
+            },
+            monoTime: 12345,
+            time: DateTime.now(),
+            type: 'zone-state-changed',
+          ),
+        ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
 
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
 
-      expect(find.text('Master: MASTER000001 (2 devices)'), findsOneWidget);
-    });
+        expect(find.text('Master: MASTER000001 (2 devices)'), findsOneWidget);
+      },
+    );
 
-    testWidgets('displays master device id without count for zone-state-changed events with single device', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {
-            'masterDeviceId': 'MASTER000001',
-            'roles': [
-              {'deviceId': 'MASTER000001', 'role': 'MASTER'},
-            ],
-          },
-          monoTime: 12345,
-          time: DateTime.now(),
-          type: 'zone-state-changed',
-        ),
-      ];
+    testWidgets(
+      'displays master device id without count for zone-state-changed events with single device',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {
+              'masterDeviceId': 'MASTER000001',
+              'roles': [
+                {'deviceId': 'MASTER000001', 'role': 'MASTER'},
+              ],
+            },
+            monoTime: 12345,
+            time: DateTime.now(),
+            type: 'zone-state-changed',
+          ),
+        ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
 
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
 
-      expect(find.text('Master: MASTER000001'), findsOneWidget);
-    });
+        expect(find.text('Master: MASTER000001'), findsOneWidget);
+      },
+    );
 
-    testWidgets('displays "Zone disbanded" for zone-state-changed events with no master', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {
-            'masterDeviceId': '',
-            'roles': <Map<String, String>>[],
-          },
-          monoTime: 12345,
-          time: DateTime.now(),
-          type: 'zone-state-changed',
-        ),
-      ];
+    testWidgets(
+      'displays "Zone disbanded" for zone-state-changed events with no master',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {'masterDeviceId': '', 'roles': <Map<String, String>>[]},
+            monoTime: 12345,
+            time: DateTime.now(),
+            type: 'zone-state-changed',
+          ),
+        ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
 
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
 
-      expect(find.text('Zone disbanded'), findsOneWidget);
-    });
+        expect(find.text('Zone disbanded'), findsOneWidget);
+      },
+    );
 
-    testWidgets('displays thumb up icon and summary for like-pressed events', (WidgetTester tester) async {
+    testWidgets('displays thumb up icon and summary for like-pressed events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {'buttonId': 'THUMBS_UP', 'origin': 'ir-remote'},
@@ -1271,9 +1390,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -1282,28 +1401,33 @@ void main() {
       expect(find.text('Like via ir-remote'), findsOneWidget);
     });
 
-    testWidgets('displays thumb down icon and summary for dislike-pressed events', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {'buttonId': 'THUMBS_DOWN', 'origin': 'ir-remote'},
-          monoTime: 12345,
-          time: DateTime.now(),
-          type: 'dislike-pressed',
-        ),
-      ];
+    testWidgets(
+      'displays thumb down icon and summary for dislike-pressed events',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {'buttonId': 'THUMBS_DOWN', 'origin': 'ir-remote'},
+            monoTime: 12345,
+            time: DateTime.now(),
+            type: 'dislike-pressed',
+          ),
+        ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
 
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
 
-      expect(find.byIcon(Icons.thumb_down), findsOneWidget);
-      expect(find.text('Dislike via ir-remote'), findsOneWidget);
-    });
+        expect(find.byIcon(Icons.thumb_down), findsOneWidget);
+        expect(find.text('Dislike via ir-remote'), findsOneWidget);
+      },
+    );
 
-    testWidgets('displays AUX icon and summary for aux-pressed events', (WidgetTester tester) async {
+    testWidgets('displays AUX icon and summary for aux-pressed events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {'buttonId': 'AUX_INPUT', 'origin': 'ir-remote'},
@@ -1313,9 +1437,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -1324,104 +1448,128 @@ void main() {
       expect(find.text('AUX via ir-remote'), findsOneWidget);
     });
 
-    testWidgets('displays star icon and preset names for presets-changed events', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {
-            'presets': [
-              {'id': 'P1', 'name': 'Preset One', 'contentItem': ''},
-              {'id': 'P2', 'name': 'Preset Two', 'contentItem': ''},
-              {'id': 'P3', 'name': 'Preset Three', 'contentItem': ''},
-            ],
-          },
-          monoTime: 12345,
-          time: DateTime.now(),
-          type: 'presets-changed',
-        ),
-      ];
+    testWidgets(
+      'displays star icon and preset names for presets-changed events',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {
+              'presets': [
+                {'id': 'P1', 'name': 'Preset One', 'contentItem': ''},
+                {'id': 'P2', 'name': 'Preset Two', 'contentItem': ''},
+                {'id': 'P3', 'name': 'Preset Three', 'contentItem': ''},
+              ],
+            },
+            monoTime: 12345,
+            time: DateTime.now(),
+            type: 'presets-changed',
+          ),
+        ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
 
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
 
-      expect(find.byIcon(Icons.star), findsOneWidget);
-      expect(find.text('P1: Preset One \u2013 P2: Preset Two \u2013 P3: Preset Three'), findsOneWidget);
-    });
+        expect(find.byIcon(Icons.star), findsOneWidget);
+        expect(
+          find.text(
+            'P1: Preset One \u2013 P2: Preset Two \u2013 P3: Preset Three',
+          ),
+          findsOneWidget,
+        );
+      },
+    );
 
-    testWidgets('displays fallback summary for presets-changed event with no presets', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {'presets': <dynamic>[]},
-          monoTime: 12345,
-          time: DateTime.now(),
-          type: 'presets-changed',
-        ),
-      ];
+    testWidgets(
+      'displays fallback summary for presets-changed event with no presets',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {'presets': <dynamic>[]},
+            monoTime: 12345,
+            time: DateTime.now(),
+            type: 'presets-changed',
+          ),
+        ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
 
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
 
-      expect(find.byIcon(Icons.star), findsOneWidget);
-      expect(find.text('Presets updated'), findsOneWidget);
-    });
+        expect(find.byIcon(Icons.star), findsOneWidget);
+        expect(find.text('Presets updated'), findsOneWidget);
+      },
+    );
 
-    testWidgets('displays equalizer icon and bass value for bass-changed events', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {'bass': -1},
-          monoTime: 12345,
-          time: DateTime.now(),
-          type: 'bass-changed',
-        ),
-      ];
+    testWidgets(
+      'displays equalizer icon and bass value for bass-changed events',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {'bass': -1},
+            monoTime: 12345,
+            time: DateTime.now(),
+            type: 'bass-changed',
+          ),
+        ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
 
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
 
-      expect(find.byIcon(Icons.equalizer), findsOneWidget);
-      expect(find.text('Bass: -1'), findsOneWidget);
-    });
+        expect(find.byIcon(Icons.equalizer), findsOneWidget);
+        expect(find.text('Bass: -1'), findsOneWidget);
+      },
+    );
 
-    testWidgets('displays clock icon and timezone/format for clock-changed events', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {
-            'brightness': 100,
-            'enabled': 'true',
-            'timeformat': 24,
-            'timezone': 'Europe/Berlin',
-            'useroffset': 0,
-            'usertime': 0,
-          },
-          monoTime: 12345,
-          time: DateTime.now(),
-          type: 'clock-changed',
-        ),
-      ];
+    testWidgets(
+      'displays clock icon and timezone/format for clock-changed events',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {
+              'brightness': 100,
+              'enabled': 'true',
+              'timeformat': 24,
+              'timezone': 'Europe/Berlin',
+              'useroffset': 0,
+              'usertime': 0,
+            },
+            monoTime: 12345,
+            time: DateTime.now(),
+            type: 'clock-changed',
+          ),
+        ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
 
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
 
-      expect(find.byIcon(Icons.access_time), findsOneWidget);
-      expect(find.text('Europe/Berlin • 24h • Brightness: 100 • Display: on • Offset: 0 • User time: 0'), findsOneWidget);
-    });
+        expect(find.byIcon(Icons.access_time), findsOneWidget);
+        expect(
+          find.text(
+            'Europe/Berlin • 24h • Brightness: 100 • Display: on • Offset: 0 • User time: 0',
+          ),
+          findsOneWidget,
+        );
+      },
+    );
 
-    testWidgets('displays pause icon and origin for pause-pressed events', (WidgetTester tester) async {
+    testWidgets('displays pause icon and origin for pause-pressed events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {'buttonId': 'PAUSE', 'origin': 'gabbo'},
@@ -1431,9 +1579,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -1442,31 +1590,33 @@ void main() {
       expect(find.text('Pause via gabbo'), findsOneWidget);
     });
 
-    testWidgets('displays star icon and preset/origin for preset-assigned events', (WidgetTester tester) async {
-      final testEvents = [
-        DeviceEvent(
-          data: {
-            'preset': 'P1',
-            'origin': 'device',
-          },
-          monoTime: 12345,
-          time: DateTime.now(),
-          type: 'preset-assigned',
-        ),
-      ];
+    testWidgets(
+      'displays star icon and preset/origin for preset-assigned events',
+      (WidgetTester tester) async {
+        final testEvents = [
+          DeviceEvent(
+            data: {'preset': 'P1', 'origin': 'device'},
+            monoTime: 12345,
+            time: DateTime.now(),
+            type: 'preset-assigned',
+          ),
+        ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+        when(
+          mockApiService.fetchDeviceEvents(any, any, any, any),
+        ).thenAnswer((_) async => testEvents);
 
-      await tester.pumpWidget(createWidgetUnderTest());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(createWidgetUnderTest());
+        await tester.pumpAndSettle();
 
-      expect(find.byIcon(Icons.star), findsOneWidget);
-      expect(find.text('P1 assigned via device'), findsOneWidget);
-    });
+        expect(find.byIcon(Icons.star), findsOneWidget);
+        expect(find.text('P1 assigned via device'), findsOneWidget);
+      },
+    );
 
-    testWidgets('displays stop icon and origin for stop-pressed events', (WidgetTester tester) async {
+    testWidgets('displays stop icon and origin for stop-pressed events', (
+      WidgetTester tester,
+    ) async {
       final testEvents = [
         DeviceEvent(
           data: {'buttonId': 'STOP', 'origin': 'gabbo'},
@@ -1476,9 +1626,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -1510,9 +1660,9 @@ void main() {
         ),
       ];
 
-      when(mockApiService.fetchDeviceEvents(any, any, any, any)).thenAnswer(
-        (_) async => testEvents,
-      );
+      when(
+        mockApiService.fetchDeviceEvents(any, any, any, any),
+      ).thenAnswer((_) async => testEvents);
 
       await tester.pumpWidget(createWidgetUnderTest());
       await tester.pumpAndSettle();
@@ -1531,7 +1681,8 @@ void main() {
       final oldestEventFinder = find.text('old-event');
 
       expect(
-        tester.getTopLeft(newestEventFinder).dy < tester.getTopLeft(oldestEventFinder).dy,
+        tester.getTopLeft(newestEventFinder).dy <
+            tester.getTopLeft(oldestEventFinder).dy,
         isTrue,
         reason: 'Newest event should be displayed before oldest event',
       );

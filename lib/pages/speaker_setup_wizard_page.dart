@@ -634,10 +634,7 @@ class _SpeakerSetupWizardPageState extends State<SpeakerSetupWizardPage> {
           if (_savingDeviceName)
             const Center(child: CircularProgressIndicator())
           else ...[
-            FilledButton(
-              onPressed: _saveDeviceName,
-              child: const Text('Save'),
-            ),
+            FilledButton(onPressed: _saveDeviceName, child: const Text('Save')),
             const SizedBox(height: 12),
             OutlinedButton(
               onPressed: () {

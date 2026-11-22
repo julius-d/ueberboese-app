@@ -10,10 +10,7 @@ import 'package:ueberboese_app/pages/presets/empty_preset_detail_page.dart';
 class PresetsPage extends StatelessWidget {
   final String speakerIp;
 
-  const PresetsPage({
-    super.key,
-    required this.speakerIp,
-  });
+  const PresetsPage({super.key, required this.speakerIp});
 
   @override
   Widget build(BuildContext context) {
@@ -21,16 +18,12 @@ class PresetsPage extends StatelessWidget {
     final appState = context.watch<MyAppState>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Manage Presets'),
-      ),
+      appBar: AppBar(title: const Text('Manage Presets')),
       body: FutureBuilder<List<Preset>>(
         future: appState.getPresets(speakerIp),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (snapshot.hasError) {
@@ -86,10 +79,7 @@ class PresetsPage extends StatelessWidget {
 
               return Card(
                 elevation: 1,
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: ListTile(
                   leading: SizedBox(
                     width: 76,
@@ -111,10 +101,14 @@ class PresetsPage extends StatelessWidget {
                                       return Container(
                                         width: 56,
                                         height: 56,
-                                        color: theme.colorScheme.surfaceContainerHighest,
+                                        color: theme
+                                            .colorScheme
+                                            .surfaceContainerHighest,
                                         child: Icon(
                                           Icons.music_note,
-                                          color: theme.colorScheme.onSurfaceVariant,
+                                          color: theme
+                                              .colorScheme
+                                              .onSurfaceVariant,
                                         ),
                                       );
                                     },
@@ -124,7 +118,9 @@ class PresetsPage extends StatelessWidget {
                                   width: 56,
                                   height: 56,
                                   decoration: BoxDecoration(
-                                    color: theme.colorScheme.surfaceContainerHighest,
+                                    color: theme
+                                        .colorScheme
+                                        .surfaceContainerHighest,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Icon(

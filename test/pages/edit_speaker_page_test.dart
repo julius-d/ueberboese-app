@@ -24,9 +24,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider(
           create: (_) => MyAppState(),
-          child: MaterialApp(
-            home: EditSpeakerPage(speaker: testSpeaker),
-          ),
+          child: MaterialApp(home: EditSpeakerPage(speaker: testSpeaker)),
         ),
       );
 
@@ -39,9 +37,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider(
           create: (_) => MyAppState(),
-          child: MaterialApp(
-            home: EditSpeakerPage(speaker: testSpeaker),
-          ),
+          child: MaterialApp(home: EditSpeakerPage(speaker: testSpeaker)),
         ),
       );
 
@@ -53,9 +49,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider(
           create: (_) => MyAppState(),
-          child: MaterialApp(
-            home: EditSpeakerPage(speaker: testSpeaker),
-          ),
+          child: MaterialApp(home: EditSpeakerPage(speaker: testSpeaker)),
         ),
       );
 
@@ -65,13 +59,13 @@ void main() {
       expect(textField.controller?.text, 'Test Speaker');
     });
 
-    testWidgets('displays selectable speaker type', (WidgetTester tester) async {
+    testWidgets('displays selectable speaker type', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         ChangeNotifierProvider(
           create: (_) => MyAppState(),
-          child: MaterialApp(
-            home: EditSpeakerPage(speaker: testSpeaker),
-          ),
+          child: MaterialApp(home: EditSpeakerPage(speaker: testSpeaker)),
         ),
       );
 
@@ -89,9 +83,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider(
           create: (_) => MyAppState(),
-          child: MaterialApp(
-            home: EditSpeakerPage(speaker: testSpeaker),
-          ),
+          child: MaterialApp(home: EditSpeakerPage(speaker: testSpeaker)),
         ),
       );
 
@@ -109,9 +101,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider(
           create: (_) => MyAppState(),
-          child: MaterialApp(
-            home: EditSpeakerPage(speaker: testSpeaker),
-          ),
+          child: MaterialApp(home: EditSpeakerPage(speaker: testSpeaker)),
         ),
       );
 
@@ -132,14 +122,13 @@ void main() {
       );
     });
 
-    testWidgets('shows emoji selector when tapped',
-        (WidgetTester tester) async {
+    testWidgets('shows emoji selector when tapped', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         ChangeNotifierProvider(
           create: (_) => MyAppState(),
-          child: MaterialApp(
-            home: EditSpeakerPage(speaker: testSpeaker),
-          ),
+          child: MaterialApp(home: EditSpeakerPage(speaker: testSpeaker)),
         ),
       );
 
@@ -158,9 +147,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider(
           create: (_) => MyAppState(),
-          child: MaterialApp(
-            home: EditSpeakerPage(speaker: testSpeaker),
-          ),
+          child: MaterialApp(home: EditSpeakerPage(speaker: testSpeaker)),
         ),
       );
 
@@ -178,14 +165,13 @@ void main() {
       expect(find.text('🔊'), findsNothing);
     });
 
-    testWidgets('hides emoji selector after selection',
-        (WidgetTester tester) async {
+    testWidgets('hides emoji selector after selection', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         ChangeNotifierProvider(
           create: (_) => MyAppState(),
-          child: MaterialApp(
-            home: EditSpeakerPage(speaker: testSpeaker),
-          ),
+          child: MaterialApp(home: EditSpeakerPage(speaker: testSpeaker)),
         ),
       );
 
@@ -203,8 +189,9 @@ void main() {
       expect(find.text('Choose an emoji'), findsNothing);
     });
 
-    testWidgets('saves updated speaker with new emoji',
-        (WidgetTester tester) async {
+    testWidgets('saves updated speaker with new emoji', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
 
       // Add the test speaker to the state
@@ -213,9 +200,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: MaterialApp(
-            home: EditSpeakerPage(speaker: testSpeaker),
-          ),
+          child: MaterialApp(home: EditSpeakerPage(speaker: testSpeaker)),
         ),
       );
 
@@ -230,7 +215,9 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify the speaker was updated in the app state
-      final updatedSpeaker = appState.speakers.firstWhere((s) => s.id == testSpeaker.id);
+      final updatedSpeaker = appState.speakers.firstWhere(
+        (s) => s.id == testSpeaker.id,
+      );
       expect(updatedSpeaker.emoji, '🎵');
       expect(updatedSpeaker.name, testSpeaker.name);
       expect(updatedSpeaker.ipAddress, testSpeaker.ipAddress);
@@ -238,17 +225,16 @@ void main() {
       expect(updatedSpeaker.deviceId, testSpeaker.deviceId);
     });
 
-    testWidgets('preserves all fields except emoji when saving',
-        (WidgetTester tester) async {
+    testWidgets('preserves all fields except emoji when saving', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       appState.addSpeaker(testSpeaker);
 
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: MaterialApp(
-            home: EditSpeakerPage(speaker: testSpeaker),
-          ),
+          child: MaterialApp(home: EditSpeakerPage(speaker: testSpeaker)),
         ),
       );
 
@@ -260,7 +246,9 @@ void main() {
       await tester.tap(find.text('Save Changes'));
       await tester.pumpAndSettle();
 
-      final updatedSpeaker = appState.speakers.firstWhere((s) => s.id == testSpeaker.id);
+      final updatedSpeaker = appState.speakers.firstWhere(
+        (s) => s.id == testSpeaker.id,
+      );
 
       // Only emoji should change
       expect(updatedSpeaker.emoji, '🎧');
@@ -285,7 +273,8 @@ void main() {
                     Navigator.push(
                       context,
                       MaterialPageRoute<void>(
-                        builder: (context) => EditSpeakerPage(speaker: testSpeaker),
+                        builder: (context) =>
+                            EditSpeakerPage(speaker: testSpeaker),
                       ),
                     );
                   },
@@ -316,9 +305,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider(
           create: (_) => MyAppState(),
-          child: MaterialApp(
-            home: EditSpeakerPage(speaker: testSpeaker),
-          ),
+          child: MaterialApp(home: EditSpeakerPage(speaker: testSpeaker)),
         ),
       );
 
@@ -336,9 +323,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider(
           create: (_) => MyAppState(),
-          child: MaterialApp(
-            home: EditSpeakerPage(speaker: testSpeaker),
-          ),
+          child: MaterialApp(home: EditSpeakerPage(speaker: testSpeaker)),
         ),
       );
 
@@ -365,9 +350,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: MaterialApp(
-            home: EditSpeakerPage(speaker: testSpeaker),
-          ),
+          child: MaterialApp(home: EditSpeakerPage(speaker: testSpeaker)),
         ),
       );
 
@@ -382,10 +365,11 @@ void main() {
       await tester.pumpAndSettle();
 
       // Verify the speaker was updated
-      final updatedSpeaker = appState.speakers.firstWhere((s) => s.id == testSpeaker.id);
+      final updatedSpeaker = appState.speakers.firstWhere(
+        (s) => s.id == testSpeaker.id,
+      );
       expect(updatedSpeaker.name, 'Test Speaker'); // Name unchanged
       expect(updatedSpeaker.emoji, '🎵'); // Emoji changed
     });
-
   });
 }

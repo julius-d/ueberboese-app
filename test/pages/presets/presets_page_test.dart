@@ -26,21 +26,17 @@ void main() {
     Widget createWidgetWithProvider(Widget child) {
       return ChangeNotifierProvider<MyAppState>.value(
         value: appState,
-        child: MaterialApp(
-          home: child,
-        ),
+        child: MaterialApp(home: child),
       );
     }
 
-    testWidgets('shows loading indicator initially', (WidgetTester tester) async {
+    testWidgets('shows loading indicator initially', (
+      WidgetTester tester,
+    ) async {
       appState.setTestPresets(testSpeakerIp, []);
 
       await tester.pumpWidget(
-        createWidgetWithProvider(
-          const PresetsPage(
-            speakerIp: testSpeakerIp,
-          ),
-        ),
+        createWidgetWithProvider(const PresetsPage(speakerIp: testSpeakerIp)),
       );
 
       // Should show loading indicator initially
@@ -54,11 +50,7 @@ void main() {
       appState.setTestPresets(testSpeakerIp, []);
 
       await tester.pumpWidget(
-        createWidgetWithProvider(
-          const PresetsPage(
-            speakerIp: testSpeakerIp,
-          ),
-        ),
+        createWidgetWithProvider(const PresetsPage(speakerIp: testSpeakerIp)),
       );
 
       // Should have "Manage Presets" title in app bar
@@ -69,18 +61,16 @@ void main() {
       appState.setTestPresets(testSpeakerIp, []);
 
       await tester.pumpWidget(
-        createWidgetWithProvider(
-          const PresetsPage(
-            speakerIp: testSpeakerIp,
-          ),
-        ),
+        createWidgetWithProvider(const PresetsPage(speakerIp: testSpeakerIp)),
       );
 
       // Widget should build successfully
       expect(find.byType(PresetsPage), findsOneWidget);
     });
 
-    testWidgets('displays all 6 preset slots when some are empty', (WidgetTester tester) async {
+    testWidgets('displays all 6 preset slots when some are empty', (
+      WidgetTester tester,
+    ) async {
       // Only return presets for slots 1 and 3
       final presets = [
         const Preset(
@@ -104,11 +94,7 @@ void main() {
       appState.setTestPresets(testSpeakerIp, presets);
 
       await tester.pumpWidget(
-        createWidgetWithProvider(
-          const PresetsPage(
-            speakerIp: testSpeakerIp,
-          ),
-        ),
+        createWidgetWithProvider(const PresetsPage(speakerIp: testSpeakerIp)),
       );
 
       await tester.pumpAndSettle();
@@ -125,7 +111,9 @@ void main() {
       expect(find.text('6'), findsOneWidget);
     });
 
-    testWidgets('displays empty preset cards with correct UI', (WidgetTester tester) async {
+    testWidgets('displays empty preset cards with correct UI', (
+      WidgetTester tester,
+    ) async {
       // Return only one preset, leaving 5 empty
       final presets = [
         const Preset(
@@ -141,11 +129,7 @@ void main() {
       appState.setTestPresets(testSpeakerIp, presets);
 
       await tester.pumpWidget(
-        createWidgetWithProvider(
-          const PresetsPage(
-            speakerIp: testSpeakerIp,
-          ),
-        ),
+        createWidgetWithProvider(const PresetsPage(speakerIp: testSpeakerIp)),
       );
 
       await tester.pumpAndSettle();
@@ -160,16 +144,14 @@ void main() {
       expect(find.byIcon(Icons.add), findsNWidgets(5));
     });
 
-    testWidgets('navigates to EmptyPresetDetailPage when tapping empty card', (WidgetTester tester) async {
+    testWidgets('navigates to EmptyPresetDetailPage when tapping empty card', (
+      WidgetTester tester,
+    ) async {
       // All presets empty
       appState.setTestPresets(testSpeakerIp, []);
 
       await tester.pumpWidget(
-        createWidgetWithProvider(
-          const PresetsPage(
-            speakerIp: testSpeakerIp,
-          ),
-        ),
+        createWidgetWithProvider(const PresetsPage(speakerIp: testSpeakerIp)),
       );
 
       await tester.pumpAndSettle();
@@ -183,39 +165,40 @@ void main() {
       expect(find.text('Preset 1'), findsOneWidget);
     });
 
-    testWidgets('navigates to appropriate detail page when tapping existing preset', (WidgetTester tester) async {
-      final presets = [
-        const Preset(
-          id: '1',
-          itemName: 'My Spotify Playlist',
-          source: 'SPOTIFY',
-          location: '/test',
-          type: 'playlist',
-          isPresetable: true,
-        ),
-      ];
-
-      appState.setTestPresets(testSpeakerIp, presets);
-
-      await tester.pumpWidget(
-        createWidgetWithProvider(
-          const PresetsPage(
-            speakerIp: testSpeakerIp,
+    testWidgets(
+      'navigates to appropriate detail page when tapping existing preset',
+      (WidgetTester tester) async {
+        final presets = [
+          const Preset(
+            id: '1',
+            itemName: 'My Spotify Playlist',
+            source: 'SPOTIFY',
+            location: '/test',
+            type: 'playlist',
+            isPresetable: true,
           ),
-        ),
-      );
+        ];
 
-      await tester.pumpAndSettle();
+        appState.setTestPresets(testSpeakerIp, presets);
 
-      // Tap the Spotify preset card
-      await tester.tap(find.text('My Spotify Playlist'));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          createWidgetWithProvider(const PresetsPage(speakerIp: testSpeakerIp)),
+        );
 
-      // Should navigate to SpotifyPresetDetailPage
-      expect(find.byType(SpotifyPresetDetailPage), findsOneWidget);
-    });
+        await tester.pumpAndSettle();
 
-    testWidgets('displays all 6 preset slots when all are assigned', (WidgetTester tester) async {
+        // Tap the Spotify preset card
+        await tester.tap(find.text('My Spotify Playlist'));
+        await tester.pumpAndSettle();
+
+        // Should navigate to SpotifyPresetDetailPage
+        expect(find.byType(SpotifyPresetDetailPage), findsOneWidget);
+      },
+    );
+
+    testWidgets('displays all 6 preset slots when all are assigned', (
+      WidgetTester tester,
+    ) async {
       final presets = List.generate(
         6,
         (index) => Preset(
@@ -231,11 +214,7 @@ void main() {
       appState.setTestPresets(testSpeakerIp, presets);
 
       await tester.pumpWidget(
-        createWidgetWithProvider(
-          const PresetsPage(
-            speakerIp: testSpeakerIp,
-          ),
-        ),
+        createWidgetWithProvider(const PresetsPage(speakerIp: testSpeakerIp)),
       );
 
       await tester.pumpAndSettle();

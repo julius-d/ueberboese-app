@@ -24,9 +24,15 @@ void main() {
 
       expect(detail.guideId, 's288368');
       expect(detail.name, 'Radio Potsdam');
-      expect(detail.logo, 'https://cdn-profiles.tunein.com/s288368/images/logoq.png');
+      expect(
+        detail.logo,
+        'https://cdn-profiles.tunein.com/s288368/images/logoq.png',
+      );
       expect(detail.slogan, 'WILLKOMMEN ZUHAUSE');
-      expect(detail.description, 'Das Radio für Potsdam, die Mittelmark, Teltow-Fläming und das Havelland.');
+      expect(
+        detail.description,
+        'Das Radio für Potsdam, die Mittelmark, Teltow-Fläming und das Havelland.',
+      );
       expect(detail.url, 'http://www.radio-potsdam.de');
       expect(detail.location, 'Germany');
       expect(detail.genreName, 'Adult Hits');

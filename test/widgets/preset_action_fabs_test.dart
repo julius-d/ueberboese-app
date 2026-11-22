@@ -60,16 +60,22 @@ void main() {
         ),
       );
 
-      final playFab = find.widgetWithIcon(FloatingActionButton, Icons.play_arrow);
+      final playFab = find.widgetWithIcon(
+        FloatingActionButton,
+        Icons.play_arrow,
+      );
       expect(playFab, findsOneWidget);
 
       final fabWidget = tester.widget<FloatingActionButton>(playFab);
       expect(fabWidget.tooltip, 'Play preset');
     });
 
-    testWidgets('calls selectPreset when play FAB is tapped', (WidgetTester tester) async {
-      when(mockSpeakerApiService.selectPreset(any, any))
-          .thenAnswer((_) async => Future.value());
+    testWidgets('calls selectPreset when play FAB is tapped', (
+      WidgetTester tester,
+    ) async {
+      when(
+        mockSpeakerApiService.selectPreset(any, any),
+      ).thenAnswer((_) async => Future.value());
 
       await tester.pumpWidget(
         MaterialApp(
@@ -84,16 +90,23 @@ void main() {
       );
 
       // Tap the play FAB
-      await tester.tap(find.widgetWithIcon(FloatingActionButton, Icons.play_arrow));
+      await tester.tap(
+        find.widgetWithIcon(FloatingActionButton, Icons.play_arrow),
+      );
       await tester.pump();
 
       // Verify the API was called
-      verify(mockSpeakerApiService.selectPreset(testSpeakerIp, testPreset)).called(1);
+      verify(
+        mockSpeakerApiService.selectPreset(testSpeakerIp, testPreset),
+      ).called(1);
     });
 
-    testWidgets('shows loading indicator when playing preset', (WidgetTester tester) async {
-      when(mockSpeakerApiService.selectPreset(any, any))
-          .thenAnswer((_) => Future.delayed(const Duration(seconds: 1)));
+    testWidgets('shows loading indicator when playing preset', (
+      WidgetTester tester,
+    ) async {
+      when(
+        mockSpeakerApiService.selectPreset(any, any),
+      ).thenAnswer((_) => Future.delayed(const Duration(seconds: 1)));
 
       await tester.pumpWidget(
         MaterialApp(
@@ -108,7 +121,9 @@ void main() {
       );
 
       // Tap the play FAB
-      await tester.tap(find.widgetWithIcon(FloatingActionButton, Icons.play_arrow));
+      await tester.tap(
+        find.widgetWithIcon(FloatingActionButton, Icons.play_arrow),
+      );
       await tester.pump();
 
       // Should show loading indicator
@@ -123,9 +138,12 @@ void main() {
       expect(find.byIcon(Icons.play_arrow), findsOneWidget);
     });
 
-    testWidgets('shows success snackbar when preset plays successfully', (WidgetTester tester) async {
-      when(mockSpeakerApiService.selectPreset(any, any))
-          .thenAnswer((_) async => Future.value());
+    testWidgets('shows success snackbar when preset plays successfully', (
+      WidgetTester tester,
+    ) async {
+      when(
+        mockSpeakerApiService.selectPreset(any, any),
+      ).thenAnswer((_) async => Future.value());
 
       await tester.pumpWidget(
         MaterialApp(
@@ -140,16 +158,21 @@ void main() {
       );
 
       // Tap the play FAB
-      await tester.tap(find.widgetWithIcon(FloatingActionButton, Icons.play_arrow));
+      await tester.tap(
+        find.widgetWithIcon(FloatingActionButton, Icons.play_arrow),
+      );
       await tester.pumpAndSettle();
 
       // Verify success snackbar
       expect(find.text('Playing Test Playlist'), findsOneWidget);
     });
 
-    testWidgets('shows error snackbar when preset fails to play', (WidgetTester tester) async {
-      when(mockSpeakerApiService.selectPreset(any, any))
-          .thenThrow(Exception('Network error'));
+    testWidgets('shows error snackbar when preset fails to play', (
+      WidgetTester tester,
+    ) async {
+      when(
+        mockSpeakerApiService.selectPreset(any, any),
+      ).thenThrow(Exception('Network error'));
 
       await tester.pumpWidget(
         MaterialApp(
@@ -164,7 +187,9 @@ void main() {
       );
 
       // Tap the play FAB
-      await tester.tap(find.widgetWithIcon(FloatingActionButton, Icons.play_arrow));
+      await tester.tap(
+        find.widgetWithIcon(FloatingActionButton, Icons.play_arrow),
+      );
       await tester.pumpAndSettle();
 
       // Verify error snackbar
@@ -172,9 +197,12 @@ void main() {
       expect(find.textContaining('Network error'), findsOneWidget);
     });
 
-    testWidgets('play FAB is disabled while loading', (WidgetTester tester) async {
-      when(mockSpeakerApiService.selectPreset(any, any))
-          .thenAnswer((_) => Future.delayed(const Duration(seconds: 1)));
+    testWidgets('play FAB is disabled while loading', (
+      WidgetTester tester,
+    ) async {
+      when(
+        mockSpeakerApiService.selectPreset(any, any),
+      ).thenAnswer((_) => Future.delayed(const Duration(seconds: 1)));
 
       await tester.pumpWidget(
         MaterialApp(
@@ -189,7 +217,9 @@ void main() {
       );
 
       // Tap the play FAB
-      await tester.tap(find.widgetWithIcon(FloatingActionButton, Icons.play_arrow));
+      await tester.tap(
+        find.widgetWithIcon(FloatingActionButton, Icons.play_arrow),
+      );
       await tester.pump();
 
       // Try to tap again while loading
@@ -197,12 +227,16 @@ void main() {
       await tester.pump();
 
       // Should only be called once
-      verify(mockSpeakerApiService.selectPreset(testSpeakerIp, testPreset)).called(1);
+      verify(
+        mockSpeakerApiService.selectPreset(testSpeakerIp, testPreset),
+      ).called(1);
 
       await tester.pumpAndSettle();
     });
 
-    testWidgets('edit FAB expands to show options', (WidgetTester tester) async {
+    testWidgets('edit FAB expands to show options', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -243,7 +277,10 @@ void main() {
 
       // Initially not expanded - labels are rendered but not visible due to opacity
       // Check for the sub-FABs instead
-      expect(find.byIcon(Icons.audiotrack), findsOneWidget); // Spotify icon is always rendered
+      expect(
+        find.byIcon(Icons.audiotrack),
+        findsOneWidget,
+      ); // Spotify icon is always rendered
 
       // Expand using notifier
       expandedNotifier.value = true;
@@ -261,7 +298,9 @@ void main() {
       // So we can't test text visibility - the test passes if no exceptions occur
     });
 
-    testWidgets('play and edit FABs are stacked vertically', (WidgetTester tester) async {
+    testWidgets('play and edit FABs are stacked vertically', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(

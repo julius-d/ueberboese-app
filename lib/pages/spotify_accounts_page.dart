@@ -66,11 +66,14 @@ class _SpotifyAccountsPageState extends State<SpotifyAccountsPage> {
 
     try {
       // Listen to all incoming links
-      _linkSubscription = _appLinks.uriLinkStream.listen((Uri uri) {
-        _handleIncomingLink(uri);
-      }, onError: (Object err) {
-        debugPrint('Error listening to deep links: $err');
-      });
+      _linkSubscription = _appLinks.uriLinkStream.listen(
+        (Uri uri) {
+          _handleIncomingLink(uri);
+        },
+        onError: (Object err) {
+          debugPrint('Error listening to deep links: $err');
+        },
+      );
 
       // Note: We intentionally don't check getInitialLink() here to avoid
       // processing stale auth codes when navigating back to this page.
@@ -270,11 +273,14 @@ class _SpotifyAccountsPageState extends State<SpotifyAccountsPage> {
       final months = (difference.inDays / 30).floor();
       relativeTime = '$months ${months == 1 ? 'month' : 'months'} ago';
     } else if (difference.inDays > 0) {
-      relativeTime = '${difference.inDays} ${difference.inDays == 1 ? 'day' : 'days'} ago';
+      relativeTime =
+          '${difference.inDays} ${difference.inDays == 1 ? 'day' : 'days'} ago';
     } else if (difference.inHours > 0) {
-      relativeTime = '${difference.inHours} ${difference.inHours == 1 ? 'hour' : 'hours'} ago';
+      relativeTime =
+          '${difference.inHours} ${difference.inHours == 1 ? 'hour' : 'hours'} ago';
     } else if (difference.inMinutes > 0) {
-      relativeTime = '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute' : 'minutes'} ago';
+      relativeTime =
+          '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute' : 'minutes'} ago';
     } else {
       relativeTime = 'just now';
     }
@@ -290,9 +296,7 @@ class _SpotifyAccountsPageState extends State<SpotifyAccountsPage> {
     Widget content;
 
     if (_isLoadingAccounts) {
-      content = const Center(
-        child: CircularProgressIndicator(),
-      );
+      content = const Center(child: CircularProgressIndicator());
     } else if (_accounts.isEmpty) {
       content = Center(
         child: Column(
@@ -312,8 +316,8 @@ class _SpotifyAccountsPageState extends State<SpotifyAccountsPage> {
             Text(
               'No Spotify accounts connected yet.',
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -324,10 +328,7 @@ class _SpotifyAccountsPageState extends State<SpotifyAccountsPage> {
         itemBuilder: (context, index) {
           final account = _accounts[index];
           return Card(
-            margin: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 8,
-            ),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: ListTile(
               leading: Icon(
                 Icons.music_note,
@@ -336,9 +337,9 @@ class _SpotifyAccountsPageState extends State<SpotifyAccountsPage> {
               ),
               title: Text(
                 account.displayName,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               subtitle: Text(
                 _formatAccountDate(account.createdAt),

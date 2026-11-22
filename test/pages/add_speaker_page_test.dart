@@ -11,9 +11,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider(
           create: (_) => MyAppState(),
-          child: const MaterialApp(
-            home: AddSpeakerPage(),
-          ),
+          child: const MaterialApp(home: AddSpeakerPage()),
         ),
       );
 
@@ -31,9 +29,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider(
           create: (_) => MyAppState(),
-          child: const MaterialApp(
-            home: AddSpeakerPage(),
-          ),
+          child: const MaterialApp(home: AddSpeakerPage()),
         ),
       );
 
@@ -45,9 +41,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider(
           create: (_) => MyAppState(),
-          child: const MaterialApp(
-            home: AddSpeakerPage(),
-          ),
+          child: const MaterialApp(home: AddSpeakerPage()),
         ),
       );
 
@@ -58,14 +52,13 @@ void main() {
       expect(find.text('Please enter an IP address'), findsOneWidget);
     });
 
-    testWidgets('validates invalid IP address format',
-        (WidgetTester tester) async {
+    testWidgets('validates invalid IP address format', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         ChangeNotifierProvider(
           create: (_) => MyAppState(),
-          child: const MaterialApp(
-            home: AddSpeakerPage(),
-          ),
+          child: const MaterialApp(home: AddSpeakerPage()),
         ),
       );
 
@@ -80,14 +73,13 @@ void main() {
       expect(find.text('Please enter a valid IP address'), findsOneWidget);
     });
 
-    testWidgets('shows emoji selector when tapped',
-        (WidgetTester tester) async {
+    testWidgets('shows emoji selector when tapped', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         ChangeNotifierProvider(
           create: (_) => MyAppState(),
-          child: const MaterialApp(
-            home: AddSpeakerPage(),
-          ),
+          child: const MaterialApp(home: AddSpeakerPage()),
         ),
       );
 
@@ -106,9 +98,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider(
           create: (_) => MyAppState(),
-          child: const MaterialApp(
-            home: AddSpeakerPage(),
-          ),
+          child: const MaterialApp(home: AddSpeakerPage()),
         ),
       );
 
@@ -124,8 +114,9 @@ void main() {
       expect(find.text('🎵'), findsOneWidget);
     });
 
-    testWidgets('preselects unused emoji when speakers exist',
-        (WidgetTester tester) async {
+    testWidgets('preselects unused emoji when speakers exist', (
+      WidgetTester tester,
+    ) async {
       // Create app state with existing speakers using first two emojis
       final appState = MyAppState();
 
@@ -153,15 +144,16 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: const MaterialApp(
-            home: AddSpeakerPage(),
-          ),
+          child: const MaterialApp(home: AddSpeakerPage()),
         ),
       );
 
       // Should preselect third emoji (🎶) since first two are used
       expect(find.text('🎶'), findsOneWidget);
-      expect(find.text('🔊'), findsNothing); // First emoji should not be shown as selected
+      expect(
+        find.text('🔊'),
+        findsNothing,
+      ); // First emoji should not be shown as selected
     });
   });
 }

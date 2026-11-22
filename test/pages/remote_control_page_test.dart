@@ -16,9 +16,7 @@ void main() {
 
     testWidgets('displays speaker name in AppBar', (WidgetTester tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: RemoteControlPage(speaker: testSpeaker),
-        ),
+        const MaterialApp(home: RemoteControlPage(speaker: testSpeaker)),
       );
 
       expect(find.text('🔊'), findsOneWidget);
@@ -28,9 +26,7 @@ void main() {
 
     testWidgets('displays all required buttons', (WidgetTester tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: RemoteControlPage(speaker: testSpeaker),
-        ),
+        const MaterialApp(home: RemoteControlPage(speaker: testSpeaker)),
       );
 
       // Check for all button labels
@@ -52,9 +48,7 @@ void main() {
 
     testWidgets('displays all required icons', (WidgetTester tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: RemoteControlPage(speaker: testSpeaker),
-        ),
+        const MaterialApp(home: RemoteControlPage(speaker: testSpeaker)),
       );
 
       // Check for all button icons

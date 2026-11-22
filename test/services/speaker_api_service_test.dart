@@ -31,7 +31,11 @@ void main() {
 </info>''';
 
       when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        (_) async => http.Response(
+          xmlResponse,
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
       final speakerInfo = await apiService.fetchSpeakerInfo('192.168.1.100');
@@ -68,7 +72,11 @@ void main() {
 </info>''';
 
       when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        (_) async => http.Response(
+          xmlResponse,
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
       final speakerInfo = await apiService.fetchSpeakerInfo('192.168.178.26');
@@ -93,7 +101,11 @@ void main() {
 </info>''';
 
       when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        (_) async => http.Response(
+          xmlResponse,
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
       final speakerInfo = await apiService.fetchSpeakerInfo('192.168.1.50');
@@ -101,7 +113,10 @@ void main() {
       expect(speakerInfo.name, 'Bedroom');
       expect(speakerInfo.type, 'SoundTouch 20');
       expect(speakerInfo.deviceId, '123456789ABC');
-      expect(speakerInfo.margeUrl, 'https://worldwide.bose.com/updates/soundtouch');
+      expect(
+        speakerInfo.margeUrl,
+        'https://worldwide.bose.com/updates/soundtouch',
+      );
       expect(speakerInfo.accountId, isNull);
     });
 
@@ -123,7 +138,11 @@ void main() {
 </info>''';
 
       when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        (_) async => http.Response(
+          xmlResponse,
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
       final speakerInfo = await apiService.fetchSpeakerInfo('192.168.1.2');
@@ -132,8 +151,10 @@ void main() {
       expect(speakerInfo.accountId, 'ACCOUNT789');
     });
 
-    test('fetchSpeakerInfo returns null accountId when margeAccountUUID is missing', () async {
-      const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
+    test(
+      'fetchSpeakerInfo returns null accountId when margeAccountUUID is missing',
+      () async {
+        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
 <info deviceID="TEST456">
   <name>Speaker Without Account</name>
   <type>SoundTouch 20</type>
@@ -144,15 +165,20 @@ void main() {
   </networkInfo>
 </info>''';
 
-      when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
-      );
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
+        );
 
-      final speakerInfo = await apiService.fetchSpeakerInfo('192.168.1.5');
+        final speakerInfo = await apiService.fetchSpeakerInfo('192.168.1.5');
 
-      expect(speakerInfo.deviceId, 'TEST456');
-      expect(speakerInfo.accountId, isNull);
-    });
+        expect(speakerInfo.deviceId, 'TEST456');
+        expect(speakerInfo.accountId, isNull);
+      },
+    );
 
     test('fetchSpeakerInfo throws exception when name is missing', () async {
       const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
@@ -161,7 +187,11 @@ void main() {
 </info>''';
 
       when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        (_) async => http.Response(
+          xmlResponse,
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
       expect(
@@ -177,7 +207,11 @@ void main() {
 </info>''';
 
       when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        (_) async => http.Response(
+          xmlResponse,
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
       expect(
@@ -186,22 +220,29 @@ void main() {
       );
     });
 
-    test('fetchSpeakerInfo throws exception when deviceID is missing', () async {
-      const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
+    test(
+      'fetchSpeakerInfo throws exception when deviceID is missing',
+      () async {
+        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
 <info>
   <name>Test Speaker</name>
   <type>SoundTouch 10</type>
 </info>''';
 
-      when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
-      );
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
+        );
 
-      expect(
-        () => apiService.fetchSpeakerInfo('192.168.1.100'),
-        throwsA(isA<Exception>()),
-      );
-    });
+        expect(
+          () => apiService.fetchSpeakerInfo('192.168.1.100'),
+          throwsA(isA<Exception>()),
+        );
+      },
+    );
 
     test('fetchSpeakerInfo throws exception when deviceID is empty', () async {
       const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
@@ -211,7 +252,11 @@ void main() {
 </info>''';
 
       when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        (_) async => http.Response(
+          xmlResponse,
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
       expect(
@@ -221,9 +266,9 @@ void main() {
     });
 
     test('fetchSpeakerInfo throws exception on non-200 status code', () async {
-      when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response('Not Found', 404),
-      );
+      when(
+        mockClient.get(any),
+      ).thenAnswer((_) async => http.Response('Not Found', 404));
 
       expect(
         () => apiService.fetchSpeakerInfo('192.168.1.100'),
@@ -231,8 +276,10 @@ void main() {
       );
     });
 
-    test('createSpeakerFromIp creates speaker with correct deviceId from speakerInfo', () async {
-      const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
+    test(
+      'createSpeakerFromIp creates speaker with correct deviceId from speakerInfo',
+      () async {
+        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
 <info deviceID="587A628A4073">
   <name>Living Room</name>
   <type>SoundTouch 10</type>
@@ -240,49 +287,73 @@ void main() {
   <margeURL>https://ueberboese.example.com</margeURL>
 </info>''';
 
-      when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
-      );
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
+        );
 
-      final speaker = await apiService.createSpeakerFromIp('192.168.1.100', '🔊');
+        final speaker = await apiService.createSpeakerFromIp(
+          '192.168.1.100',
+          '🔊',
+        );
 
-      expect(speaker.name, 'Living Room');
-      expect(speaker.type, 'SoundTouch 10');
-      expect(speaker.deviceId, '587A628A4073');  // deviceId from deviceID attribute, NOT from margeAccountUUID
-      expect(speaker.emoji, '🔊');
-      expect(speaker.ipAddress, '192.168.1.100');
-      expect(speaker.id, isNotEmpty);
-    });
+        expect(speaker.name, 'Living Room');
+        expect(speaker.type, 'SoundTouch 10');
+        expect(
+          speaker.deviceId,
+          '587A628A4073',
+        ); // deviceId from deviceID attribute, NOT from margeAccountUUID
+        expect(speaker.emoji, '🔊');
+        expect(speaker.ipAddress, '192.168.1.100');
+        expect(speaker.id, isNotEmpty);
+      },
+    );
 
-    test('createSpeakerFromIp creates speaker with deviceId even when accountId present', () async {
-      const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
+    test(
+      'createSpeakerFromIp creates speaker with deviceId even when accountId present',
+      () async {
+        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
 <info deviceID="ABC123DEF456">
   <name>Kitchen</name>
   <type>SoundTouch 20</type>
   <margeAccountUUID>ACCOUNT789</margeAccountUUID>
 </info>''';
 
-      when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
-      );
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
+        );
 
-      final speaker = await apiService.createSpeakerFromIp('192.168.1.50', '🎵');
+        final speaker = await apiService.createSpeakerFromIp(
+          '192.168.1.50',
+          '🎵',
+        );
 
-      // Verify deviceId comes from deviceID attribute, not margeAccountUUID
-      expect(speaker.deviceId, 'ABC123DEF456');
-      expect(speaker.deviceId, isNot('ACCOUNT789'));
-    });
+        // Verify deviceId comes from deviceID attribute, not margeAccountUUID
+        expect(speaker.deviceId, 'ABC123DEF456');
+        expect(speaker.deviceId, isNot('ACCOUNT789'));
+      },
+    );
 
-    test('createSpeakerFromIp throws exception when fetchSpeakerInfo fails', () async {
-      when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response('Not Found', 404),
-      );
+    test(
+      'createSpeakerFromIp throws exception when fetchSpeakerInfo fails',
+      () async {
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response('Not Found', 404));
 
-      expect(
-        () => apiService.createSpeakerFromIp('192.168.1.100', '🔊'),
-        throwsA(isA<Exception>()),
-      );
-    });
+        expect(
+          () => apiService.createSpeakerFromIp('192.168.1.100', '🔊'),
+          throwsA(isA<Exception>()),
+        );
+      },
+    );
 
     test('createSpeakerFromIp creates unique IDs for speakers', () async {
       const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
@@ -292,13 +363,23 @@ void main() {
 </info>''';
 
       when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        (_) async => http.Response(
+          xmlResponse,
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
-      final speaker1 = await apiService.createSpeakerFromIp('192.168.1.100', '🔊');
+      final speaker1 = await apiService.createSpeakerFromIp(
+        '192.168.1.100',
+        '🔊',
+      );
       // Small delay to ensure different timestamp
       await Future<void>.delayed(const Duration(milliseconds: 2));
-      final speaker2 = await apiService.createSpeakerFromIp('192.168.1.100', '🔊');
+      final speaker2 = await apiService.createSpeakerFromIp(
+        '192.168.1.100',
+        '🔊',
+      );
 
       expect(speaker1.id, isNot(equals(speaker2.id)));
     });
@@ -312,7 +393,11 @@ void main() {
 </volume>''';
 
       when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        (_) async => http.Response(
+          xmlResponse,
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
       final volume = await apiService.getVolume('192.168.1.100');
@@ -331,7 +416,11 @@ void main() {
 </volume>''';
 
       when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        (_) async => http.Response(
+          xmlResponse,
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
       final volume = await apiService.getVolume('192.168.1.100');
@@ -349,8 +438,18 @@ void main() {
   <muteenabled>false</muteenabled>
 </volume>''';
 
-      when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
-        (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+      when(
+        mockClient.post(
+          any,
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        ),
+      ).thenAnswer(
+        (_) async => http.Response(
+          xmlResponse,
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
       final volume = await apiService.setVolume('192.168.1.100', 75);
@@ -360,11 +459,13 @@ void main() {
       expect(volume.muteEnabled, false);
 
       // Verify the request was made with correct XML body
-      verify(mockClient.post(
-        any,
-        headers: {'Content-Type': 'text/xml'},
-        body: '<volume>75</volume>',
-      )).called(1);
+      verify(
+        mockClient.post(
+          any,
+          headers: {'Content-Type': 'text/xml'},
+          body: '<volume>75</volume>',
+        ),
+      ).called(1);
     });
 
     test('setVolume throws ArgumentError for volume < 0', () async {
@@ -396,12 +497,32 @@ void main() {
   <muteenabled>false</muteenabled>
 </volume>''';
 
-      when(mockClient.post(any, headers: anyNamed('headers'), body: '<volume>0</volume>')).thenAnswer(
-        (_) async => http.Response(xmlResponse0, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+      when(
+        mockClient.post(
+          any,
+          headers: anyNamed('headers'),
+          body: '<volume>0</volume>',
+        ),
+      ).thenAnswer(
+        (_) async => http.Response(
+          xmlResponse0,
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
-      when(mockClient.post(any, headers: anyNamed('headers'), body: '<volume>100</volume>')).thenAnswer(
-        (_) async => http.Response(xmlResponse100, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+      when(
+        mockClient.post(
+          any,
+          headers: anyNamed('headers'),
+          body: '<volume>100</volume>',
+        ),
+      ).thenAnswer(
+        (_) async => http.Response(
+          xmlResponse100,
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
       final volume0 = await apiService.setVolume('192.168.1.100', 0);
@@ -412,9 +533,9 @@ void main() {
     });
 
     test('getVolume throws exception on non-200 status code', () async {
-      when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response('Not Found', 404),
-      );
+      when(
+        mockClient.get(any),
+      ).thenAnswer((_) async => http.Response('Not Found', 404));
 
       expect(
         () => apiService.getVolume('192.168.1.100'),
@@ -423,9 +544,13 @@ void main() {
     });
 
     test('setVolume throws exception on non-200 status code', () async {
-      when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
-        (_) async => http.Response('Not Found', 404),
-      );
+      when(
+        mockClient.post(
+          any,
+          headers: anyNamed('headers'),
+          body: anyNamed('body'),
+        ),
+      ).thenAnswer((_) async => http.Response('Not Found', 404));
 
       expect(
         () => apiService.setVolume('192.168.1.100', 50),
@@ -439,7 +564,11 @@ void main() {
 <zone />''';
 
         when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         final zone = await apiService.getZone('192.168.1.131');
@@ -455,7 +584,11 @@ void main() {
 </zone>''';
 
         when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         final zone = await apiService.getZone('192.168.1.131');
@@ -478,7 +611,11 @@ void main() {
 </zone>''';
 
         when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         final zone = await apiService.getZone('192.168.1.130');
@@ -500,7 +637,11 @@ void main() {
 </zone>''';
 
         when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         final zone = await apiService.getZone('192.168.1.100');
@@ -534,7 +675,11 @@ void main() {
 </zone>''';
 
         when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         final zone = await apiService.getZone('192.168.1.101');
@@ -562,83 +707,151 @@ void main() {
         const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
 <status>/setZone</status>''';
 
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer(
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         final members = [
-          const ZoneMember(deviceId: '1004567890AA', ipAddress: '192.168.1.131'),
-          const ZoneMember(deviceId: '3004567890BB', ipAddress: '192.168.1.130'),
+          const ZoneMember(
+            deviceId: '1004567890AA',
+            ipAddress: '192.168.1.131',
+          ),
+          const ZoneMember(
+            deviceId: '3004567890BB',
+            ipAddress: '192.168.1.130',
+          ),
         ];
 
         await apiService.createZone('192.168.1.131', '1004567890AA', members);
 
-        final captured = verify(mockClient.post(
-          any,
-          headers: {'Content-Type': 'text/xml'},
-          body: captureAnyNamed('body'),
-        )).captured;
+        final captured = verify(
+          mockClient.post(
+            any,
+            headers: {'Content-Type': 'text/xml'},
+            body: captureAnyNamed('body'),
+          ),
+        ).captured;
 
         final body = captured[0] as String;
         expect(body, contains('<zone master="1004567890AA">'));
-        expect(body, contains('<member ipaddress="192.168.1.131">1004567890AA</member>'));
-        expect(body, contains('<member ipaddress="192.168.1.130">3004567890BB</member>'));
+        expect(
+          body,
+          contains('<member ipaddress="192.168.1.131">1004567890AA</member>'),
+        );
+        expect(
+          body,
+          contains('<member ipaddress="192.168.1.130">3004567890BB</member>'),
+        );
       });
 
       test('addZoneMembers sends correct XML', () async {
         const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
 <status>/addZoneSlave</status>''';
 
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer(
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         final newMembers = [
-          const ZoneMember(deviceId: 'F9BC35A6D825', ipAddress: '192.168.1.132'),
+          const ZoneMember(
+            deviceId: 'F9BC35A6D825',
+            ipAddress: '192.168.1.132',
+          ),
         ];
 
-        await apiService.addZoneMembers('192.168.1.131', '1004567890AA', newMembers);
+        await apiService.addZoneMembers(
+          '192.168.1.131',
+          '1004567890AA',
+          newMembers,
+        );
 
-        final captured = verify(mockClient.post(
-          any,
-          headers: {'Content-Type': 'text/xml'},
-          body: captureAnyNamed('body'),
-        )).captured;
+        final captured = verify(
+          mockClient.post(
+            any,
+            headers: {'Content-Type': 'text/xml'},
+            body: captureAnyNamed('body'),
+          ),
+        ).captured;
 
         final body = captured[0] as String;
         expect(body, contains('<zone master="1004567890AA">'));
-        expect(body, contains('<member ipaddress="192.168.1.132">F9BC35A6D825</member>'));
+        expect(
+          body,
+          contains('<member ipaddress="192.168.1.132">F9BC35A6D825</member>'),
+        );
       });
 
       test('removeZoneMembers sends correct XML', () async {
         const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
 <status>/removeZoneSlave</status>''';
 
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer(
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         final membersToRemove = [
-          const ZoneMember(deviceId: '3004567890BB', ipAddress: '192.168.1.130'),
+          const ZoneMember(
+            deviceId: '3004567890BB',
+            ipAddress: '192.168.1.130',
+          ),
         ];
 
-        await apiService.removeZoneMembers('192.168.1.131', '1004567890AA', membersToRemove);
+        await apiService.removeZoneMembers(
+          '192.168.1.131',
+          '1004567890AA',
+          membersToRemove,
+        );
 
-        final captured = verify(mockClient.post(
-          any,
-          headers: {'Content-Type': 'text/xml'},
-          body: captureAnyNamed('body'),
-        )).captured;
+        final captured = verify(
+          mockClient.post(
+            any,
+            headers: {'Content-Type': 'text/xml'},
+            body: captureAnyNamed('body'),
+          ),
+        ).captured;
 
         final body = captured[0] as String;
         expect(body, contains('<zone master="1004567890AA">'));
-        expect(body, contains('<member ipaddress="192.168.1.130">3004567890BB</member>'));
+        expect(
+          body,
+          contains('<member ipaddress="192.168.1.130">3004567890BB</member>'),
+        );
       });
 
       test('getZone throws exception on non-200 status code', () async {
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response('Not Found', 404),
-        );
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response('Not Found', 404));
 
         expect(
           () => apiService.getZone('192.168.1.131'),
@@ -647,12 +860,19 @@ void main() {
       });
 
       test('createZone throws exception on non-200 status code', () async {
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
-          (_) async => http.Response('Not Found', 404),
-        );
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response('Not Found', 404));
 
         final members = [
-          const ZoneMember(deviceId: '1004567890AA', ipAddress: '192.168.1.131'),
+          const ZoneMember(
+            deviceId: '1004567890AA',
+            ipAddress: '192.168.1.131',
+          ),
         ];
 
         expect(
@@ -667,81 +887,137 @@ void main() {
         const xmlResponse = '''<?xml version='1.0' encoding='utf-8'?>
 <status>/userPlayControl</status>''';
 
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer(
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         await apiService.userPlayControl('192.168.1.131', 'PAUSE_CONTROL');
 
-        verify(mockClient.post(
-          any,
-          headers: {'Content-Type': 'text/xml'},
-          body: '<PlayControl>PAUSE_CONTROL</PlayControl>',
-        )).called(1);
+        verify(
+          mockClient.post(
+            any,
+            headers: {'Content-Type': 'text/xml'},
+            body: '<PlayControl>PAUSE_CONTROL</PlayControl>',
+          ),
+        ).called(1);
       });
 
       test('userPlayControl sends PLAY_CONTROL correctly', () async {
         const xmlResponse = '''<?xml version='1.0' encoding='utf-8'?>
 <status>/userPlayControl</status>''';
 
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer(
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         await apiService.userPlayControl('192.168.1.131', 'PLAY_CONTROL');
 
-        verify(mockClient.post(
-          any,
-          headers: {'Content-Type': 'text/xml'},
-          body: '<PlayControl>PLAY_CONTROL</PlayControl>',
-        )).called(1);
+        verify(
+          mockClient.post(
+            any,
+            headers: {'Content-Type': 'text/xml'},
+            body: '<PlayControl>PLAY_CONTROL</PlayControl>',
+          ),
+        ).called(1);
       });
 
       test('userPlayControl sends PLAY_PAUSE_CONTROL correctly', () async {
         const xmlResponse = '''<?xml version='1.0' encoding='utf-8'?>
 <status>/userPlayControl</status>''';
 
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer(
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         await apiService.userPlayControl('192.168.1.131', 'PLAY_PAUSE_CONTROL');
 
-        verify(mockClient.post(
-          any,
-          headers: {'Content-Type': 'text/xml'},
-          body: '<PlayControl>PLAY_PAUSE_CONTROL</PlayControl>',
-        )).called(1);
+        verify(
+          mockClient.post(
+            any,
+            headers: {'Content-Type': 'text/xml'},
+            body: '<PlayControl>PLAY_PAUSE_CONTROL</PlayControl>',
+          ),
+        ).called(1);
       });
 
       test('userPlayControl sends STOP_CONTROL correctly', () async {
         const xmlResponse = '''<?xml version='1.0' encoding='utf-8'?>
 <status>/userPlayControl</status>''';
 
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer(
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         await apiService.userPlayControl('192.168.1.131', 'STOP_CONTROL');
 
-        verify(mockClient.post(
-          any,
-          headers: {'Content-Type': 'text/xml'},
-          body: '<PlayControl>STOP_CONTROL</PlayControl>',
-        )).called(1);
+        verify(
+          mockClient.post(
+            any,
+            headers: {'Content-Type': 'text/xml'},
+            body: '<PlayControl>STOP_CONTROL</PlayControl>',
+          ),
+        ).called(1);
       });
 
-      test('userPlayControl throws ArgumentError for invalid control type', () async {
-        expect(
-          () => apiService.userPlayControl('192.168.1.131', 'INVALID_CONTROL'),
-          throwsA(isA<ArgumentError>()),
-        );
-      });
+      test(
+        'userPlayControl throws ArgumentError for invalid control type',
+        () async {
+          expect(
+            () =>
+                apiService.userPlayControl('192.168.1.131', 'INVALID_CONTROL'),
+            throwsA(isA<ArgumentError>()),
+          );
+        },
+      );
 
       test('userPlayControl throws exception on non-200 status code', () async {
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
-          (_) async => http.Response('Not Found', 404),
-        );
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response('Not Found', 404));
 
         expect(
           () => apiService.userPlayControl('192.168.1.131', 'PAUSE_CONTROL'),
@@ -775,7 +1051,11 @@ void main() {
 </presets>''';
 
         when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         final presets = await apiService.getPresets('192.168.1.131');
@@ -807,7 +1087,11 @@ void main() {
 </presets>''';
 
         when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         final presets = await apiService.getPresets('192.168.1.131');
@@ -816,9 +1100,9 @@ void main() {
       });
 
       test('getPresets throws exception on non-200 status code', () async {
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response('Not Found', 404),
-        );
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response('Not Found', 404));
 
         expect(
           () => apiService.getPresets('192.168.1.131'),
@@ -849,7 +1133,11 @@ void main() {
         const xmlResponse = '''This is not valid XML''';
 
         when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         expect(
@@ -877,18 +1165,30 @@ void main() {
   </preset>
 </presets>''';
 
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer(
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         final presets = await apiService.removePreset('192.168.1.131', '2');
 
         // Verify request was made correctly
-        verify(mockClient.post(
-          any,
-          headers: {'Content-Type': 'text/xml'},
-          body: '<preset id="2"></preset>',
-        )).called(1);
+        verify(
+          mockClient.post(
+            any,
+            headers: {'Content-Type': 'text/xml'},
+            body: '<preset id="2"></preset>',
+          ),
+        ).called(1);
 
         // Verify response parsing
         expect(presets.length, 2);
@@ -898,24 +1198,41 @@ void main() {
         expect(presets.any((p) => p.id == '2'), false);
       });
 
-      test('removePreset returns empty list when all presets deleted', () async {
-        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8"?>
+      test(
+        'removePreset returns empty list when all presets deleted',
+        () async {
+          const xmlResponse = '''<?xml version="1.0" encoding="UTF-8"?>
 <presets>
 </presets>''';
 
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
-        );
+          when(
+            mockClient.post(
+              any,
+              headers: anyNamed('headers'),
+              body: anyNamed('body'),
+            ),
+          ).thenAnswer(
+            (_) async => http.Response(
+              xmlResponse,
+              200,
+              headers: {'content-type': 'text/xml; charset=utf-8'},
+            ),
+          );
 
-        final presets = await apiService.removePreset('192.168.1.131', '1');
+          final presets = await apiService.removePreset('192.168.1.131', '1');
 
-        expect(presets, isEmpty);
-      });
+          expect(presets, isEmpty);
+        },
+      );
 
       test('removePreset throws exception on non-200 status code', () async {
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
-          (_) async => http.Response('Not Found', 404),
-        );
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response('Not Found', 404));
 
         expect(
           () => apiService.removePreset('192.168.1.131', '1'),
@@ -929,7 +1246,13 @@ void main() {
           timeout: const Duration(milliseconds: 100),
         );
 
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer(
           (_) async => Future.delayed(
             const Duration(milliseconds: 200),
             () => http.Response('', 200),
@@ -945,8 +1268,18 @@ void main() {
       test('removePreset throws exception on XML parsing error', () async {
         const xmlResponse = '''This is not valid XML''';
 
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body'))).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer(
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         expect(
@@ -962,20 +1295,24 @@ void main() {
 <status>/standby</status>''';
 
         when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         await apiService.standby('192.168.1.131');
 
-        verify(mockClient.get(
-          Uri.parse('http://192.168.1.131:8090/standby'),
-        )).called(1);
+        verify(
+          mockClient.get(Uri.parse('http://192.168.1.131:8090/standby')),
+        ).called(1);
       });
 
       test('standby throws exception on non-200 status code', () async {
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response('Not Found', 404),
-        );
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response('Not Found', 404));
 
         expect(
           () => apiService.standby('192.168.1.131'),
@@ -1024,11 +1361,13 @@ void main() {
 
         final mockResponse = http.Response(responseBody, 200);
 
-        when(mockClient.post(
-          Uri.parse('http://$ipAddress:8090/storePreset'),
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer((_) async => mockResponse);
+        when(
+          mockClient.post(
+            Uri.parse('http://$ipAddress:8090/storePreset'),
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => mockResponse);
 
         final result = await apiService.storePreset(
           ipAddress,
@@ -1044,11 +1383,13 @@ void main() {
         expect(result[0].itemName, itemName);
         expect(result[0].source, 'SPOTIFY');
 
-        verify(mockClient.post(
-          Uri.parse('http://$ipAddress:8090/storePreset'),
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).called(1);
+        verify(
+          mockClient.post(
+            Uri.parse('http://$ipAddress:8090/storePreset'),
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).called(1);
       });
 
       test('should store preset with null containerArt', () async {
@@ -1069,11 +1410,13 @@ void main() {
 
         final mockResponse = http.Response(responseBody, 200);
 
-        when(mockClient.post(
-          Uri.parse('http://$ipAddress:8090/storePreset'),
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer((_) async => mockResponse);
+        when(
+          mockClient.post(
+            Uri.parse('http://$ipAddress:8090/storePreset'),
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => mockResponse);
 
         final result = await apiService.storePreset(
           ipAddress,
@@ -1107,11 +1450,16 @@ void main() {
 
         final mockResponse = http.Response(responseBody, 200);
 
-        when(mockClient.post(
-          Uri.parse('http://$ipAddress:8090/storePreset'),
-          headers: anyNamed('headers'),
-          body: argThat(contains('/playback/container/c3BvdGlmeTpwbGF5bGlzdDoxMjM='), named: 'body'),
-        )).thenAnswer((_) async => mockResponse);
+        when(
+          mockClient.post(
+            Uri.parse('http://$ipAddress:8090/storePreset'),
+            headers: anyNamed('headers'),
+            body: argThat(
+              contains('/playback/container/c3BvdGlmeTpwbGF5bGlzdDoxMjM='),
+              named: 'body',
+            ),
+          ),
+        ).thenAnswer((_) async => mockResponse);
 
         await apiService.storePreset(
           ipAddress,
@@ -1122,22 +1470,29 @@ void main() {
           null,
         );
 
-        verify(mockClient.post(
-          Uri.parse('http://$ipAddress:8090/storePreset'),
-          headers: anyNamed('headers'),
-          body: argThat(contains('/playback/container/c3BvdGlmeTpwbGF5bGlzdDoxMjM='), named: 'body'),
-        )).called(1);
+        verify(
+          mockClient.post(
+            Uri.parse('http://$ipAddress:8090/storePreset'),
+            headers: anyNamed('headers'),
+            body: argThat(
+              contains('/playback/container/c3BvdGlmeTpwbGF5bGlzdDoxMjM='),
+              named: 'body',
+            ),
+          ),
+        ).called(1);
       });
 
       test('should throw exception on non-200 status code', () async {
         const ipAddress = '192.168.1.131';
         final mockResponse = http.Response('Internal Server Error', 500);
 
-        when(mockClient.post(
-          Uri.parse('http://$ipAddress:8090/storePreset'),
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer((_) async => mockResponse);
+        when(
+          mockClient.post(
+            Uri.parse('http://$ipAddress:8090/storePreset'),
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => mockResponse);
 
         expect(
           () => apiService.storePreset(
@@ -1156,11 +1511,13 @@ void main() {
         const ipAddress = '192.168.1.131';
         final mockResponse = http.Response('not valid xml', 200);
 
-        when(mockClient.post(
-          Uri.parse('http://$ipAddress:8090/storePreset'),
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer((_) async => mockResponse);
+        when(
+          mockClient.post(
+            Uri.parse('http://$ipAddress:8090/storePreset'),
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => mockResponse);
 
         expect(
           () => apiService.storePreset(
@@ -1182,11 +1539,13 @@ void main() {
           timeout: const Duration(milliseconds: 100),
         );
 
-        when(mockClient.post(
-          Uri.parse('http://$ipAddress:8090/storePreset'),
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer(
+        when(
+          mockClient.post(
+            Uri.parse('http://$ipAddress:8090/storePreset'),
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer(
           (_) async => Future.delayed(
             const Duration(milliseconds: 200),
             () => http.Response('{}', 200),
@@ -1215,7 +1574,8 @@ void main() {
         const itemName = 'Radio Potsdam';
         const containerArt = 'http://example.com/logo.png';
 
-        const responseBody = '''<?xml version="1.0" encoding="UTF-8"?>
+        const responseBody =
+            '''<?xml version="1.0" encoding="UTF-8"?>
 <presets>
   <preset id="3" createdOn="1234567890" updatedOn="1234567890">
     <ContentItem source="TUNEIN" type="stationurl" location="/v1/playback/station/s288368" isPresetable="true">
@@ -1227,11 +1587,13 @@ void main() {
 
         final mockResponse = http.Response(responseBody, 200);
 
-        when(mockClient.post(
-          Uri.parse('http://$ipAddress:8090/storePreset'),
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer((_) async => mockResponse);
+        when(
+          mockClient.post(
+            Uri.parse('http://$ipAddress:8090/storePreset'),
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => mockResponse);
 
         final result = await apiService.storeTuneInPreset(
           ipAddress,
@@ -1247,11 +1609,13 @@ void main() {
         expect(result[0].source, 'TUNEIN');
         expect(result[0].location, '/v1/playback/station/s288368');
 
-        verify(mockClient.post(
-          Uri.parse('http://$ipAddress:8090/storePreset'),
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).called(1);
+        verify(
+          mockClient.post(
+            Uri.parse('http://$ipAddress:8090/storePreset'),
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).called(1);
       });
 
       test('should store TuneIn preset without containerArt', () async {
@@ -1260,7 +1624,8 @@ void main() {
         const stationId = 's288368';
         const itemName = 'Radio Potsdam';
 
-        const responseBody = '''<?xml version="1.0" encoding="UTF-8"?>
+        const responseBody =
+            '''<?xml version="1.0" encoding="UTF-8"?>
 <presets>
   <preset id="3" createdOn="1234567890" updatedOn="1234567890">
     <ContentItem source="TUNEIN" type="stationurl" location="/v1/playback/station/s288368" isPresetable="true">
@@ -1271,11 +1636,13 @@ void main() {
 
         final mockResponse = http.Response(responseBody, 200);
 
-        when(mockClient.post(
-          Uri.parse('http://$ipAddress:8090/storePreset'),
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer((_) async => mockResponse);
+        when(
+          mockClient.post(
+            Uri.parse('http://$ipAddress:8090/storePreset'),
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => mockResponse);
 
         final result = await apiService.storeTuneInPreset(
           ipAddress,
@@ -1290,11 +1657,13 @@ void main() {
         expect(result[0].itemName, itemName);
         expect(result[0].source, 'TUNEIN');
 
-        verify(mockClient.post(
-          Uri.parse('http://$ipAddress:8090/storePreset'),
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).called(1);
+        verify(
+          mockClient.post(
+            Uri.parse('http://$ipAddress:8090/storePreset'),
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).called(1);
       });
 
       test('should include correct location format', () async {
@@ -1314,11 +1683,16 @@ void main() {
 
         final mockResponse = http.Response(responseBody, 200);
 
-        when(mockClient.post(
-          Uri.parse('http://$ipAddress:8090/storePreset'),
-          headers: anyNamed('headers'),
-          body: argThat(contains('/v1/playback/station/s288368'), named: 'body'),
-        )).thenAnswer((_) async => mockResponse);
+        when(
+          mockClient.post(
+            Uri.parse('http://$ipAddress:8090/storePreset'),
+            headers: anyNamed('headers'),
+            body: argThat(
+              contains('/v1/playback/station/s288368'),
+              named: 'body',
+            ),
+          ),
+        ).thenAnswer((_) async => mockResponse);
 
         await apiService.storeTuneInPreset(
           ipAddress,
@@ -1328,22 +1702,29 @@ void main() {
           null,
         );
 
-        verify(mockClient.post(
-          Uri.parse('http://$ipAddress:8090/storePreset'),
-          headers: anyNamed('headers'),
-          body: argThat(contains('/v1/playback/station/s288368'), named: 'body'),
-        )).called(1);
+        verify(
+          mockClient.post(
+            Uri.parse('http://$ipAddress:8090/storePreset'),
+            headers: anyNamed('headers'),
+            body: argThat(
+              contains('/v1/playback/station/s288368'),
+              named: 'body',
+            ),
+          ),
+        ).called(1);
       });
 
       test('should throw exception on non-200 status code', () async {
         const ipAddress = '192.168.1.131';
         final mockResponse = http.Response('Internal Server Error', 500);
 
-        when(mockClient.post(
-          Uri.parse('http://$ipAddress:8090/storePreset'),
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer((_) async => mockResponse);
+        when(
+          mockClient.post(
+            Uri.parse('http://$ipAddress:8090/storePreset'),
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => mockResponse);
 
         expect(
           () => apiService.storeTuneInPreset(
@@ -1361,11 +1742,13 @@ void main() {
         const ipAddress = '192.168.1.131';
         final mockResponse = http.Response('not valid xml', 200);
 
-        when(mockClient.post(
-          Uri.parse('http://$ipAddress:8090/storePreset'),
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer((_) async => mockResponse);
+        when(
+          mockClient.post(
+            Uri.parse('http://$ipAddress:8090/storePreset'),
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => mockResponse);
 
         expect(
           () => apiService.storeTuneInPreset(
@@ -1386,11 +1769,13 @@ void main() {
           timeout: const Duration(milliseconds: 100),
         );
 
-        when(mockClient.post(
-          Uri.parse('http://$ipAddress:8090/storePreset'),
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer(
+        when(
+          mockClient.post(
+            Uri.parse('http://$ipAddress:8090/storePreset'),
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer(
           (_) async => Future.delayed(
             const Duration(milliseconds: 200),
             () => http.Response('{}', 200),
@@ -1411,9 +1796,11 @@ void main() {
     });
 
     group('getNowPlaying', () {
-      test('getNowPlaying parses ContentItem with location and source', () async {
-        const ipAddress = '192.168.1.100';
-        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8"?>
+      test(
+        'getNowPlaying parses ContentItem with location and source',
+        () async {
+          const ipAddress = '192.168.1.100';
+          const xmlResponse = '''<?xml version="1.0" encoding="UTF-8"?>
 <nowPlaying>
   <ContentItem source="SPOTIFY" type="tracklisturl" location="/playback/container/c3BvdGlmeTp0cmFjazoxMjM0NTY=" isPresetable="true">
     <itemName>Test Track</itemName>
@@ -1428,22 +1815,33 @@ void main() {
   <repeatSetting>REPEAT_OFF</repeatSetting>
 </nowPlaying>''';
 
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
-        );
+          when(mockClient.get(any)).thenAnswer(
+            (_) async => http.Response(
+              xmlResponse,
+              200,
+              headers: {'content-type': 'text/xml; charset=utf-8'},
+            ),
+          );
 
-        final result = await apiService.getNowPlaying(ipAddress);
+          final result = await apiService.getNowPlaying(ipAddress);
 
-        expect(result.track, equals('Test Track'));
-        expect(result.artist, equals('Test Artist'));
-        expect(result.album, equals('Test Album'));
-        expect(result.art, equals('http://192.168.1.100:8090/image/1234567890'));
-        expect(result.playStatus, equals('PLAY_STATE'));
-        expect(result.shuffleSetting, equals('SHUFFLE_OFF'));
-        expect(result.repeatSetting, equals('REPEAT_OFF'));
-        expect(result.source, equals('SPOTIFY'));
-        expect(result.location, equals('/playback/container/c3BvdGlmeTp0cmFjazoxMjM0NTY='));
-      });
+          expect(result.track, equals('Test Track'));
+          expect(result.artist, equals('Test Artist'));
+          expect(result.album, equals('Test Album'));
+          expect(
+            result.art,
+            equals('http://192.168.1.100:8090/image/1234567890'),
+          );
+          expect(result.playStatus, equals('PLAY_STATE'));
+          expect(result.shuffleSetting, equals('SHUFFLE_OFF'));
+          expect(result.repeatSetting, equals('REPEAT_OFF'));
+          expect(result.source, equals('SPOTIFY'));
+          expect(
+            result.location,
+            equals('/playback/container/c3BvdGlmeTp0cmFjazoxMjM0NTY='),
+          );
+        },
+      );
 
       test('getNowPlaying handles missing ContentItem gracefully', () async {
         const ipAddress = '192.168.1.100';
@@ -1455,7 +1853,11 @@ void main() {
 </nowPlaying>''';
 
         when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         final result = await apiService.getNowPlaying(ipAddress);
@@ -1477,7 +1879,11 @@ void main() {
 </nowPlaying>''';
 
         when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         final result = await apiService.getNowPlaying(ipAddress);
@@ -1491,18 +1897,22 @@ void main() {
         expect(result.album, isNull);
       });
 
-      test('getNowPlaying should throw exception on non-200 status code', () async {
-        const ipAddress = '192.168.1.100';
-        final mockResponse = http.Response('Internal Server Error', 500);
+      test(
+        'getNowPlaying should throw exception on non-200 status code',
+        () async {
+          const ipAddress = '192.168.1.100';
+          final mockResponse = http.Response('Internal Server Error', 500);
 
-        when(mockClient.get(Uri.parse('http://$ipAddress:8090/nowPlaying')))
-            .thenAnswer((_) async => mockResponse);
+          when(
+            mockClient.get(Uri.parse('http://$ipAddress:8090/nowPlaying')),
+          ).thenAnswer((_) async => mockResponse);
 
-        expect(
-          () => apiService.getNowPlaying(ipAddress),
-          throwsA(isA<Exception>()),
-        );
-      });
+          expect(
+            () => apiService.getNowPlaying(ipAddress),
+            throwsA(isA<Exception>()),
+          );
+        },
+      );
     });
 
     group('sendKey', () {
@@ -1510,42 +1920,52 @@ void main() {
         const ipAddress = '192.168.1.100';
         const keyValue = 'POWER';
         const state = 'press';
-        const expectedBody = '<key state="$state" sender="Gabbo">$keyValue</key>';
+        const expectedBody =
+            '<key state="$state" sender="Gabbo">$keyValue</key>';
 
-        when(mockClient.post(
-          Uri.parse('http://$ipAddress:8090/key'),
-          headers: {'Content-Type': 'text/xml'},
-          body: expectedBody,
-        )).thenAnswer((_) async => http.Response('', 200));
+        when(
+          mockClient.post(
+            Uri.parse('http://$ipAddress:8090/key'),
+            headers: {'Content-Type': 'text/xml'},
+            body: expectedBody,
+          ),
+        ).thenAnswer((_) async => http.Response('', 200));
 
         await apiService.sendKey(ipAddress, keyValue, state);
 
-        verify(mockClient.post(
-          Uri.parse('http://$ipAddress:8090/key'),
-          headers: {'Content-Type': 'text/xml'},
-          body: expectedBody,
-        )).called(1);
+        verify(
+          mockClient.post(
+            Uri.parse('http://$ipAddress:8090/key'),
+            headers: {'Content-Type': 'text/xml'},
+            body: expectedBody,
+          ),
+        ).called(1);
       });
 
       test('sends key release with correct XML format', () async {
         const ipAddress = '192.168.1.100';
         const keyValue = 'VOLUME_UP';
         const state = 'release';
-        const expectedBody = '<key state="$state" sender="Gabbo">$keyValue</key>';
+        const expectedBody =
+            '<key state="$state" sender="Gabbo">$keyValue</key>';
 
-        when(mockClient.post(
-          Uri.parse('http://$ipAddress:8090/key'),
-          headers: {'Content-Type': 'text/xml'},
-          body: expectedBody,
-        )).thenAnswer((_) async => http.Response('', 200));
+        when(
+          mockClient.post(
+            Uri.parse('http://$ipAddress:8090/key'),
+            headers: {'Content-Type': 'text/xml'},
+            body: expectedBody,
+          ),
+        ).thenAnswer((_) async => http.Response('', 200));
 
         await apiService.sendKey(ipAddress, keyValue, state);
 
-        verify(mockClient.post(
-          Uri.parse('http://$ipAddress:8090/key'),
-          headers: {'Content-Type': 'text/xml'},
-          body: expectedBody,
-        )).called(1);
+        verify(
+          mockClient.post(
+            Uri.parse('http://$ipAddress:8090/key'),
+            headers: {'Content-Type': 'text/xml'},
+            body: expectedBody,
+          ),
+        ).called(1);
       });
 
       test('throws ArgumentError for invalid key value', () async {
@@ -1597,11 +2017,13 @@ void main() {
         const keyValue = 'POWER';
         const state = 'press';
 
-        when(mockClient.post(
-          any,
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer((_) async => http.Response('Internal Server Error', 500));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response('Internal Server Error', 500));
 
         expect(
           () => apiService.sendKey(ipAddress, keyValue, state),
@@ -1642,21 +2064,25 @@ void main() {
           'VOLUME_UP',
         ];
 
-        when(mockClient.post(
-          any,
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer((_) async => http.Response('', 200));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response('', 200));
 
         for (final key in validKeys) {
           await apiService.sendKey(ipAddress, key, state);
         }
 
-        verify(mockClient.post(
-          any,
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).called(validKeys.length);
+        verify(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).called(validKeys.length);
       });
 
       test('accepts all valid states', () async {
@@ -1664,21 +2090,25 @@ void main() {
         const keyValue = 'POWER';
         const validStates = ['press', 'release', 'repeat'];
 
-        when(mockClient.post(
-          any,
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer((_) async => http.Response('', 200));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response('', 200));
 
         for (final state in validStates) {
           await apiService.sendKey(ipAddress, keyValue, state);
         }
 
-        verify(mockClient.post(
-          any,
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).called(validStates.length);
+        verify(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).called(validStates.length);
       });
     });
 
@@ -1687,19 +2117,23 @@ void main() {
       const speakerName = 'Living Room';
 
       test('successfully sets speaker name', () async {
-        when(mockClient.post(
-          any,
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer((_) async => http.Response('', 200));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response('', 200));
 
         await apiService.setSpeakerName(ipAddress, speakerName);
 
-        final captured = verify(mockClient.post(
-          captureAny,
-          headers: captureAnyNamed('headers'),
-          body: captureAnyNamed('body'),
-        )).captured;
+        final captured = verify(
+          mockClient.post(
+            captureAny,
+            headers: captureAnyNamed('headers'),
+            body: captureAnyNamed('body'),
+          ),
+        ).captured;
 
         expect(captured[0].toString(), 'http://$ipAddress:8090/name');
         expect(captured[1], {'Content-Type': 'text/xml'});
@@ -1707,11 +2141,13 @@ void main() {
       });
 
       test('throws exception on HTTP error', () async {
-        when(mockClient.post(
-          any,
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer((_) async => http.Response('Error', 500));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response('Error', 500));
 
         expect(
           () => apiService.setSpeakerName(ipAddress, speakerName),
@@ -1725,11 +2161,13 @@ void main() {
           timeout: const Duration(milliseconds: 100),
         );
 
-        when(mockClient.post(
-          any,
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer((_) async {
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async {
           await Future<void>.delayed(const Duration(milliseconds: 400));
           return http.Response('', 200);
         });
@@ -1741,11 +2179,13 @@ void main() {
       });
 
       test('throws exception on network error', () async {
-        when(mockClient.post(
-          any,
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenThrow(Exception('Network error'));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenThrow(Exception('Network error'));
 
         expect(
           () => apiService.setSpeakerName(ipAddress, speakerName),
@@ -1756,19 +2196,23 @@ void main() {
       test('handles special characters in name', () async {
         const specialName = 'Living Room & Kitchen';
 
-        when(mockClient.post(
-          any,
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer((_) async => http.Response('', 200));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response('', 200));
 
         await apiService.setSpeakerName(ipAddress, specialName);
 
-        final captured = verify(mockClient.post(
-          captureAny,
-          headers: captureAnyNamed('headers'),
-          body: captureAnyNamed('body'),
-        )).captured;
+        final captured = verify(
+          mockClient.post(
+            captureAny,
+            headers: captureAnyNamed('headers'),
+            body: captureAnyNamed('body'),
+          ),
+        ).captured;
 
         expect(captured[2], '<name>$specialName</name>');
       });
@@ -1783,7 +2227,8 @@ void main() {
 
       test('stores Internet Radio preset successfully', () async {
         // Expected Base64 encoded JSON: {"name":"My Radio Station","imageUrl":"","streamUrl":"https://stream.example.com/radio"}
-        const expectedLocation = 'https://ueberboese.example.com/core02/svc-bmx-adapter-orion/prod/orion/station?data=eyJuYW1lIjoiTXkgUmFkaW8gU3RhdGlvbiIsImltYWdlVXJsIjoiIiwic3RyZWFtVXJsIjoiaHR0cHM6Ly9zdHJlYW0uZXhhbXBsZS5jb20vcmFkaW8ifQ==';
+        const expectedLocation =
+            'https://ueberboese.example.com/core02/svc-bmx-adapter-orion/prod/orion/station?data=eyJuYW1lIjoiTXkgUmFkaW8gU3RhdGlvbiIsImltYWdlVXJsIjoiIiwic3RyZWFtVXJsIjoiaHR0cHM6Ly9zdHJlYW0uZXhhbXBsZS5jb20vcmFkaW8ifQ==';
 
         const xmlResponse = '''<?xml version="1.0" encoding="UTF-8"?>
 <presets>
@@ -1794,11 +2239,13 @@ void main() {
   </preset>
 </presets>''';
 
-        when(mockClient.post(
-          any,
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer((_) async => http.Response(xmlResponse, 200));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
         final presets = await apiService.storeInternetRadioPreset(
           ipAddress,
@@ -1832,11 +2279,13 @@ void main() {
   </preset>
 </presets>''';
 
-        when(mockClient.post(
-          any,
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer((_) async => http.Response(xmlResponse, 200));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
         final presets = await apiService.storeInternetRadioPreset(
           ipAddress,
@@ -1861,11 +2310,13 @@ void main() {
   </preset>
 </presets>''';
 
-        when(mockClient.post(
-          any,
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer((_) async => http.Response(xmlResponse, 200));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
         await apiService.storeInternetRadioPreset(
           ipAddress,
@@ -1876,26 +2327,35 @@ void main() {
           apiUrl,
         );
 
-        final captured = verify(mockClient.post(
-          captureAny,
-          headers: captureAnyNamed('headers'),
-          body: captureAnyNamed('body'),
-        )).captured;
+        final captured = verify(
+          mockClient.post(
+            captureAny,
+            headers: captureAnyNamed('headers'),
+            body: captureAnyNamed('body'),
+          ),
+        ).captured;
 
         final body = captured[2] as String;
         expect(body, contains('source="LOCAL_INTERNET_RADIO"'));
         expect(body, contains('type="stationurl"'));
-        expect(body, contains('location="$apiUrl/core02/svc-bmx-adapter-orion/prod/orion/station?data='));
+        expect(
+          body,
+          contains(
+            'location="$apiUrl/core02/svc-bmx-adapter-orion/prod/orion/station?data=',
+          ),
+        );
         expect(body, contains('isPresetable="true"'));
         expect(body, contains('<itemName>$itemName</itemName>'));
       });
 
       test('throws exception on HTTP error', () async {
-        when(mockClient.post(
-          any,
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer((_) async => http.Response('Error', 500));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response('Error', 500));
 
         expect(
           () => apiService.storeInternetRadioPreset(
@@ -1920,11 +2380,13 @@ void main() {
   </preset>
 </presets>''';
 
-        when(mockClient.post(
-          any,
-          headers: anyNamed('headers'),
-          body: anyNamed('body'),
-        )).thenAnswer((_) async => http.Response(xmlResponse, 200));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
         await apiService.storeInternetRadioPreset(
           ipAddress,
@@ -1935,16 +2397,20 @@ void main() {
           apiUrl,
         );
 
-        final captured = verify(mockClient.post(
-          captureAny,
-          headers: captureAnyNamed('headers'),
-          body: captureAnyNamed('body'),
-        )).captured;
+        final captured = verify(
+          mockClient.post(
+            captureAny,
+            headers: captureAnyNamed('headers'),
+            body: captureAnyNamed('body'),
+          ),
+        ).captured;
 
         final body = captured[2] as String;
 
         // Extract the Base64 data from the location URL
-        final locationMatch = RegExp(r'location="[^"]*\?data=([^"]+)"').firstMatch(body);
+        final locationMatch = RegExp(
+          r'location="[^"]*\?data=([^"]+)"',
+        ).firstMatch(body);
         expect(locationMatch, isNotNull);
 
         final base64Data = locationMatch!.group(1)!;
@@ -1959,8 +2425,10 @@ void main() {
     });
 
     group('getRecents', () {
-      test('getRecents parses multiple recents correctly and sorts by utcTime', () async {
-        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8"?>
+      test(
+        'getRecents parses multiple recents correctly and sorts by utcTime',
+        () async {
+          const xmlResponse = '''<?xml version="1.0" encoding="UTF-8"?>
 <recents>
   <recent deviceID="1004567890AA" utcTime="1697087351" id="2">
     <contentItem source="TUNEIN" type="stationurl" location="/v1/playback/station/s33255" sourceAccount="" isPresetable="true">
@@ -1979,34 +2447,39 @@ void main() {
   </recent>
 </recents>''';
 
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
-        );
+          when(mockClient.get(any)).thenAnswer(
+            (_) async => http.Response(
+              xmlResponse,
+              200,
+              headers: {'content-type': 'text/xml; charset=utf-8'},
+            ),
+          );
 
-        final recents = await apiService.getRecents('192.168.1.131');
+          final recents = await apiService.getRecents('192.168.1.131');
 
-        expect(recents.length, 3);
+          expect(recents.length, 3);
 
-        // Check that items are sorted by utcTime descending (newest first)
-        expect(recents[0].utcTime, 1768323670); // Newest
-        expect(recents[0].id, '1');
-        expect(recents[0].itemName, 'Radio TEDDY');
-        expect(recents[0].deviceId, '44EAD8A17CC7');
-        expect(recents[0].source, 'TUNEIN');
-        expect(recents[0].location, '/v1/playback/station/s80044');
-        expect(recents[0].type, 'stationurl');
-        expect(recents[0].isPresetable, true);
+          // Check that items are sorted by utcTime descending (newest first)
+          expect(recents[0].utcTime, 1768323670); // Newest
+          expect(recents[0].id, '1');
+          expect(recents[0].itemName, 'Radio TEDDY');
+          expect(recents[0].deviceId, '44EAD8A17CC7');
+          expect(recents[0].source, 'TUNEIN');
+          expect(recents[0].location, '/v1/playback/station/s80044');
+          expect(recents[0].type, 'stationurl');
+          expect(recents[0].isPresetable, true);
 
-        expect(recents[1].utcTime, 1768304677); // Second newest
-        expect(recents[1].id, '4');
-        expect(recents[1].itemName, 'Komplett Entspannt');
-        expect(recents[1].source, 'SPOTIFY');
-        expect(recents[1].sourceAccount, 'z5zt8py3wuxytbza4cxa431ge');
+          expect(recents[1].utcTime, 1768304677); // Second newest
+          expect(recents[1].id, '4');
+          expect(recents[1].itemName, 'Komplett Entspannt');
+          expect(recents[1].source, 'SPOTIFY');
+          expect(recents[1].sourceAccount, 'z5zt8py3wuxytbza4cxa431ge');
 
-        expect(recents[2].utcTime, 1697087351); // Oldest
-        expect(recents[2].id, '2');
-        expect(recents[2].itemName, '89.7 | The River (College Radio)');
-      });
+          expect(recents[2].utcTime, 1697087351); // Oldest
+          expect(recents[2].id, '2');
+          expect(recents[2].itemName, '89.7 | The River (College Radio)');
+        },
+      );
 
       test('getRecents returns empty list when no recents', () async {
         const xmlResponse = '''<?xml version="1.0" encoding="UTF-8"?>
@@ -2014,7 +2487,11 @@ void main() {
 </recents>''';
 
         when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         final recents = await apiService.getRecents('192.168.1.131');
@@ -2023,9 +2500,9 @@ void main() {
       });
 
       test('getRecents throws exception on non-200 status code', () async {
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response('Not Found', 404),
-        );
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response('Not Found', 404));
 
         expect(
           () => apiService.getRecents('192.168.1.131'),
@@ -2056,7 +2533,11 @@ void main() {
         const xmlResponse = '''This is not valid XML''';
 
         when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         expect(
@@ -2076,7 +2557,11 @@ void main() {
 </recents>''';
 
         when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+          (_) async => http.Response(
+            xmlResponse,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         final recents = await apiService.getRecents('192.168.1.131');
@@ -2094,10 +2579,16 @@ void main() {
 
     group('selectContentItem', () {
       test('selectContentItem sends correct XML for TUNEIN content', () async {
-        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?><status>/select</status>''';
+        const xmlResponse =
+            '''<?xml version="1.0" encoding="UTF-8" ?><status>/select</status>''';
 
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer((_) async => http.Response(xmlResponse, 200));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
         const recent = Recent(
           deviceId: '44EAD8A17CC7',
@@ -2130,45 +2621,61 @@ void main() {
         expect(body, contains('<itemName>Radio TEDDY</itemName>'));
       });
 
-      test('selectContentItem sends correct XML for SPOTIFY content with sourceAccount', () async {
-        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?><status>/select</status>''';
+      test(
+        'selectContentItem sends correct XML for SPOTIFY content with sourceAccount',
+        () async {
+          const xmlResponse =
+              '''<?xml version="1.0" encoding="UTF-8" ?><status>/select</status>''';
 
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer((_) async => http.Response(xmlResponse, 200));
+          when(
+            mockClient.post(
+              any,
+              headers: anyNamed('headers'),
+              body: anyNamed('body'),
+            ),
+          ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
-        const recent = Recent(
-          deviceId: '44EAD8A17CC7',
-          utcTime: 1768304677,
-          id: '4',
-          itemName: 'Komplett Entspannt',
-          source: 'SPOTIFY',
-          location: '/playback/container/c3BvdGlmeTpwbGF5bGlzdDoybjZXMnA1QzBNQUQ5YTR6NXhUVDdu',
-          type: 'tracklisturl',
-          isPresetable: true,
-          sourceAccount: 'z5zt8py3wuxytbza4cxa431ge',
-        );
+          const recent = Recent(
+            deviceId: '44EAD8A17CC7',
+            utcTime: 1768304677,
+            id: '4',
+            itemName: 'Komplett Entspannt',
+            source: 'SPOTIFY',
+            location:
+                '/playback/container/c3BvdGlmeTpwbGF5bGlzdDoybjZXMnA1QzBNQUQ5YTR6NXhUVDdu',
+            type: 'tracklisturl',
+            isPresetable: true,
+            sourceAccount: 'z5zt8py3wuxytbza4cxa431ge',
+          );
 
-        await apiService.selectContentItem('192.168.1.131', recent);
+          await apiService.selectContentItem('192.168.1.131', recent);
 
-        final captured = verify(
-          mockClient.post(
-            any,
-            headers: captureAnyNamed('headers'),
-            body: captureAnyNamed('body'),
-          ),
-        ).captured;
+          final captured = verify(
+            mockClient.post(
+              any,
+              headers: captureAnyNamed('headers'),
+              body: captureAnyNamed('body'),
+            ),
+          ).captured;
 
-        final body = captured[1] as String;
-        expect(body, contains('source="SPOTIFY"'));
-        expect(body, contains('sourceAccount="z5zt8py3wuxytbza4cxa431ge"'));
-        expect(body, contains('<itemName>Komplett Entspannt</itemName>'));
-      });
+          final body = captured[1] as String;
+          expect(body, contains('source="SPOTIFY"'));
+          expect(body, contains('sourceAccount="z5zt8py3wuxytbza4cxa431ge"'));
+          expect(body, contains('<itemName>Komplett Entspannt</itemName>'));
+        },
+      );
 
       test('selectContentItem does not include sourceAccount if empty', () async {
-        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?><status>/select</status>''';
+        const xmlResponse =
+            '''<?xml version="1.0" encoding="UTF-8" ?><status>/select</status>''';
 
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer((_) async => http.Response(xmlResponse, 200));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
         const recent = Recent(
           deviceId: '1004567890AA',
@@ -2197,10 +2704,16 @@ void main() {
       });
 
       test('selectContentItem escapes special characters in itemName', () async {
-        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?><status>/select</status>''';
+        const xmlResponse =
+            '''<?xml version="1.0" encoding="UTF-8" ?><status>/select</status>''';
 
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer((_) async => http.Response(xmlResponse, 200));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
         const recent = Recent(
           deviceId: '44EAD8A17CC7',
@@ -2228,26 +2741,34 @@ void main() {
         expect(body, contains('Rock &amp; Roll &lt;with> "quotes"'));
       });
 
-      test('selectContentItem throws exception on non-200 status code', () async {
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer((_) async => http.Response('Not Found', 404));
+      test(
+        'selectContentItem throws exception on non-200 status code',
+        () async {
+          when(
+            mockClient.post(
+              any,
+              headers: anyNamed('headers'),
+              body: anyNamed('body'),
+            ),
+          ).thenAnswer((_) async => http.Response('Not Found', 404));
 
-        const recent = Recent(
-          deviceId: '44EAD8A17CC7',
-          utcTime: 1768323670,
-          id: '1',
-          itemName: 'Radio TEDDY',
-          source: 'TUNEIN',
-          location: '/v1/playback/station/s80044',
-          type: 'stationurl',
-          isPresetable: true,
-        );
+          const recent = Recent(
+            deviceId: '44EAD8A17CC7',
+            utcTime: 1768323670,
+            id: '1',
+            itemName: 'Radio TEDDY',
+            source: 'TUNEIN',
+            location: '/v1/playback/station/s80044',
+            type: 'stationurl',
+            isPresetable: true,
+          );
 
-        expect(
-          () => apiService.selectContentItem('192.168.1.131', recent),
-          throwsA(isA<Exception>()),
-        );
-      });
+          expect(
+            () => apiService.selectContentItem('192.168.1.131', recent),
+            throwsA(isA<Exception>()),
+          );
+        },
+      );
 
       test('selectContentItem throws exception on timeout', () async {
         final fastApiService = SpeakerApiService(
@@ -2255,8 +2776,13 @@ void main() {
           timeout: const Duration(milliseconds: 100),
         );
 
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer(
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer(
           (_) async => Future.delayed(
             const Duration(milliseconds: 200),
             () => http.Response('', 200),
@@ -2283,16 +2809,23 @@ void main() {
 
     group('selectPreset', () {
       test('selectPreset sends correct XML for preset', () async {
-        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?><status>/select</status>''';
+        const xmlResponse =
+            '''<?xml version="1.0" encoding="UTF-8" ?><status>/select</status>''';
 
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer((_) async => http.Response(xmlResponse, 200));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
         const preset = Preset(
           id: '1',
           itemName: 'My Favorite Playlist',
           source: 'SPOTIFY',
-          location: '/playback/container/c3BvdGlmeTpwbGF5bGlzdDoybjZXMnA1QzBNQUQ5YTR6NXhUVDdu',
+          location:
+              '/playback/container/c3BvdGlmeTpwbGF5bGlzdDoybjZXMnA1QzBNQUQ5YTR6NXhUVDdu',
           type: 'tracklisturl',
           isPresetable: true,
           sourceAccount: 'user123',
@@ -2313,17 +2846,28 @@ void main() {
         expect(body, contains('<ContentItem'));
         expect(body, contains('source="SPOTIFY"'));
         expect(body, contains('type="tracklisturl"'));
-        expect(body, contains('location="/playback/container/c3BvdGlmeTpwbGF5bGlzdDoybjZXMnA1QzBNQUQ5YTR6NXhUVDdu"'));
+        expect(
+          body,
+          contains(
+            'location="/playback/container/c3BvdGlmeTpwbGF5bGlzdDoybjZXMnA1QzBNQUQ5YTR6NXhUVDdu"',
+          ),
+        );
         expect(body, contains('isPresetable="true"'));
         expect(body, contains('sourceAccount="user123"'));
         expect(body, contains('<itemName>My Favorite Playlist</itemName>'));
       });
 
       test('selectPreset does not include sourceAccount if null', () async {
-        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?><status>/select</status>''';
+        const xmlResponse =
+            '''<?xml version="1.0" encoding="UTF-8" ?><status>/select</status>''';
 
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer((_) async => http.Response(xmlResponse, 200));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
         const preset = Preset(
           id: '2',
@@ -2348,53 +2892,75 @@ void main() {
         expect(body, isNot(contains('sourceAccount')));
       });
 
-      test('selectPreset throws exception on non-200 status code without response body', () async {
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer((_) async => http.Response('', 500));
+      test(
+        'selectPreset throws exception on non-200 status code without response body',
+        () async {
+          when(
+            mockClient.post(
+              any,
+              headers: anyNamed('headers'),
+              body: anyNamed('body'),
+            ),
+          ).thenAnswer((_) async => http.Response('', 500));
 
-        const preset = Preset(
-          id: '1',
-          itemName: 'Test Preset',
-          source: 'TUNEIN',
-          location: '/v1/playback/station/s33828',
-          type: 'stationurl',
-          isPresetable: true,
-        );
+          const preset = Preset(
+            id: '1',
+            itemName: 'Test Preset',
+            source: 'TUNEIN',
+            location: '/v1/playback/station/s33828',
+            type: 'stationurl',
+            isPresetable: true,
+          );
 
-        expect(
-          () => apiService.selectPreset('192.168.1.131', preset),
-          throwsA(
-            predicate((e) =>
-                e is Exception &&
-                e.toString() == 'Exception: Failed to select preset: HTTP 500'),
-          ),
-        );
-      });
+          expect(
+            () => apiService.selectPreset('192.168.1.131', preset),
+            throwsA(
+              predicate(
+                (e) =>
+                    e is Exception &&
+                    e.toString() ==
+                        'Exception: Failed to select preset: HTTP 500',
+              ),
+            ),
+          );
+        },
+      );
 
-      test('selectPreset includes response body in error message when available', () async {
-        const errorResponse = '<error><errorCode>INVALID_PRESET</errorCode><message>Preset not found</message></error>';
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer((_) async => http.Response(errorResponse, 500));
+      test(
+        'selectPreset includes response body in error message when available',
+        () async {
+          const errorResponse =
+              '<error><errorCode>INVALID_PRESET</errorCode><message>Preset not found</message></error>';
+          when(
+            mockClient.post(
+              any,
+              headers: anyNamed('headers'),
+              body: anyNamed('body'),
+            ),
+          ).thenAnswer((_) async => http.Response(errorResponse, 500));
 
-        const preset = Preset(
-          id: '1',
-          itemName: 'Test Preset',
-          source: 'TUNEIN',
-          location: '/v1/playback/station/s33828',
-          type: 'stationurl',
-          isPresetable: true,
-        );
+          const preset = Preset(
+            id: '1',
+            itemName: 'Test Preset',
+            source: 'TUNEIN',
+            location: '/v1/playback/station/s33828',
+            type: 'stationurl',
+            isPresetable: true,
+          );
 
-        expect(
-          () => apiService.selectPreset('192.168.1.131', preset),
-          throwsA(
-            predicate((e) =>
-                e is Exception &&
-                e.toString().contains('HTTP 500') &&
-                e.toString().contains(errorResponse)),
-          ),
-        );
-      });
+          expect(
+            () => apiService.selectPreset('192.168.1.131', preset),
+            throwsA(
+              predicate(
+                (e) =>
+                    e is Exception &&
+                    e.toString().contains('HTTP 500') &&
+                    e.toString().contains(errorResponse),
+              ),
+            ),
+          );
+        },
+      );
 
       test('selectPreset throws exception on timeout', () async {
         final fastApiService = SpeakerApiService(
@@ -2402,8 +2968,13 @@ void main() {
           timeout: const Duration(milliseconds: 100),
         );
 
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer(
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer(
           (_) async => Future.delayed(
             const Duration(milliseconds: 200),
             () => http.Response('', 200),
@@ -2426,10 +2997,16 @@ void main() {
       });
 
       test('selectPreset escapes special characters in itemName', () async {
-        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?><status>/select</status>''';
+        const xmlResponse =
+            '''<?xml version="1.0" encoding="UTF-8" ?><status>/select</status>''';
 
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer((_) async => http.Response(xmlResponse, 200));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
         const preset = Preset(
           id: '1',
@@ -2474,9 +3051,9 @@ void main() {
       });
 
       test('throws on non-200 response', () async {
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response('', 500),
-        );
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response('', 500));
 
         expect(
           () => apiService.getLanguage('192.168.1.100'),
@@ -2552,9 +3129,9 @@ void main() {
   <bassDefault>0</bassDefault>
 </bassCapabilities>''';
 
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200),
-        );
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
         final caps = await apiService.getBassCapabilities('192.168.1.131');
 
@@ -2573,9 +3150,9 @@ void main() {
   <bassDefault>0</bassDefault>
 </bassCapabilities>''';
 
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200),
-        );
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
         final caps = await apiService.getBassCapabilities('192.168.1.131');
 
@@ -2583,9 +3160,9 @@ void main() {
       });
 
       test('throws on non-200 response', () async {
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response('', 500),
-        );
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response('', 500));
 
         expect(
           () => apiService.getBassCapabilities('192.168.1.131'),
@@ -2602,9 +3179,9 @@ void main() {
   <actualbass>-5</actualbass>
 </bass>''';
 
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200),
-        );
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
         final bass = await apiService.getBass('192.168.1.131');
 
@@ -2618,9 +3195,9 @@ void main() {
   <actualbass>0</actualbass>
 </bass>''';
 
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200),
-        );
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
         expect(
           () => apiService.getBass('192.168.1.131'),
@@ -2629,9 +3206,9 @@ void main() {
       });
 
       test('throws on non-200 response', () async {
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response('', 500),
-        );
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response('', 500));
 
         expect(
           () => apiService.getBass('192.168.1.131'),
@@ -2688,42 +3265,49 @@ void main() {
   <URL location="/bass"/>
 </supportedURLs>''';
 
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200),
-        );
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
-        final supported =
-            await apiService.isClockDisplaySupported('192.168.1.131');
+        final supported = await apiService.isClockDisplaySupported(
+          '192.168.1.131',
+        );
         expect(supported, isTrue);
       });
 
-      test('returns false when /clockDisplay is not in supportedURLs',
-          () async {
-        const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
+      test(
+        'returns false when /clockDisplay is not in supportedURLs',
+        () async {
+          const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
 <supportedURLs deviceID="1004567890AA">
   <URL location="/volume"/>
   <URL location="/bass"/>
 </supportedURLs>''';
 
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200),
-        );
+          when(
+            mockClient.get(any),
+          ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
-        final supported =
-            await apiService.isClockDisplaySupported('192.168.1.131');
-        expect(supported, isFalse);
-      });
+          final supported = await apiService.isClockDisplaySupported(
+            '192.168.1.131',
+          );
+          expect(supported, isFalse);
+        },
+      );
 
-      test('returns false on non-200 response (e.g. 404 on older devices)',
-          () async {
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response('', 404),
-        );
+      test(
+        'returns false on non-200 response (e.g. 404 on older devices)',
+        () async {
+          when(
+            mockClient.get(any),
+          ).thenAnswer((_) async => http.Response('', 404));
 
-        final supported =
-            await apiService.isClockDisplaySupported('192.168.1.131');
-        expect(supported, isFalse);
-      });
+          final supported = await apiService.isClockDisplaySupported(
+            '192.168.1.131',
+          );
+          expect(supported, isFalse);
+        },
+      );
     });
 
     group('getClockDisplay', () {
@@ -2738,9 +3322,9 @@ void main() {
                userUtcTime="1701824606" />
 </clockDisplay>''';
 
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200),
-        );
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
         final config = await apiService.getClockDisplay('192.168.1.131');
 
@@ -2764,9 +3348,9 @@ void main() {
                userUtcTime="0" />
 </clockDisplay>''';
 
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200),
-        );
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
         final config = await apiService.getClockDisplay('192.168.1.131');
 
@@ -2779,9 +3363,9 @@ void main() {
         const xmlResponse = '''<?xml version="1.0" encoding="UTF-8" ?>
 <clockDisplay />''';
 
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200),
-        );
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
         expect(
           () => apiService.getClockDisplay('192.168.1.131'),
@@ -2790,9 +3374,9 @@ void main() {
       });
 
       test('throws on non-200 response', () async {
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response('', 500),
-        );
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response('', 500));
 
         expect(
           () => apiService.getClockDisplay('192.168.1.131'),
@@ -2928,24 +3512,36 @@ void main() {
   <sourceItem source="ALEXA" status="READY" isLocal="false" multiroomallowed="true"/>
 </sources>''';
 
-      test('returns all source types from the device without filtering', () async {
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(singleAuxXml, 200,
-              headers: {'content-type': 'text/xml; charset=utf-8'}),
-        );
+      test(
+        'returns all source types from the device without filtering',
+        () async {
+          when(mockClient.get(any)).thenAnswer(
+            (_) async => http.Response(
+              singleAuxXml,
+              200,
+              headers: {'content-type': 'text/xml; charset=utf-8'},
+            ),
+          );
 
-        final sources = await apiService.getSources('192.168.1.131');
+          final sources = await apiService.getSources('192.168.1.131');
 
-        final sourceTypes = sources.map((s) => s.source).toSet();
-        expect(sourceTypes, containsAll({'AUX', 'BLUETOOTH', 'TUNEIN', 'SPOTIFY', 'UPNP'}));
-        expect(sourceTypes, contains('AIRPLAY'));
-        expect(sourceTypes, contains('NOTIFICATION'));
-      });
+          final sourceTypes = sources.map((s) => s.source).toSet();
+          expect(
+            sourceTypes,
+            containsAll({'AUX', 'BLUETOOTH', 'TUNEIN', 'SPOTIFY', 'UPNP'}),
+          );
+          expect(sourceTypes, contains('AIRPLAY'));
+          expect(sourceTypes, contains('NOTIFICATION'));
+        },
+      );
 
       test('parses single AUX with display name', () async {
         when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(singleAuxXml, 200,
-              headers: {'content-type': 'text/xml; charset=utf-8'}),
+          (_) async => http.Response(
+            singleAuxXml,
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
         );
 
         final sources = await apiService.getSources('192.168.1.131');
@@ -2956,41 +3552,53 @@ void main() {
         expect(aux.status, 'READY');
       });
 
-      test('uses source name as fallback when inner text is blank (BLUETOOTH)', () async {
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(singleAuxXml, 200,
-              headers: {'content-type': 'text/xml; charset=utf-8'}),
-        );
+      test(
+        'uses source name as fallback when inner text is blank (BLUETOOTH)',
+        () async {
+          when(mockClient.get(any)).thenAnswer(
+            (_) async => http.Response(
+              singleAuxXml,
+              200,
+              headers: {'content-type': 'text/xml; charset=utf-8'},
+            ),
+          );
 
-        final sources = await apiService.getSources('192.168.1.131');
-        final bluetooth = sources.firstWhere((s) => s.source == 'BLUETOOTH');
+          final sources = await apiService.getSources('192.168.1.131');
+          final bluetooth = sources.firstWhere((s) => s.source == 'BLUETOOTH');
 
-        expect(bluetooth.displayName, 'BLUETOOTH');
-        expect(bluetooth.sourceAccount, isNull);
-      });
+          expect(bluetooth.displayName, 'BLUETOOTH');
+          expect(bluetooth.sourceAccount, isNull);
+        },
+      );
 
-      test('returns three separate AUX entries for a three-AUX device', () async {
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(threeAuxXml, 200,
-              headers: {'content-type': 'text/xml; charset=utf-8'}),
-        );
+      test(
+        'returns three separate AUX entries for a three-AUX device',
+        () async {
+          when(mockClient.get(any)).thenAnswer(
+            (_) async => http.Response(
+              threeAuxXml,
+              200,
+              headers: {'content-type': 'text/xml; charset=utf-8'},
+            ),
+          );
 
-        final sources = await apiService.getSources('192.168.1.131');
-        final auxSources = sources.where((s) => s.source == 'AUX').toList();
+          final sources = await apiService.getSources('192.168.1.131');
+          final auxSources = sources.where((s) => s.source == 'AUX').toList();
 
-        expect(auxSources.length, 3);
-        expect(auxSources[0].sourceAccount, 'AUX1');
-        expect(auxSources[0].displayName, 'AUX IN 1');
-        expect(auxSources[1].sourceAccount, 'AUX2');
-        expect(auxSources[1].displayName, 'AUX IN 2');
-        expect(auxSources[2].sourceAccount, 'AUX3');
-        expect(auxSources[2].displayName, 'AUX IN 3');
-      });
+          expect(auxSources.length, 3);
+          expect(auxSources[0].sourceAccount, 'AUX1');
+          expect(auxSources[0].displayName, 'AUX IN 1');
+          expect(auxSources[1].sourceAccount, 'AUX2');
+          expect(auxSources[1].displayName, 'AUX IN 2');
+          expect(auxSources[2].sourceAccount, 'AUX3');
+          expect(auxSources[2].displayName, 'AUX IN 3');
+        },
+      );
 
       test('throws on non-200 response', () async {
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response('', 500),
-        );
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response('', 500));
 
         expect(
           () => apiService.getSources('192.168.1.131'),
@@ -3000,35 +3608,48 @@ void main() {
     });
 
     group('selectSource', () {
-      test('sends correct XML for source without sourceAccount (BLUETOOTH)', () async {
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer((_) async => http.Response('', 200));
+      test(
+        'sends correct XML for source without sourceAccount (BLUETOOTH)',
+        () async {
+          when(
+            mockClient.post(
+              any,
+              headers: anyNamed('headers'),
+              body: anyNamed('body'),
+            ),
+          ).thenAnswer((_) async => http.Response('', 200));
 
-        const source = SpeakerSource(
-          source: 'BLUETOOTH',
-          displayName: 'BLUETOOTH',
-        );
+          const source = SpeakerSource(
+            source: 'BLUETOOTH',
+            displayName: 'BLUETOOTH',
+          );
 
-        await apiService.selectSource('192.168.1.131', source);
+          await apiService.selectSource('192.168.1.131', source);
 
-        final captured = verify(
-          mockClient.post(
-            any,
-            headers: captureAnyNamed('headers'),
-            body: captureAnyNamed('body'),
-          ),
-        ).captured;
+          final captured = verify(
+            mockClient.post(
+              any,
+              headers: captureAnyNamed('headers'),
+              body: captureAnyNamed('body'),
+            ),
+          ).captured;
 
-        expect(captured[0], {'Content-Type': 'text/xml'});
-        final body = captured[1] as String;
-        expect(body, contains('<ContentItem'));
-        expect(body, contains('source="BLUETOOTH"'));
-        expect(body, isNot(contains('sourceAccount')));
-      });
+          expect(captured[0], {'Content-Type': 'text/xml'});
+          final body = captured[1] as String;
+          expect(body, contains('<ContentItem'));
+          expect(body, contains('source="BLUETOOTH"'));
+          expect(body, isNot(contains('sourceAccount')));
+        },
+      );
 
       test('sends correct XML for AUX source with sourceAccount', () async {
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer((_) async => http.Response('', 200));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response('', 200));
 
         const source = SpeakerSource(
           source: 'AUX',
@@ -3052,8 +3673,13 @@ void main() {
       });
 
       test('throws on non-200 response', () async {
-        when(mockClient.post(any, headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer((_) async => http.Response('', 500));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response('', 500));
 
         const source = SpeakerSource(source: 'TUNEIN', displayName: 'TuneIn');
 
@@ -3085,8 +3711,9 @@ void main() {
 </network-data>''';
 
       test('parses a wireless interface', () async {
-        when(mockClient.get(any))
-            .thenAnswer((_) async => http.Response(wirelessXml, 200));
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response(wirelessXml, 200));
 
         final stats = await apiService.getNetworkStats('192.168.178.30');
 
@@ -3097,16 +3724,21 @@ void main() {
         expect(stats.ipAddress, '192.168.178.30');
         expect(stats.macAddress, '7C3866F83074');
         final captured = verify(mockClient.get(captureAny)).captured;
-        expect(captured.first.toString(),
-            'http://192.168.178.30:8090/netStats');
+        expect(
+          captured.first.toString(),
+          'http://192.168.178.30:8090/netStats',
+        );
       });
 
       test('parses a wired interface without SSID', () async {
-        when(mockClient.get(any)).thenAnswer((_) async => http.Response(
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(
             '<network-data><devices><device><interfaces><interface>'
             '<mac-addr>AA</mac-addr><running>true</running><kind>Wired</kind>'
             '</interface></interfaces></device></devices></network-data>',
-            200));
+            200,
+          ),
+        );
 
         final stats = await apiService.getNetworkStats('192.168.1.1');
 
@@ -3116,19 +3748,25 @@ void main() {
       });
 
       test('throws on non-200 response', () async {
-        when(mockClient.get(any))
-            .thenAnswer((_) async => http.Response('', 500));
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response('', 500));
 
-        expect(() => apiService.getNetworkStats('192.168.1.1'),
-            throwsA(isA<Exception>()));
+        expect(
+          () => apiService.getNetworkStats('192.168.1.1'),
+          throwsA(isA<Exception>()),
+        );
       });
 
       test('throws when no interface is present', () async {
-        when(mockClient.get(any)).thenAnswer(
-            (_) async => http.Response('<network-data/>', 200));
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response('<network-data/>', 200));
 
-        expect(() => apiService.getNetworkStats('192.168.1.1'),
-            throwsA(isA<Exception>()));
+        expect(
+          () => apiService.getNetworkStats('192.168.1.1'),
+          throwsA(isA<Exception>()),
+        );
       });
     });
   });

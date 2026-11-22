@@ -30,11 +30,7 @@ class SpeakerDetailPage extends StatefulWidget {
   final Speaker speaker;
   final SpeakerApiService? apiService;
 
-  const SpeakerDetailPage({
-    super.key,
-    required this.speaker,
-    this.apiService,
-  });
+  const SpeakerDetailPage({super.key, required this.speaker, this.apiService});
 
   @override
   State<SpeakerDetailPage> createState() => _SpeakerDetailPageState();
@@ -79,7 +75,9 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
   final ScrollController _scrollController = ScrollController();
 
   // Page storage key to maintain scroll position across rebuilds
-  final PageStorageKey<String> _scrollKey = const PageStorageKey<String>('speaker_detail_scroll');
+  final PageStorageKey<String> _scrollKey = const PageStorageKey<String>(
+    'speaker_detail_scroll',
+  );
 
   @override
   void initState() {
@@ -97,7 +95,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
 
     // Subscribe to volume updates
     _volumeSubscription = _websocketService!.volumeStream.listen(
-          (volume) {
+      (volume) {
         if (!mounted) return;
         // Update volume via ValueNotifier - doesn't trigger full rebuild
         _currentVolume = volume;
@@ -117,7 +115,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
 
     // Subscribe to now playing updates
     _nowPlayingSubscription = _websocketService!.nowPlayingStream.listen(
-          (nowPlaying) {
+      (nowPlaying) {
         if (!mounted) return;
         // Update shared state instead of local state
         final appState = context.read<MyAppState>();
@@ -134,7 +132,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
 
     // Subscribe to zone updates
     _zoneSubscription = _websocketService!.zoneStream.listen(
-          (_) {
+      (_) {
         if (!mounted) return;
         // Refresh zone data when zone update is received
         _loadZone();
@@ -182,7 +180,6 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
     }
   }
 
-
   Future<void> _loadZone() async {
     setState(() {
       _isLoadingZone = true;
@@ -210,7 +207,6 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
     }
   }
 
-
   static const _displayedSources = {'AUX', 'BLUETOOTH'};
   static const _sourceOrder = ['AUX', 'BLUETOOTH'];
 
@@ -222,11 +218,12 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
 
     try {
       final all = await _apiService.getSources(widget.speaker.ipAddress);
-      final filtered = all
-          .where((s) => _displayedSources.contains(s.source))
-          .toList()
-        ..sort((a, b) => _sourceOrder.indexOf(a.source)
-            .compareTo(_sourceOrder.indexOf(b.source)));
+      final filtered =
+          all.where((s) => _displayedSources.contains(s.source)).toList()..sort(
+            (a, b) => _sourceOrder
+                .indexOf(a.source)
+                .compareTo(_sourceOrder.indexOf(b.source)),
+          );
       if (!mounted) return;
       setState(() {
         _sources = filtered;
@@ -244,7 +241,8 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
   Future<void> _loadSpeakerInfo() async {
     try {
       final speakerInfo = await _apiService.fetchSpeakerInfo(
-          widget.speaker.ipAddress);
+        widget.speaker.ipAddress,
+      );
       if (!mounted) return;
 
       // Get configured API URL from app settings
@@ -262,7 +260,8 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
           .replaceAll(RegExp(r'/+$'), '');
 
       // Warn only when the hosts (scheme+domain+port) differ; ignore path differences
-      final hasMismatch = normalizedMargeUrl != null &&
+      final hasMismatch =
+          normalizedMargeUrl != null &&
           normalizedMargeUrl.isNotEmpty &&
           normalizedConfigUrl.isNotEmpty &&
           !urlHostsMatch(normalizedMargeUrl, normalizedConfigUrl);
@@ -313,14 +312,11 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
 
   Future<void> _selectPreset(Preset preset) async {
     try {
-      await _apiService.selectPreset(
-        widget.speaker.ipAddress,
-        preset,
-      );
+      await _apiService.selectPreset(widget.speaker.ipAddress, preset);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Playing ${preset.itemName}')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Playing ${preset.itemName}')));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -446,11 +442,9 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
         ),
         ...selectedSpeakers
             .where((s) => s.id != widget.speaker.id)
-            .map((s) =>
-            ZoneMember(
-              deviceId: s.deviceId,
-              ipAddress: s.ipAddress,
-            )),
+            .map(
+              (s) => ZoneMember(deviceId: s.deviceId, ipAddress: s.ipAddress),
+            ),
       ];
 
       await _apiService.createZone(
@@ -487,20 +481,17 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
 
     try {
       final newMembers = selectedSpeakers
-          .where((s) =>
-      !_currentZone!.members.any((m) => m.deviceId == s.deviceId))
-          .map((s) =>
-          ZoneMember(
-            deviceId: s.deviceId,
-            ipAddress: s.ipAddress,
-          ))
+          .where(
+            (s) => !_currentZone!.members.any((m) => m.deviceId == s.deviceId),
+          )
+          .map((s) => ZoneMember(deviceId: s.deviceId, ipAddress: s.ipAddress))
           .toList();
 
       if (newMembers.isEmpty) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No new speakers to add')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('No new speakers to add')));
         setState(() => _isLoadingZone = false);
         return;
       }
@@ -513,9 +504,9 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
 
       await _loadZone();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Speakers added to zone')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Speakers added to zone')));
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -568,9 +559,9 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
       );
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Playback toggled')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Playback toggled')));
 
       // The WebSocket will update the state automatically
     } catch (e) {
@@ -605,13 +596,12 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
 
     showDialog<void>(
       context: context,
-      builder: (context) =>
-          _ZoneDialog(
-            availableSpeakers: availableSpeakers,
-            currentZone: _currentZone,
-            onCreateZone: _createZone,
-            onAddToZone: _addToZone,
-          ),
+      builder: (context) => _ZoneDialog(
+        availableSpeakers: availableSpeakers,
+        currentZone: _currentZone,
+        onCreateZone: _createZone,
+        onAddToZone: _addToZone,
+      ),
     );
   }
 
@@ -620,30 +610,28 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
 
     showDialog<void>(
       context: context,
-      builder: (context) =>
-          AlertDialog(
-            title: const Text('Delete Speaker'),
-            content: Text(
-              'Are you sure you want to delete "${widget.speaker
-                  .name}"? This action cannot be undone.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Cancel'),
-              ),
-              FilledButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  _deleteSpeaker(context);
-                },
-                style: FilledButton.styleFrom(
-                  backgroundColor: theme.colorScheme.error,
-                ),
-                child: const Text('Delete'),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Speaker'),
+        content: Text(
+          'Are you sure you want to delete "${widget.speaker.name}"? This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
           ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              _deleteSpeaker(context);
+            },
+            style: FilledButton.styleFrom(
+              backgroundColor: theme.colorScheme.error,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -653,18 +641,18 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
 
     Navigator.of(context).pop();
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${widget.speaker.name} deleted')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('${widget.speaker.name} deleted')));
   }
 
   Future<void> _sendToStandby() async {
     try {
       await _apiService.standby(widget.speaker.ipAddress);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Speaker sent to standby')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Speaker sent to standby')));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -746,17 +734,16 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
   void _showErrorDialog(String message) {
     showDialog<void>(
       context: context,
-      builder: (context) =>
-          AlertDialog(
-            title: const Text('Error'),
-            content: Text(message),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
           ),
+        ],
+      ),
     );
   }
 
@@ -769,14 +756,13 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
     Navigator.push(
       context,
       MaterialPageRoute<void>(
-        builder: (context) =>
-            AlbumArtViewerPage(
-              imageUrl: nowPlaying!.art!,
-              heroTag: 'album-art-${widget.speaker.id}',
-              track: nowPlaying.track,
-              artist: nowPlaying.artist,
-              album: nowPlaying.album,
-            ),
+        builder: (context) => AlbumArtViewerPage(
+          imageUrl: nowPlaying!.art!,
+          heroTag: 'album-art-${widget.speaker.id}',
+          track: nowPlaying.track,
+          artist: nowPlaying.artist,
+          album: nowPlaying.album,
+        ),
       ),
     );
   }
@@ -791,12 +777,13 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
     }
 
     // Check if we have actual content to display
-    final hasContentInfo = nowPlaying.track != null ||
+    final hasContentInfo =
+        nowPlaying.track != null ||
         nowPlaying.artist != null ||
         nowPlaying.album != null;
 
-    final hasArtwork = nowPlaying.art != null &&
-        nowPlaying.artImageStatus == 'IMAGE_PRESENT';
+    final hasArtwork =
+        nowPlaying.art != null && nowPlaying.artImageStatus == 'IMAGE_PRESENT';
 
     // Only show the now playing card if we have content info OR artwork
     // Don't show placeholder when we have playback state but no actual content
@@ -817,10 +804,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                widget.speaker.emoji,
-                style: const TextStyle(fontSize: 48),
-              ),
+              Text(widget.speaker.emoji, style: const TextStyle(fontSize: 48)),
               const SizedBox(width: 16),
               Flexible(
                 child: FittedBox(
@@ -854,17 +838,17 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
     );
   }
 
-  Widget _buildHeroNowPlaying(BuildContext context, ThemeData theme, NowPlaying nowPlaying) {
+  Widget _buildHeroNowPlaying(
+    BuildContext context,
+    ThemeData theme,
+    NowPlaying nowPlaying,
+  ) {
     // Handle TV source
     if (_isTvSource(nowPlaying)) {
       return Center(
         child: Column(
           children: [
-            Icon(
-              Icons.tv,
-              size: 120,
-              color: theme.colorScheme.primary,
-            ),
+            Icon(Icons.tv, size: 120, color: theme.colorScheme.primary),
             const SizedBox(height: 24),
             Text(
               'Playing TV sound',
@@ -988,9 +972,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                           : Icons.play_arrow,
                     ),
                     label: Text(
-                      nowPlaying.playStatus == 'PLAY_STATE'
-                          ? 'Pause'
-                          : 'Play',
+                      nowPlaying.playStatus == 'PLAY_STATE' ? 'Pause' : 'Play',
                     ),
                     style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
@@ -1047,8 +1029,8 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                     nowPlaying.repeatSetting == 'REPEAT_ALL'
                         ? Icons.repeat
                         : nowPlaying.repeatSetting == 'REPEAT_ONE'
-                            ? Icons.repeat_one
-                            : Icons.repeat,
+                        ? Icons.repeat_one
+                        : Icons.repeat,
                     size: 20,
                     color: nowPlaying.repeatSetting != 'REPEAT_OFF'
                         ? theme.colorScheme.primary
@@ -1059,8 +1041,8 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                     nowPlaying.repeatSetting == 'REPEAT_ALL'
                         ? 'Repeat All'
                         : nowPlaying.repeatSetting == 'REPEAT_ONE'
-                            ? 'Repeat One'
-                            : 'Repeat Off',
+                        ? 'Repeat One'
+                        : 'Repeat Off',
                     style: theme.textTheme.bodyMedium,
                   ),
                 ],
@@ -1090,7 +1072,9 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
               decoration: BoxDecoration(
                 color: preset != null
                     ? theme.colorScheme.surfaceContainerHighest
-                    : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                    : theme.colorScheme.surfaceContainerHighest.withValues(
+                        alpha: 0.3,
+                      ),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: preset != null
@@ -1181,16 +1165,14 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
           Navigator.push(
             context,
             MaterialPageRoute<void>(
-              builder: (context) =>
-                  EditSpeakerPage(speaker: widget.speaker),
+              builder: (context) => EditSpeakerPage(speaker: widget.speaker),
             ),
           );
         } else if (value == 'remote') {
           Navigator.push(
             context,
             MaterialPageRoute<void>(
-              builder: (context) =>
-                  RemoteControlPage(speaker: widget.speaker),
+              builder: (context) => RemoteControlPage(speaker: widget.speaker),
             ),
           );
         } else if (value == 'recent') {
@@ -1204,7 +1186,8 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
           Navigator.push(
             context,
             MaterialPageRoute<void>(
-              builder: (context) => PresetsPage(speakerIp: widget.speaker.ipAddress),
+              builder: (context) =>
+                  PresetsPage(speakerIp: widget.speaker.ipAddress),
             ),
           );
         } else if (value == 'events') {
@@ -1237,8 +1220,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
           _showDeleteConfirmationDialog(context);
         }
       },
-      itemBuilder: (BuildContext context) =>
-      [
+      itemBuilder: (BuildContext context) => [
         const PopupMenuItem<String>(
           value: 'edit',
           child: Row(
@@ -1262,11 +1244,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
         const PopupMenuItem<String>(
           value: 'recent',
           child: Row(
-            children: [
-              Icon(Icons.history),
-              SizedBox(width: 8),
-              Text('Recent'),
-            ],
+            children: [Icon(Icons.history), SizedBox(width: 8), Text('Recent')],
           ),
         ),
         const PopupMenuItem<String>(
@@ -1302,11 +1280,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
         const PopupMenuItem<String>(
           value: 'wifi',
           child: Row(
-            children: [
-              Icon(Icons.wifi),
-              SizedBox(width: 8),
-              Text('Wi-Fi'),
-            ],
+            children: [Icon(Icons.wifi), SizedBox(width: 8), Text('Wi-Fi')],
           ),
         ),
         const PopupMenuItem<String>(
@@ -1352,7 +1326,6 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
     );
   }
 
-
   Widget _buildVolumeCard(BuildContext context, ThemeData theme) {
     return Card(
       elevation: 1,
@@ -1363,10 +1336,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.volume_up,
-                  color: theme.colorScheme.primary,
-                ),
+                Icon(Icons.volume_up, color: theme.colorScheme.primary),
                 const SizedBox(width: 8),
                 Text(
                   'Volume',
@@ -1415,11 +1385,14 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                       const SizedBox(height: 16),
                       // Volume slider
                       Slider(
-                        value: (_pendingVolume ?? currentVolume.actualVolume.toDouble()),
+                        value:
+                            (_pendingVolume ??
+                            currentVolume.actualVolume.toDouble()),
                         min: 0,
                         max: 100,
                         divisions: 20,
-                        label: '${(_pendingVolume ?? currentVolume.actualVolume.toDouble()).round()}%',
+                        label:
+                            '${(_pendingVolume ?? currentVolume.actualVolume.toDouble()).round()}%',
                         onChanged: _isLoadingVolume ? null : _onSliderChanged,
                         onChangeEnd: _onSliderChangeEnd,
                       ),
@@ -1496,7 +1469,8 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute<void>(
-                        builder: (context) => PresetsPage(speakerIp: widget.speaker.ipAddress),
+                        builder: (context) =>
+                            PresetsPage(speakerIp: widget.speaker.ipAddress),
                       ),
                     );
                   },
@@ -1506,7 +1480,9 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
             ),
             const SizedBox(height: 16),
             FutureBuilder<List<Preset>>(
-              future: context.read<MyAppState>().getPresets(widget.speaker.ipAddress),
+              future: context.read<MyAppState>().getPresets(
+                widget.speaker.ipAddress,
+              ),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
@@ -1530,7 +1506,9 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                       const SizedBox(height: 8),
                       TextButton(
                         onPressed: () {
-                          context.read<MyAppState>().invalidatePresetsCache(widget.speaker.ipAddress);
+                          context.read<MyAppState>().invalidatePresetsCache(
+                            widget.speaker.ipAddress,
+                          );
                         },
                         child: const Text('Retry'),
                       ),
@@ -1544,7 +1522,9 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                     // Calculate appropriate max width
                     // On screens wider than 600px, constrain the preset grid to 500px
                     // On smaller screens, use full width
-                    final maxGridWidth = constraints.maxWidth > 600 ? 500.0 : constraints.maxWidth;
+                    final maxGridWidth = constraints.maxWidth > 600
+                        ? 500.0
+                        : constraints.maxWidth;
 
                     return Center(
                       child: ConstrainedBox(
@@ -1560,7 +1540,9 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                                     context,
                                     theme,
                                     i.toString(),
-                                    presets.where((p) => p.id == i.toString()).firstOrNull,
+                                    presets
+                                        .where((p) => p.id == i.toString())
+                                        .firstOrNull,
                                   ),
                               ],
                             ),
@@ -1574,7 +1556,9 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                                     context,
                                     theme,
                                     i.toString(),
-                                    presets.where((p) => p.id == i.toString()).firstOrNull,
+                                    presets
+                                        .where((p) => p.id == i.toString())
+                                        .firstOrNull,
                                   ),
                               ],
                             ),
@@ -1606,9 +1590,7 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
             Text(widget.speaker.name),
           ],
         ),
-        actions: [
-          _buildAppBarActions(context, theme),
-        ],
+        actions: [_buildAppBarActions(context, theme)],
       ),
       body: Column(
         children: [
@@ -1637,7 +1619,8 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
           // Use Selector to only rebuild when this speaker's nowPlaying changes
           Expanded(
             child: Selector<MyAppState, NowPlaying?>(
-              selector: (_, appState) => appState.getCachedNowPlaying(widget.speaker.ipAddress),
+              selector: (_, appState) =>
+                  appState.getCachedNowPlaying(widget.speaker.ipAddress),
               builder: (context, nowPlaying, child) {
                 return SingleChildScrollView(
                   key: _scrollKey,
@@ -1648,7 +1631,8 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Conditional rendering: Hero Now Playing or Speaker Header
-                        if (_shouldShowNowPlayingCard(nowPlaying) && nowPlaying != null)
+                        if (_shouldShowNowPlayingCard(nowPlaying) &&
+                            nowPlaying != null)
                           _buildHeroNowPlaying(context, theme, nowPlaying)
                         else
                           _buildSpeakerHeader(context, theme),
@@ -1794,400 +1778,340 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
 
   Widget _buildZoneCard(BuildContext context, ThemeData theme) {
     return Card(
-                      elevation: 1,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.speaker_group,
-                                  color: theme.colorScheme.primary,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Multi-Room Zone',
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            if (_isLoadingZone && _currentZone == null)
-                              const Center(
-                                child: Padding(
-                                  padding: EdgeInsets.all(16.0),
-                                  child: CircularProgressIndicator(),
-                                ),
-                              )
-                            else
-                              if (_zoneErrorMessage != null)
-                                Column(
-                                  children: [
-                                    Text(
-                                      _zoneErrorMessage!,
-                                      style: TextStyle(
-                                        color: theme.colorScheme.error,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    TextButton(
-                                      onPressed: _loadZone,
-                                      child: const Text('Retry'),
-                                    ),
-                                  ],
-                                )
-                              else
-                                if (_currentZone == null ||
-                                    _currentZone!.isEmpty)
-                                  Column(
-                                    children: [
-                                      Text(
-                                        'This speaker is not in a zone',
-                                        style: theme.textTheme.bodyMedium
-                                            ?.copyWith(
-                                          color: theme.colorScheme
-                                              .onSurfaceVariant,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 16),
-                                      FilledButton.icon(
-                                        onPressed: _isLoadingZone ? null : () =>
-                                            _showZoneDialog(context),
-                                        icon: const Icon(Icons.add),
-                                        label: const Text('Create Zone'),
-                                      ),
-                                    ],
-                                  )
-                                else
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment
-                                        .start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            Icons.album,
-                                            size: 18,
-                                            color: theme.colorScheme.primary,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            _currentZone!.isMaster(
-                                                widget.speaker.deviceId)
-                                                ? 'Master Speaker'
-                                                : 'Zone Member',
-                                            style: theme.textTheme.bodyLarge
-                                                ?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 16),
-                                      Text(
-                                        'Zone Members (${_currentZone!
-                                            .allMemberDeviceIds.length})',
-                                        style: theme.textTheme.bodyMedium
-                                            ?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      ..._currentZone!.allMemberDeviceIds.map((
-                                          deviceId) {
-                                        final isCurrentSpeaker = deviceId ==
-                                            widget.speaker.deviceId;
-                                        final isMaster = _currentZone!.isMaster(
-                                            deviceId);
-                                        final speaker = _getSpeakerByDeviceId(
-                                            deviceId);
-
-                                        // Find the member object for this device (null if it's the master)
-                                        final member = _currentZone!
-                                            .members
-                                            .where((m) =>
-                                        m.deviceId == deviceId)
-                                            .firstOrNull;
-
-                                        // Get volume state for this member
-                                        final memberVolume = _zoneMemberVolumes[deviceId];
-                                        final isLoadingMemberVolume = _loadingVolumes[deviceId] ??
-                                            false;
-                                        final volumeError = _volumeErrors[deviceId];
-
-                                        // Determine role text
-                                        final roleText = isMaster
-                                            ? 'Master'
-                                            : 'Zone Member';
-
-                                        return Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 8.0),
-                                          child: Column(
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  // Speaker emoji and info
-                                                  if (speaker != null) ...[
-                                                    Text(
-                                                      speaker.emoji,
-                                                      style: const TextStyle(
-                                                          fontSize: 24),
-                                                    ),
-                                                    const SizedBox(width: 12),
-                                                    Expanded(
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment
-                                                            .start,
-                                                        children: [
-                                                          Text(
-                                                            speaker.name,
-                                                            style: theme
-                                                                .textTheme
-                                                                .bodyMedium
-                                                                ?.copyWith(
-                                                              fontWeight: FontWeight
-                                                                  .w500,
-                                                            ),
-                                                          ),
-                                                          Text(
-                                                            roleText,
-                                                            style: theme
-                                                                .textTheme
-                                                                .bodySmall
-                                                                ?.copyWith(
-                                                              color: theme
-                                                                  .colorScheme
-                                                                  .onSurfaceVariant,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ] else
-                                                    Expanded(
-                                                      child: Text(
-                                                        member?.ipAddress ??
-                                                            deviceId,
-                                                        style: theme.textTheme
-                                                            .bodyMedium,
-                                                      ),
-                                                    ),
-                                                  // Volume controls - always present to maintain alignment
-                                                  if (speaker != null) ...[
-                                                    const SizedBox(width: 16),
-                                                    SizedBox(
-                                                      height: 40,
-                                                      width: 40,
-                                                      child: FilledButton(
-                                                        onPressed: (isLoadingMemberVolume ||
-                                                            memberVolume ==
-                                                                null)
-                                                            ? null
-                                                            : () =>
-                                                            _adjustMemberVolume(
-                                                                deviceId, -5),
-                                                        style: FilledButton
-                                                            .styleFrom(
-                                                          padding: EdgeInsets
-                                                              .zero,
-                                                          minimumSize: const Size(
-                                                              40, 40),
-                                                        ),
-                                                        child: const Icon(
-                                                            Icons.volume_down,
-                                                            size: 18),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 4),
-                                                    if (isLoadingMemberVolume)
-                                                      const SizedBox(
-                                                        width: 50,
-                                                        height: 16,
-                                                        child: Center(
-                                                          child: SizedBox(
-                                                            width: 16,
-                                                            height: 16,
-                                                            child: CircularProgressIndicator(
-                                                                strokeWidth: 2),
-                                                          ),
-                                                        ),
-                                                      )
-                                                    else
-                                                      if (memberVolume !=
-                                                          null) ...[
-                                                        SizedBox(
-                                                          width: 50,
-                                                          child: Text(
-                                                            '${memberVolume
-                                                                .actualVolume}%',
-                                                            style: theme
-                                                                .textTheme
-                                                                .bodySmall
-                                                                ?.copyWith(
-                                                              fontWeight: FontWeight
-                                                                  .bold,
-                                                            ),
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                          ),
-                                                        ),
-                                                      ] else
-                                                        const SizedBox(
-                                                            width: 50),
-                                                    const SizedBox(width: 4),
-                                                    SizedBox(
-                                                      height: 40,
-                                                      width: 40,
-                                                      child: FilledButton(
-                                                        onPressed: (isLoadingMemberVolume ||
-                                                            memberVolume ==
-                                                                null)
-                                                            ? null
-                                                            : () =>
-                                                            _adjustMemberVolume(
-                                                                deviceId, 5),
-                                                        style: FilledButton
-                                                            .styleFrom(
-                                                          padding: EdgeInsets
-                                                              .zero,
-                                                          minimumSize: const Size(
-                                                              40, 40),
-                                                        ),
-                                                        child: const Icon(
-                                                            Icons.volume_up,
-                                                            size: 18),
-                                                      ),
-                                                    ),
-                                                    // Remove button - fixed width to maintain alignment
-                                                    const SizedBox(width: 4),
-                                                    SizedBox(
-                                                      width: 40,
-                                                      height: 40,
-                                                      child: (!isCurrentSpeaker &&
-                                                          !isMaster &&
-                                                          _currentZone!
-                                                              .isMaster(
-                                                              widget.speaker
-                                                                  .deviceId) &&
-                                                          member != null)
-                                                          ? FilledButton(
-                                                        onPressed: _isLoadingZone
-                                                            ? null
-                                                            : () =>
-                                                            _removeFromZone(
-                                                                member),
-                                                        style: FilledButton
-                                                            .styleFrom(
-                                                          padding: EdgeInsets
-                                                              .zero,
-                                                          minimumSize: const Size(
-                                                              40, 40),
-                                                          backgroundColor: theme
-                                                              .colorScheme
-                                                              .errorContainer,
-                                                          foregroundColor: theme
-                                                              .colorScheme
-                                                              .onErrorContainer,
-                                                        ),
-                                                        child: const Icon(Icons
-                                                            .remove_circle_outline,
-                                                            size: 18),
-                                                      )
-                                                          : null,
-                                                    ),
-                                                  ],
-                                                ],
-                                              ),
-                                              // Show error message if volume load failed
-                                              if (volumeError != null)
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                      .only(left: 36, top: 4),
-                                                  child: Row(
-                                                    children: [
-                                                      Expanded(
-                                                        child: Text(
-                                                          volumeError,
-                                                          style: TextStyle(
-                                                            color: theme
-                                                                .colorScheme
-                                                                .error,
-                                                            fontSize: 12,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                      TextButton(
-                                                        onPressed: () async {
-                                                          if (speaker == null) {
-                                                            return;
-                                                          }
-                                                          setState(() {
-                                                            _loadingVolumes[deviceId] =
-                                                            true;
-                                                            _volumeErrors[deviceId] =
-                                                            null;
-                                                          });
-                                                          try {
-                                                            final volume = await _apiService
-                                                                .getVolume(
-                                                                speaker
-                                                                    .ipAddress);
-                                                            if (!mounted) {
-                                                              return;
-                                                            }
-                                                            setState(() {
-                                                              _zoneMemberVolumes[deviceId] =
-                                                                  volume;
-                                                              _loadingVolumes[deviceId] =
-                                                              false;
-                                                            });
-                                                          } catch (e) {
-                                                            if (!mounted) {
-                                                              return;
-                                                            }
-                                                            setState(() {
-                                                              _volumeErrors[deviceId] =
-                                                              'Failed to load volume: ${e
-                                                                  .toString()}';
-                                                              _loadingVolumes[deviceId] =
-                                                              false;
-                                                            });
-                                                          }
-                                                        },
-                                                        child: const Text(
-                                                            'Retry',
-                                                            style: TextStyle(
-                                                                fontSize: 12)),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                            ],
-                                          ),
-                                        );
-                                      }),
-                                      const SizedBox(height: 16),
-                                      if (_currentZone!.isMaster(
-                                          widget.speaker.deviceId))
-                                        FilledButton.icon(
-                                          onPressed: _isLoadingZone
-                                              ? null
-                                              : () => _showZoneDialog(context),
-                                          icon: const Icon(Icons.add),
-                                          label: const Text('Add Speakers'),
-                                        ),
-                                    ],
-                                  ),
-                          ],
+      elevation: 1,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.speaker_group, color: theme.colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  'Multi-Room Zone',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            if (_isLoadingZone && _currentZone == null)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            else if (_zoneErrorMessage != null)
+              Column(
+                children: [
+                  Text(
+                    _zoneErrorMessage!,
+                    style: TextStyle(
+                      color: theme.colorScheme.error,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(onPressed: _loadZone, child: const Text('Retry')),
+                ],
+              )
+            else if (_currentZone == null || _currentZone!.isEmpty)
+              Column(
+                children: [
+                  Text(
+                    'This speaker is not in a zone',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  FilledButton.icon(
+                    onPressed: _isLoadingZone
+                        ? null
+                        : () => _showZoneDialog(context),
+                    icon: const Icon(Icons.add),
+                    label: const Text('Create Zone'),
+                  ),
+                ],
+              )
+            else
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.album,
+                        size: 18,
+                        color: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _currentZone!.isMaster(widget.speaker.deviceId)
+                            ? 'Master Speaker'
+                            : 'Zone Member',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Zone Members (${_currentZone!.allMemberDeviceIds.length})',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  ..._currentZone!.allMemberDeviceIds.map((deviceId) {
+                    final isCurrentSpeaker =
+                        deviceId == widget.speaker.deviceId;
+                    final isMaster = _currentZone!.isMaster(deviceId);
+                    final speaker = _getSpeakerByDeviceId(deviceId);
+
+                    // Find the member object for this device (null if it's the master)
+                    final member = _currentZone!.members
+                        .where((m) => m.deviceId == deviceId)
+                        .firstOrNull;
+
+                    // Get volume state for this member
+                    final memberVolume = _zoneMemberVolumes[deviceId];
+                    final isLoadingMemberVolume =
+                        _loadingVolumes[deviceId] ?? false;
+                    final volumeError = _volumeErrors[deviceId];
+
+                    // Determine role text
+                    final roleText = isMaster ? 'Master' : 'Zone Member';
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              // Speaker emoji and info
+                              if (speaker != null) ...[
+                                Text(
+                                  speaker.emoji,
+                                  style: const TextStyle(fontSize: 24),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        speaker.name,
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                      ),
+                                      Text(
+                                        roleText,
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              color: theme
+                                                  .colorScheme
+                                                  .onSurfaceVariant,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ] else
+                                Expanded(
+                                  child: Text(
+                                    member?.ipAddress ?? deviceId,
+                                    style: theme.textTheme.bodyMedium,
+                                  ),
+                                ),
+                              // Volume controls - always present to maintain alignment
+                              if (speaker != null) ...[
+                                const SizedBox(width: 16),
+                                SizedBox(
+                                  height: 40,
+                                  width: 40,
+                                  child: FilledButton(
+                                    onPressed:
+                                        (isLoadingMemberVolume ||
+                                            memberVolume == null)
+                                        ? null
+                                        : () =>
+                                              _adjustMemberVolume(deviceId, -5),
+                                    style: FilledButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      minimumSize: const Size(40, 40),
+                                    ),
+                                    child: const Icon(
+                                      Icons.volume_down,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                if (isLoadingMemberVolume)
+                                  const SizedBox(
+                                    width: 50,
+                                    height: 16,
+                                    child: Center(
+                                      child: SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                else if (memberVolume != null) ...[
+                                  SizedBox(
+                                    width: 50,
+                                    child: Text(
+                                      '${memberVolume.actualVolume}%',
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ] else
+                                  const SizedBox(width: 50),
+                                const SizedBox(width: 4),
+                                SizedBox(
+                                  height: 40,
+                                  width: 40,
+                                  child: FilledButton(
+                                    onPressed:
+                                        (isLoadingMemberVolume ||
+                                            memberVolume == null)
+                                        ? null
+                                        : () =>
+                                              _adjustMemberVolume(deviceId, 5),
+                                    style: FilledButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      minimumSize: const Size(40, 40),
+                                    ),
+                                    child: const Icon(
+                                      Icons.volume_up,
+                                      size: 18,
+                                    ),
+                                  ),
+                                ),
+                                // Remove button - fixed width to maintain alignment
+                                const SizedBox(width: 4),
+                                SizedBox(
+                                  width: 40,
+                                  height: 40,
+                                  child:
+                                      (!isCurrentSpeaker &&
+                                          !isMaster &&
+                                          _currentZone!.isMaster(
+                                            widget.speaker.deviceId,
+                                          ) &&
+                                          member != null)
+                                      ? FilledButton(
+                                          onPressed: _isLoadingZone
+                                              ? null
+                                              : () => _removeFromZone(member),
+                                          style: FilledButton.styleFrom(
+                                            padding: EdgeInsets.zero,
+                                            minimumSize: const Size(40, 40),
+                                            backgroundColor: theme
+                                                .colorScheme
+                                                .errorContainer,
+                                            foregroundColor: theme
+                                                .colorScheme
+                                                .onErrorContainer,
+                                          ),
+                                          child: const Icon(
+                                            Icons.remove_circle_outline,
+                                            size: 18,
+                                          ),
+                                        )
+                                      : null,
+                                ),
+                              ],
+                            ],
+                          ),
+                          // Show error message if volume load failed
+                          if (volumeError != null)
+                            Padding(
+                              padding: const EdgeInsets.only(left: 36, top: 4),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      volumeError,
+                                      style: TextStyle(
+                                        color: theme.colorScheme.error,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      if (speaker == null) {
+                                        return;
+                                      }
+                                      setState(() {
+                                        _loadingVolumes[deviceId] = true;
+                                        _volumeErrors[deviceId] = null;
+                                      });
+                                      try {
+                                        final volume = await _apiService
+                                            .getVolume(speaker.ipAddress);
+                                        if (!mounted) {
+                                          return;
+                                        }
+                                        setState(() {
+                                          _zoneMemberVolumes[deviceId] = volume;
+                                          _loadingVolumes[deviceId] = false;
+                                        });
+                                      } catch (e) {
+                                        if (!mounted) {
+                                          return;
+                                        }
+                                        setState(() {
+                                          _volumeErrors[deviceId] =
+                                              'Failed to load volume: ${e.toString()}';
+                                          _loadingVolumes[deviceId] = false;
+                                        });
+                                      }
+                                    },
+                                    child: const Text(
+                                      'Retry',
+                                      style: TextStyle(fontSize: 12),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
                     );
+                  }),
+                  const SizedBox(height: 16),
+                  if (_currentZone!.isMaster(widget.speaker.deviceId))
+                    FilledButton.icon(
+                      onPressed: _isLoadingZone
+                          ? null
+                          : () => _showZoneDialog(context),
+                      icon: const Icon(Icons.add),
+                      label: const Text('Add Speakers'),
+                    ),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -2214,8 +2138,8 @@ class _ZoneDialogState extends State<_ZoneDialog> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final hasZone = widget.currentZone != null &&
-        widget.currentZone!.isNotEmpty;
+    final hasZone =
+        widget.currentZone != null && widget.currentZone!.isNotEmpty;
 
     return AlertDialog(
       title: Text(hasZone ? 'Add Speakers to Zone' : 'Create Multi-Room Zone'),
@@ -2237,9 +2161,11 @@ class _ZoneDialogState extends State<_ZoneDialog> {
                 itemCount: widget.availableSpeakers.length,
                 itemBuilder: (context, index) {
                   final speaker = widget.availableSpeakers[index];
-                  final isInZone = hasZone &&
-                      widget.currentZone!.members
-                          .any((m) => m.deviceId == speaker.deviceId);
+                  final isInZone =
+                      hasZone &&
+                      widget.currentZone!.members.any(
+                        (m) => m.deviceId == speaker.deviceId,
+                      );
                   final isSelected = _selectedSpeakerIds.contains(speaker.id);
 
                   return CheckboxListTile(
@@ -2248,14 +2174,14 @@ class _ZoneDialogState extends State<_ZoneDialog> {
                     onChanged: isInZone
                         ? null
                         : (value) {
-                      setState(() {
-                        if (value == true) {
-                          _selectedSpeakerIds.add(speaker.id);
-                        } else {
-                          _selectedSpeakerIds.remove(speaker.id);
-                        }
-                      });
-                    },
+                            setState(() {
+                              if (value == true) {
+                                _selectedSpeakerIds.add(speaker.id);
+                              } else {
+                                _selectedSpeakerIds.remove(speaker.id);
+                              }
+                            });
+                          },
                     title: Row(
                       children: [
                         Text(
@@ -2296,18 +2222,18 @@ class _ZoneDialogState extends State<_ZoneDialog> {
           onPressed: _selectedSpeakerIds.isEmpty
               ? null
               : () {
-            final selectedSpeakers = widget.availableSpeakers
-                .where((s) => _selectedSpeakerIds.contains(s.id))
-                .toList();
+                  final selectedSpeakers = widget.availableSpeakers
+                      .where((s) => _selectedSpeakerIds.contains(s.id))
+                      .toList();
 
-            Navigator.of(context).pop();
+                  Navigator.of(context).pop();
 
-            if (hasZone) {
-              widget.onAddToZone(selectedSpeakers);
-            } else {
-              widget.onCreateZone(selectedSpeakers);
-            }
-          },
+                  if (hasZone) {
+                    widget.onAddToZone(selectedSpeakers);
+                  } else {
+                    widget.onCreateZone(selectedSpeakers);
+                  }
+                },
           child: Text(hasZone ? 'Add' : 'Create Zone'),
         ),
       ],

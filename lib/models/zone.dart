@@ -4,18 +4,12 @@ class ZoneMember {
   final String deviceId;
   final String ipAddress;
 
-  const ZoneMember({
-    required this.deviceId,
-    required this.ipAddress,
-  });
+  const ZoneMember({required this.deviceId, required this.ipAddress});
 
   factory ZoneMember.fromXml(XmlElement memberElement) {
     final ipAddress = memberElement.getAttribute('ipaddress') ?? '';
     final deviceId = memberElement.innerText;
-    return ZoneMember(
-      deviceId: deviceId,
-      ipAddress: ipAddress,
-    );
+    return ZoneMember(deviceId: deviceId, ipAddress: ipAddress);
   }
 
   String toXml() {

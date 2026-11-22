@@ -36,22 +36,22 @@ class TuneInStation {
   }
 
   Map<String, dynamic> toJson() => {
-        'guideId': guideId,
-        'text': text,
-        'subtext': subtext,
-        'image': image,
-        'bitrate': bitrate,
-        'reliability': reliability,
-      };
+    'guideId': guideId,
+    'text': text,
+    'subtext': subtext,
+    'image': image,
+    'bitrate': bitrate,
+    'reliability': reliability,
+  };
 
   factory TuneInStation.fromJson(Map<String, dynamic> json) => TuneInStation(
-        guideId: json['guideId'] as String,
-        text: json['text'] as String,
-        subtext: json['subtext'] as String?,
-        image: json['image'] as String?,
-        bitrate: json['bitrate'] as String?,
-        reliability: json['reliability'] as String?,
-      );
+    guideId: json['guideId'] as String,
+    text: json['text'] as String,
+    subtext: json['subtext'] as String?,
+    image: json['image'] as String?,
+    bitrate: json['bitrate'] as String?,
+    reliability: json['reliability'] as String?,
+  );
 
   @override
   bool operator ==(Object other) =>

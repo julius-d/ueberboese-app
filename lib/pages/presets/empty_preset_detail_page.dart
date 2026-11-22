@@ -36,7 +36,10 @@ class _EmptyPresetDetailPageState extends State<EmptyPresetDetailPage> {
 
     // Check if this slot is now filled
     final appState = context.read<MyAppState>();
-    final actualPreset = appState.getPresetById(widget.speakerIp, widget.presetId);
+    final actualPreset = appState.getPresetById(
+      widget.speakerIp,
+      widget.presetId,
+    );
 
     // If the preset now exists, navigate back so the list can show the updated state
     if (actualPreset != null) {
@@ -59,9 +62,7 @@ class _EmptyPresetDetailPageState extends State<EmptyPresetDetailPage> {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Preset ${widget.presetId}'),
-      ),
+      appBar: AppBar(title: Text('Preset ${widget.presetId}')),
       body: Stack(
         fit: StackFit.expand,
         children: [

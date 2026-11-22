@@ -71,9 +71,7 @@ void main() {
     });
 
     test('fromJson handles missing apiUrl with default value', () {
-      final json = {
-        'accountId': 'abc123',
-      };
+      final json = {'accountId': 'abc123'};
       final config = AppConfig.fromJson(json);
       expect(config.apiUrl, '');
       expect(config.accountId, 'abc123');
@@ -82,9 +80,7 @@ void main() {
     });
 
     test('fromJson handles missing accountId with default value', () {
-      final json = {
-        'apiUrl': 'https://api.example.com',
-      };
+      final json = {'apiUrl': 'https://api.example.com'};
       final config = AppConfig.fromJson(json);
       expect(config.apiUrl, 'https://api.example.com');
       expect(config.accountId, '');
@@ -103,10 +99,7 @@ void main() {
     });
 
     test('fromJson handles missing mgmt credentials with default values', () {
-      final json = {
-        'apiUrl': 'https://api.example.com',
-        'accountId': 'abc123',
-      };
+      final json = {'apiUrl': 'https://api.example.com', 'accountId': 'abc123'};
       final config = AppConfig.fromJson(json);
       expect(config.apiUrl, 'https://api.example.com');
       expect(config.accountId, 'abc123');
@@ -128,7 +121,10 @@ void main() {
       expect(restoredConfig.accountId, originalConfig.accountId);
       expect(restoredConfig.mgmtUsername, originalConfig.mgmtUsername);
       expect(restoredConfig.mgmtPassword, originalConfig.mgmtPassword);
-      expect(restoredConfig.showAlbumArtInList, originalConfig.showAlbumArtInList);
+      expect(
+        restoredConfig.showAlbumArtInList,
+        originalConfig.showAlbumArtInList,
+      );
     });
 
     group('copyWith', () {

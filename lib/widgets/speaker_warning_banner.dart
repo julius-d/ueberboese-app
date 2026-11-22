@@ -21,10 +21,7 @@ class SpeakerWarningBanner extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: Row(
         children: [
-          Icon(
-            Icons.warning,
-            color: theme.colorScheme.onErrorContainer,
-          ),
+          Icon(Icons.warning, color: theme.colorScheme.onErrorContainer),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

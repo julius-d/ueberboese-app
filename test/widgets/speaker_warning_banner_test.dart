@@ -53,8 +53,9 @@ void main() {
       expect(find.text('Doctor'), findsOneWidget);
     });
 
-    testWidgets('calls onOpenDoctor when button is tapped',
-        (WidgetTester tester) async {
+    testWidgets('calls onOpenDoctor when button is tapped', (
+      WidgetTester tester,
+    ) async {
       var tapped = false;
 
       await tester.pumpWidget(
@@ -75,8 +76,9 @@ void main() {
       expect(tapped, isTrue);
     });
 
-    testWidgets('uses errorContainer background color',
-        (WidgetTester tester) async {
+    testWidgets('uses errorContainer background color', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -90,10 +92,12 @@ void main() {
       );
 
       final container = tester.widget<Container>(
-        find.ancestor(
-          of: find.byIcon(Icons.warning),
-          matching: find.byType(Container),
-        ).first,
+        find
+            .ancestor(
+              of: find.byIcon(Icons.warning),
+              matching: find.byType(Container),
+            )
+            .first,
       );
       final theme = Theme.of(tester.element(find.byType(SpeakerWarningBanner)));
       expect(container.color, theme.colorScheme.errorContainer);

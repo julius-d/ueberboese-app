@@ -8,7 +8,10 @@ void main() {
 
   group('buildWindowsUrlSchemeRegCommands', () {
     test('builds the three registry writes', () {
-      final commands = buildWindowsUrlSchemeRegCommands('ueberboese-login', exe);
+      final commands = buildWindowsUrlSchemeRegCommands(
+        'ueberboese-login',
+        exe,
+      );
 
       expect(commands, [
         [
@@ -50,20 +53,28 @@ void main() {
   group('registerUrlScheme', () {
     test('runs all commands in order', () async {
       final calls = <List<String>>[];
-      await registerUrlScheme('s', exe, runReg: (args) async {
-        calls.add(args);
-        return ProcessResult(0, 0, '', '');
-      });
+      await registerUrlScheme(
+        's',
+        exe,
+        runReg: (args) async {
+          calls.add(args);
+          return ProcessResult(0, 0, '', '');
+        },
+      );
 
       expect(calls, buildWindowsUrlSchemeRegCommands('s', exe));
     });
 
     test('throws ProcessException and stops on first failure', () async {
       var calls = 0;
-      final future = registerUrlScheme('s', exe, runReg: (args) async {
-        calls++;
-        return ProcessResult(0, 1, '', 'access denied');
-      });
+      final future = registerUrlScheme(
+        's',
+        exe,
+        runReg: (args) async {
+          calls++;
+          return ProcessResult(0, 1, '', 'access denied');
+        },
+      );
 
       await expectLater(future, throwsA(isA<ProcessException>()));
       expect(calls, 1);

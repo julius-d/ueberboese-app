@@ -13,7 +13,9 @@ void main() {
       appState = TestMyAppState();
       appState.config = const AppConfig();
     });
-    testWidgets('displays correct title with preset number', (WidgetTester tester) async {
+    testWidgets('displays correct title with preset number', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         ChangeNotifierProvider<MyAppState>.value(
           value: appState,
@@ -29,7 +31,9 @@ void main() {
       expect(find.text('Preset 1'), findsOneWidget);
     });
 
-    testWidgets('displays correct title for preset 6', (WidgetTester tester) async {
+    testWidgets('displays correct title for preset 6', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         ChangeNotifierProvider<MyAppState>.value(
           value: appState,
@@ -59,7 +63,12 @@ void main() {
       );
 
       expect(find.text('This preset is empty'), findsOneWidget);
-      expect(find.text('Tap the edit button below to assign content to this preset slot'), findsOneWidget);
+      expect(
+        find.text(
+          'Tap the edit button below to assign content to this preset slot',
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('displays add icon', (WidgetTester tester) async {
@@ -97,7 +106,9 @@ void main() {
       expect(find.byIcon(Icons.edit), findsOneWidget);
     });
 
-    testWidgets('FAB expands to show edit options', (WidgetTester tester) async {
+    testWidgets('FAB expands to show edit options', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         ChangeNotifierProvider<MyAppState>.value(
           value: appState,
@@ -118,9 +129,18 @@ void main() {
       expect(find.text('Spotify'), findsOneWidget);
       expect(find.text('TuneIn'), findsOneWidget);
       expect(find.text('Internet Radio'), findsOneWidget);
-      expect(find.widgetWithIcon(FloatingActionButton, Icons.audiotrack), findsOneWidget);
-      expect(find.widgetWithIcon(FloatingActionButton, Icons.podcasts), findsOneWidget);
-      expect(find.widgetWithIcon(FloatingActionButton, Icons.radio), findsOneWidget);
+      expect(
+        find.widgetWithIcon(FloatingActionButton, Icons.audiotrack),
+        findsOneWidget,
+      );
+      expect(
+        find.widgetWithIcon(FloatingActionButton, Icons.podcasts),
+        findsOneWidget,
+      );
+      expect(
+        find.widgetWithIcon(FloatingActionButton, Icons.radio),
+        findsOneWidget,
+      );
     });
 
     testWidgets('page builds without error', (WidgetTester tester) async {
@@ -179,7 +199,9 @@ void main() {
       expect(find.byType(BackButton), findsOneWidget);
     });
 
-    testWidgets('displays scrim overlay when FAB is expanded', (WidgetTester tester) async {
+    testWidgets('displays scrim overlay when FAB is expanded', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         ChangeNotifierProvider<MyAppState>.value(
           value: appState,

@@ -23,7 +23,9 @@ void main() {
       appState.config = const AppConfig();
     });
 
-    testWidgets('displays preset information correctly', (WidgetTester tester) async {
+    testWidgets('displays preset information correctly', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Radio Station',
@@ -60,7 +62,9 @@ void main() {
       expect(find.text('/v1/playback/station/s12345'), findsOneWidget);
     });
 
-    testWidgets('displays preset without optional fields', (WidgetTester tester) async {
+    testWidgets('displays preset without optional fields', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '2',
         itemName: 'Simple Preset',
@@ -194,7 +198,9 @@ void main() {
       expect(find.text('Location'), findsOneWidget);
     });
 
-    testWidgets('displays FABs with play and edit icons', (WidgetTester tester) async {
+    testWidgets('displays FABs with play and edit icons', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test',
@@ -228,7 +234,9 @@ void main() {
       expect(find.byIcon(Icons.edit), findsOneWidget);
     });
 
-    testWidgets('sub-FABs are accessible and can be tapped', (WidgetTester tester) async {
+    testWidgets('sub-FABs are accessible and can be tapped', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Station',
@@ -261,11 +269,19 @@ void main() {
       // Verify sub-menu is open with all options
       expect(find.text('TuneIn'), findsOneWidget);
       expect(find.text('Spotify'), findsOneWidget);
-      expect(find.widgetWithIcon(FloatingActionButton, Icons.podcasts), findsOneWidget);
-      expect(find.widgetWithIcon(FloatingActionButton, Icons.audiotrack), findsOneWidget);
+      expect(
+        find.widgetWithIcon(FloatingActionButton, Icons.podcasts),
+        findsOneWidget,
+      );
+      expect(
+        find.widgetWithIcon(FloatingActionButton, Icons.audiotrack),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('tapping main FAB opens sub-menu with 2 options', (WidgetTester tester) async {
+    testWidgets('tapping main FAB opens sub-menu with 2 options', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Preset',
@@ -296,13 +312,21 @@ void main() {
       await tester.pumpAndSettle();
 
       // Check that all 2 sub-FABs are visible
-      expect(find.widgetWithIcon(FloatingActionButton, Icons.audiotrack), findsOneWidget); // Spotify
-      expect(find.widgetWithIcon(FloatingActionButton, Icons.podcasts), findsOneWidget); // TuneIn
+      expect(
+        find.widgetWithIcon(FloatingActionButton, Icons.audiotrack),
+        findsOneWidget,
+      ); // Spotify
+      expect(
+        find.widgetWithIcon(FloatingActionButton, Icons.podcasts),
+        findsOneWidget,
+      ); // TuneIn
       expect(find.text('Spotify'), findsOneWidget);
       expect(find.text('TuneIn'), findsOneWidget);
     });
 
-    testWidgets('shows loading indicator when preset not in cache', (WidgetTester tester) async {
+    testWidgets('shows loading indicator when preset not in cache', (
+      WidgetTester tester,
+    ) async {
       final emptyAppState = TestMyAppState();
       emptyAppState.config = const AppConfig();
       // Don't populate cache, so preset will be null

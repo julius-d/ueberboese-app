@@ -21,15 +21,14 @@ void main() {
       return MaterialApp(
         home: ChangeNotifierProvider.value(
           value: appState,
-          child: const Scaffold(
-            body: SpotifyAccountsPage(),
-          ),
+          child: const Scaffold(body: SpotifyAccountsPage()),
         ),
       );
     }
 
-    testWidgets('should initialize deep link listener on init',
-        (WidgetTester tester) async {
+    testWidgets('should initialize deep link listener on init', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
@@ -38,8 +37,9 @@ void main() {
       expect(find.byType(FloatingActionButton), findsOneWidget);
     });
 
-    testWidgets('should show loading overlay when connecting to Spotify',
-        (WidgetTester tester) async {
+    testWidgets('should show loading overlay when connecting to Spotify', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
@@ -50,8 +50,9 @@ void main() {
       // Actual deep link testing would require integration tests
     });
 
-    testWidgets('should have cancel button in loading overlay',
-        (WidgetTester tester) async {
+    testWidgets('should have cancel button in loading overlay', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
@@ -69,7 +70,9 @@ void main() {
       });
 
       test('should parse URI with state parameter', () {
-        final uri = Uri.parse('ueberboese-login://spotify?code=abc123&state=xyz789');
+        final uri = Uri.parse(
+          'ueberboese-login://spotify?code=abc123&state=xyz789',
+        );
 
         expect(uri.scheme, 'ueberboese-login');
         expect(uri.host, 'spotify');
@@ -86,7 +89,9 @@ void main() {
       });
 
       test('should parse URL encoded parameters', () {
-        final uri = Uri.parse('ueberboese-login://spotify?code=abc%20123&error=access%20denied');
+        final uri = Uri.parse(
+          'ueberboese-login://spotify?code=abc%20123&error=access%20denied',
+        );
 
         expect(uri.scheme, 'ueberboese-login');
         expect(uri.host, 'spotify');
@@ -105,7 +110,9 @@ void main() {
 
       test('should validate correct host', () {
         final validUri = Uri.parse('ueberboese-login://spotify?code=abc123');
-        final invalidUri = Uri.parse('ueberboese-login://wrong-host?code=abc123');
+        final invalidUri = Uri.parse(
+          'ueberboese-login://wrong-host?code=abc123',
+        );
 
         expect(validUri.host, 'spotify');
         expect(invalidUri.host, 'wrong-host');
@@ -128,7 +135,8 @@ void main() {
 
       test('should handle multiple query parameters', () {
         final uri = Uri.parse(
-            'ueberboese-login://spotify?code=test_code&state=random_state&extra=value');
+          'ueberboese-login://spotify?code=test_code&state=random_state&extra=value',
+        );
 
         expect(uri.queryParameters.length, 3);
         expect(uri.queryParameters['code'], 'test_code');
@@ -138,7 +146,8 @@ void main() {
 
       test('should handle special characters in parameters', () {
         final uri = Uri.parse(
-            'ueberboese-login://spotify?code=abc-123_xyz.456&state=test%2Bvalue');
+          'ueberboese-login://spotify?code=abc-123_xyz.456&state=test%2Bvalue',
+        );
 
         expect(uri.queryParameters['code'], 'abc-123_xyz.456');
         expect(uri.queryParameters['state'], 'test+value');
@@ -157,14 +166,33 @@ void main() {
         }
 
         // Valid cases
-        expect(isValidDeepLink(Uri.parse('ueberboese-login://spotify?code=abc123')), true);
-        expect(isValidDeepLink(Uri.parse('ueberboese-login://spotify?code=xyz&state=test')), true);
+        expect(
+          isValidDeepLink(Uri.parse('ueberboese-login://spotify?code=abc123')),
+          true,
+        );
+        expect(
+          isValidDeepLink(
+            Uri.parse('ueberboese-login://spotify?code=xyz&state=test'),
+          ),
+          true,
+        );
 
         // Invalid cases
-        expect(isValidDeepLink(Uri.parse('wrong-scheme://spotify?code=abc123')), false);
-        expect(isValidDeepLink(Uri.parse('ueberboese-login://wrong-host?code=abc123')), false);
+        expect(
+          isValidDeepLink(Uri.parse('wrong-scheme://spotify?code=abc123')),
+          false,
+        );
+        expect(
+          isValidDeepLink(
+            Uri.parse('ueberboese-login://wrong-host?code=abc123'),
+          ),
+          false,
+        );
         expect(isValidDeepLink(Uri.parse('ueberboese-login://spotify')), false);
-        expect(isValidDeepLink(Uri.parse('ueberboese-login://spotify?code=')), false);
+        expect(
+          isValidDeepLink(Uri.parse('ueberboese-login://spotify?code=')),
+          false,
+        );
       });
     });
   });

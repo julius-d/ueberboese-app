@@ -10,16 +10,16 @@ class SpotifyAccount {
   });
 
   Map<String, dynamic> toJson() => {
-        'displayName': displayName,
-        'createdAt': createdAt.toIso8601String(),
-        'spotifyUserId': spotifyUserId,
-      };
+    'displayName': displayName,
+    'createdAt': createdAt.toIso8601String(),
+    'spotifyUserId': spotifyUserId,
+  };
 
   factory SpotifyAccount.fromJson(Map<String, dynamic> json) => SpotifyAccount(
-        displayName: json['displayName'] as String,
-        createdAt: DateTime.parse(json['createdAt'] as String),
-        spotifyUserId: json['spotifyUserId'] as String,
-      );
+    displayName: json['displayName'] as String,
+    createdAt: DateTime.parse(json['createdAt'] as String),
+    spotifyUserId: json['spotifyUserId'] as String,
+  );
 
   @override
   bool operator ==(Object other) =>

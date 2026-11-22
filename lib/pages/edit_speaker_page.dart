@@ -9,11 +9,7 @@ class EditSpeakerPage extends StatefulWidget {
   final Speaker speaker;
   final SpeakerApiService? apiService;
 
-  const EditSpeakerPage({
-    super.key,
-    required this.speaker,
-    this.apiService,
-  });
+  const EditSpeakerPage({super.key, required this.speaker, this.apiService});
 
   @override
   State<EditSpeakerPage> createState() => _EditSpeakerPageState();
@@ -98,9 +94,7 @@ class _EditSpeakerPageState extends State<EditSpeakerPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Speaker'),
-      ),
+      appBar: AppBar(title: const Text('Edit Speaker')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -118,10 +112,7 @@ class _EditSpeakerPageState extends State<EditSpeakerPage> {
                 padding: const EdgeInsets.all(24),
                 child: Column(
                   children: [
-                    Text(
-                      _selectedEmoji,
-                      style: const TextStyle(fontSize: 64),
-                    ),
+                    Text(_selectedEmoji, style: const TextStyle(fontSize: 64)),
                     const SizedBox(height: 8),
                     Text(
                       'Tap to change emoji',

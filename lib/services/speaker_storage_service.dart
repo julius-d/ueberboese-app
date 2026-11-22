@@ -28,7 +28,9 @@ class SpeakerStorageService {
       }
 
       final List<dynamic> jsonList = jsonDecode(jsonString) as List<dynamic>;
-      return jsonList.map((json) => Speaker.fromJson(json as Map<String, dynamic>)).toList();
+      return jsonList
+          .map((json) => Speaker.fromJson(json as Map<String, dynamic>))
+          .toList();
     } catch (e) {
       // Log error and return empty list if data is corrupted
       debugPrint('Error loading speakers: $e');

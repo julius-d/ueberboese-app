@@ -6,11 +6,7 @@ class RemoteControlPage extends StatefulWidget {
   final Speaker speaker;
   final SpeakerApiService? apiService;
 
-  const RemoteControlPage({
-    super.key,
-    required this.speaker,
-    this.apiService,
-  });
+  const RemoteControlPage({super.key, required this.speaker, this.apiService});
 
   @override
   State<RemoteControlPage> createState() => _RemoteControlPageState();
@@ -135,10 +131,7 @@ class _RemoteControlPageState extends State<RemoteControlPage> {
             // Empty onTap to show ripple effect, but actual handling is in GestureDetector
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 24,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,

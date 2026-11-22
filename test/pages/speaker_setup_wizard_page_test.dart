@@ -48,14 +48,16 @@ void main() {
 
   /// Helper: stub a successful AP connection check.
   void stubConnectionSuccess() {
-    when(mockApiService.fetchSpeakerInfo(any))
-        .thenAnswer((_) async => fakeSpeakerInfo);
+    when(
+      mockApiService.fetchSpeakerInfo(any),
+    ).thenAnswer((_) async => fakeSpeakerInfo);
   }
 
   /// Helper: stub a failing AP connection check.
   void stubConnectionFailure() {
-    when(mockApiService.fetchSpeakerInfo(any))
-        .thenThrow(Exception('Connection refused'));
+    when(
+      mockApiService.fetchSpeakerInfo(any),
+    ).thenThrow(Exception('Connection refused'));
   }
 
   group('SpeakerSetupWizardPage', () {
@@ -72,11 +74,11 @@ void main() {
       expect(find.text('Step 2: Connect to Speaker Wi-Fi'), findsOneWidget);
     });
 
-    testWidgets('Continue checks connection and advances on success',
-        (tester) async {
+    testWidgets('Continue checks connection and advances on success', (
+      tester,
+    ) async {
       stubConnectionSuccess();
-      when(mockService.performWirelessSiteSurvey())
-          .thenAnswer((_) async => []);
+      when(mockService.performWirelessSiteSurvey()).thenAnswer((_) async => []);
 
       await tester.pumpWidget(buildWizard());
       await tester.tap(find.text('Next'));
@@ -88,8 +90,9 @@ void main() {
       expect(find.text('Step 3: Select Wi-Fi Network'), findsOneWidget);
     });
 
-    testWidgets('Continue shows error when not connected to speaker AP',
-        (tester) async {
+    testWidgets('Continue shows error when not connected to speaker AP', (
+      tester,
+    ) async {
       stubConnectionFailure();
 
       await tester.pumpWidget(buildWizard());
@@ -98,14 +101,18 @@ void main() {
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('Could not reach the speaker'), findsOneWidget);
+      expect(
+        find.textContaining('Could not reach the speaker'),
+        findsOneWidget,
+      );
       expect(find.text('Retry'), findsOneWidget);
       // Should stay on step 2
       expect(find.text('Step 2: Connect to Speaker Wi-Fi'), findsOneWidget);
     });
 
-    testWidgets('Retry re-checks connection and advances on success',
-        (tester) async {
+    testWidgets('Retry re-checks connection and advances on success', (
+      tester,
+    ) async {
       // First call fails, second succeeds
       var callCount = 0;
       when(mockApiService.fetchSpeakerInfo(any)).thenAnswer((_) async {
@@ -113,8 +120,7 @@ void main() {
         if (callCount == 1) throw Exception('Not connected');
         return fakeSpeakerInfo;
       });
-      when(mockService.performWirelessSiteSurvey())
-          .thenAnswer((_) async => []);
+      when(mockService.performWirelessSiteSurvey()).thenAnswer((_) async => []);
 
       await tester.pumpWidget(buildWizard());
       await tester.tap(find.text('Next'));
@@ -132,18 +138,22 @@ void main() {
 
     testWidgets('shows networks after site survey', (tester) async {
       stubConnectionSuccess();
-      when(mockService.performWirelessSiteSurvey()).thenAnswer((_) async => [
-            const WirelessNetwork(
-                ssid: 'HomeNet',
-                signalStrength: -55,
-                secure: true,
-                securityType: 'wpa_or_wpa2'),
-            const WirelessNetwork(
-                ssid: 'GuestNet',
-                signalStrength: -70,
-                secure: false,
-                securityType: 'none'),
-          ]);
+      when(mockService.performWirelessSiteSurvey()).thenAnswer(
+        (_) async => [
+          const WirelessNetwork(
+            ssid: 'HomeNet',
+            signalStrength: -55,
+            secure: true,
+            securityType: 'wpa_or_wpa2',
+          ),
+          const WirelessNetwork(
+            ssid: 'GuestNet',
+            signalStrength: -70,
+            secure: false,
+            securityType: 'none',
+          ),
+        ],
+      );
 
       await tester.pumpWidget(buildWizard());
       // Navigate to step 2 (Wi-Fi selection)
@@ -156,11 +166,13 @@ void main() {
       expect(find.text('GuestNet'), findsOneWidget);
     });
 
-    testWidgets('shows error and retry button when site survey fails',
-        (tester) async {
+    testWidgets('shows error and retry button when site survey fails', (
+      tester,
+    ) async {
       stubConnectionSuccess();
-      when(mockService.performWirelessSiteSurvey())
-          .thenThrow(Exception('Connection refused'));
+      when(
+        mockService.performWirelessSiteSurvey(),
+      ).thenThrow(Exception('Connection refused'));
 
       await tester.pumpWidget(buildWizard());
       await tester.tap(find.text('Next'));
@@ -174,13 +186,16 @@ void main() {
 
     testWidgets('shows password dialog for secure networks', (tester) async {
       stubConnectionSuccess();
-      when(mockService.performWirelessSiteSurvey()).thenAnswer((_) async => [
-            const WirelessNetwork(
-                ssid: 'SecureNet',
-                signalStrength: -60,
-                secure: true,
-                securityType: 'wpa_or_wpa2'),
-          ]);
+      when(mockService.performWirelessSiteSurvey()).thenAnswer(
+        (_) async => [
+          const WirelessNetwork(
+            ssid: 'SecureNet',
+            signalStrength: -60,
+            secure: true,
+            securityType: 'wpa_or_wpa2',
+          ),
+        ],
+      );
 
       await tester.pumpWidget(buildWizard());
       await tester.tap(find.text('Next'));
@@ -195,18 +210,23 @@ void main() {
       expect(find.text('Connect'), findsOneWidget);
     });
 
-    testWidgets('advances to envswitch step after successful Wi-Fi setup',
-        (tester) async {
+    testWidgets('advances to envswitch step after successful Wi-Fi setup', (
+      tester,
+    ) async {
       stubConnectionSuccess();
-      when(mockService.performWirelessSiteSurvey()).thenAnswer((_) async => [
-            const WirelessNetwork(
-                ssid: 'OpenNet',
-                signalStrength: -60,
-                secure: false,
-                securityType: 'none'),
-          ]);
-      when(mockService.addWirelessProfile(any, any, any))
-          .thenAnswer((_) async {});
+      when(mockService.performWirelessSiteSurvey()).thenAnswer(
+        (_) async => [
+          const WirelessNetwork(
+            ssid: 'OpenNet',
+            signalStrength: -60,
+            secure: false,
+            securityType: 'none',
+          ),
+        ],
+      );
+      when(
+        mockService.addWirelessProfile(any, any, any),
+      ).thenAnswer((_) async {});
 
       await tester.pumpWidget(buildWizard());
       await tester.tap(find.text('Next'));
@@ -216,21 +236,29 @@ void main() {
       await tester.tap(find.text('OpenNet'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Step 4: Connect to your Überböse Server'), findsOneWidget);
+      expect(
+        find.text('Step 4: Connect to your Überböse Server'),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('envswitch step skip button advances to Marge account step',
-        (tester) async {
+    testWidgets('envswitch step skip button advances to Marge account step', (
+      tester,
+    ) async {
       stubConnectionSuccess();
-      when(mockService.performWirelessSiteSurvey()).thenAnswer((_) async => [
-            const WirelessNetwork(
-                ssid: 'Net',
-                signalStrength: -50,
-                secure: false,
-                securityType: 'none'),
-          ]);
-      when(mockService.addWirelessProfile(any, any, any))
-          .thenAnswer((_) async {});
+      when(mockService.performWirelessSiteSurvey()).thenAnswer(
+        (_) async => [
+          const WirelessNetwork(
+            ssid: 'Net',
+            signalStrength: -50,
+            secure: false,
+            securityType: 'none',
+          ),
+        ],
+      );
+      when(
+        mockService.addWirelessProfile(any, any, any),
+      ).thenAnswer((_) async {});
 
       await tester.pumpWidget(buildWizard());
       await tester.tap(find.text('Next'));
@@ -249,22 +277,28 @@ void main() {
 
     testWidgets('Marge account step shows pre-filled fields', (tester) async {
       stubConnectionSuccess();
-      appState.updateConfig(const AppConfig(
-        apiUrl: 'https://api.example.com',
-        accountId: 'myaccount123',
-        mgmtUsername: 'admin',
-        mgmtPassword: 'pass',
-      ));
+      appState.updateConfig(
+        const AppConfig(
+          apiUrl: 'https://api.example.com',
+          accountId: 'myaccount123',
+          mgmtUsername: 'admin',
+          mgmtPassword: 'pass',
+        ),
+      );
 
-      when(mockService.performWirelessSiteSurvey()).thenAnswer((_) async => [
-            const WirelessNetwork(
-                ssid: 'Net',
-                signalStrength: -50,
-                secure: false,
-                securityType: 'none'),
-          ]);
-      when(mockService.addWirelessProfile(any, any, any))
-          .thenAnswer((_) async {});
+      when(mockService.performWirelessSiteSurvey()).thenAnswer(
+        (_) async => [
+          const WirelessNetwork(
+            ssid: 'Net',
+            signalStrength: -50,
+            secure: false,
+            securityType: 'none',
+          ),
+        ],
+      );
+      when(
+        mockService.addWirelessProfile(any, any, any),
+      ).thenAnswer((_) async {});
 
       await tester.pumpWidget(buildWizard());
       await tester.tap(find.text('Next'));
@@ -282,114 +316,141 @@ void main() {
       expect(find.text('auth1234'), findsOneWidget);
     });
 
-    testWidgets('Marge account confirm calls setMargeAccount and advances to rename step',
-        (tester) async {
-      stubConnectionSuccess();
-      when(mockService.performWirelessSiteSurvey()).thenAnswer((_) async => [
+    testWidgets(
+      'Marge account confirm calls setMargeAccount and advances to rename step',
+      (tester) async {
+        stubConnectionSuccess();
+        when(mockService.performWirelessSiteSurvey()).thenAnswer(
+          (_) async => [
             const WirelessNetwork(
-                ssid: 'Net',
-                signalStrength: -50,
-                secure: false,
-                securityType: 'none'),
-          ]);
-      when(mockService.addWirelessProfile(any, any, any))
-          .thenAnswer((_) async {});
-      when(mockService.setMargeAccount(any, any, any))
-          .thenAnswer((_) async {});
+              ssid: 'Net',
+              signalStrength: -50,
+              secure: false,
+              securityType: 'none',
+            ),
+          ],
+        );
+        when(
+          mockService.addWirelessProfile(any, any, any),
+        ).thenAnswer((_) async {});
+        when(
+          mockService.setMargeAccount(any, any, any),
+        ).thenAnswer((_) async {});
 
-      // Set config with non-empty accountId so pre-fill works
-      appState.updateConfig(const AppConfig(
-        apiUrl: '',
-        accountId: 'testaccount',
-        mgmtUsername: 'admin',
-        mgmtPassword: 'pass',
-      ));
+        // Set config with non-empty accountId so pre-fill works
+        appState.updateConfig(
+          const AppConfig(
+            apiUrl: '',
+            accountId: 'testaccount',
+            mgmtUsername: 'admin',
+            mgmtPassword: 'pass',
+          ),
+        );
 
-      await tester.pumpWidget(buildWizard());
-      // Step 0 → 1
-      await tester.tap(find.text('Next'));
-      await tester.pumpAndSettle();
-      // Step 1 → 2
-      await tester.tap(find.text('Continue'));
-      await tester.pumpAndSettle();
-      // Step 2: tap network (triggers loading dialog + addWirelessProfile)
-      await tester.tap(find.text('Net'));
-      await tester.pump();
-      await tester.pump(const Duration(seconds: 1));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(buildWizard());
+        // Step 0 → 1
+        await tester.tap(find.text('Next'));
+        await tester.pumpAndSettle();
+        // Step 1 → 2
+        await tester.tap(find.text('Continue'));
+        await tester.pumpAndSettle();
+        // Step 2: tap network (triggers loading dialog + addWirelessProfile)
+        await tester.tap(find.text('Net'));
+        await tester.pump();
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pumpAndSettle();
 
-      // Should be on envswitch step now
-      expect(find.text('Step 4: Connect to your Überböse Server'), findsOneWidget,
-          reason: 'Should be on envswitch step after Wi-Fi setup');
+        // Should be on envswitch step now
+        expect(
+          find.text('Step 4: Connect to your Überböse Server'),
+          findsOneWidget,
+          reason: 'Should be on envswitch step after Wi-Fi setup',
+        );
 
-      // Skip envswitch → step 4
-      await tester.tap(find.text('Skip'));
-      await tester.pumpAndSettle();
+        // Skip envswitch → step 4
+        await tester.tap(find.text('Skip'));
+        await tester.pumpAndSettle();
 
-      // Should be on Marge account step now
-      expect(find.text('Step 5: Link Marge Account'), findsOneWidget,
-          reason: 'Should be on Marge step after skipping envswitch');
+        // Should be on Marge account step now
+        expect(
+          find.text('Step 5: Link Marge Account'),
+          findsOneWidget,
+          reason: 'Should be on Marge step after skipping envswitch',
+        );
 
-      await tester.tap(find.text('Confirm'));
-      await tester.pump();
-      await tester.pump(const Duration(seconds: 1));
-      await tester.pumpAndSettle();
+        await tester.tap(find.text('Confirm'));
+        await tester.pump();
+        await tester.pump(const Duration(seconds: 1));
+        await tester.pumpAndSettle();
 
-      verify(mockService.setMargeAccount(any, any, any)).called(1);
-      expect(find.text('Step 6: Name Your Speaker'), findsOneWidget);
-    });
+        verify(mockService.setMargeAccount(any, any, any)).called(1);
+        expect(find.text('Step 6: Name Your Speaker'), findsOneWidget);
+      },
+    );
 
-    testWidgets('rename step shows pre-filled name and save calls setSpeakerName',
-        (tester) async {
-      stubConnectionSuccess();
-      when(mockService.performWirelessSiteSurvey()).thenAnswer((_) async => [
+    testWidgets(
+      'rename step shows pre-filled name and save calls setSpeakerName',
+      (tester) async {
+        stubConnectionSuccess();
+        when(mockService.performWirelessSiteSurvey()).thenAnswer(
+          (_) async => [
             const WirelessNetwork(
-                ssid: 'Net',
-                signalStrength: -50,
-                secure: false,
-                securityType: 'none'),
-          ]);
-      when(mockService.addWirelessProfile(any, any, any))
-          .thenAnswer((_) async {});
-      when(mockApiService.setSpeakerName(any, any)).thenAnswer((_) async {});
-      when(mockService.leaveSetupMode()).thenAnswer((_) async {});
+              ssid: 'Net',
+              signalStrength: -50,
+              secure: false,
+              securityType: 'none',
+            ),
+          ],
+        );
+        when(
+          mockService.addWirelessProfile(any, any, any),
+        ).thenAnswer((_) async {});
+        when(mockApiService.setSpeakerName(any, any)).thenAnswer((_) async {});
+        when(mockService.leaveSetupMode()).thenAnswer((_) async {});
 
-      await tester.pumpWidget(buildWizard());
-      await tester.tap(find.text('Next'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Continue'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Net'));
-      await tester.pumpAndSettle();
-      // Skip envswitch step
-      await tester.tap(find.text('Skip'));
-      await tester.pumpAndSettle();
-      // Skip Marge step
-      await tester.tap(find.text('Skip'));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(buildWizard());
+        await tester.tap(find.text('Next'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Continue'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Net'));
+        await tester.pumpAndSettle();
+        // Skip envswitch step
+        await tester.tap(find.text('Skip'));
+        await tester.pumpAndSettle();
+        // Skip Marge step
+        await tester.tap(find.text('Skip'));
+        await tester.pumpAndSettle();
 
-      expect(find.text('Step 6: Name Your Speaker'), findsOneWidget);
-      // Name pre-filled from fetchSpeakerInfo
-      expect(find.text('Bose Speaker'), findsOneWidget);
+        expect(find.text('Step 6: Name Your Speaker'), findsOneWidget);
+        // Name pre-filled from fetchSpeakerInfo
+        expect(find.text('Bose Speaker'), findsOneWidget);
 
-      await tester.tap(find.text('Save'));
-      await tester.pumpAndSettle();
+        await tester.tap(find.text('Save'));
+        await tester.pumpAndSettle();
 
-      verify(mockApiService.setSpeakerName('192.0.2.1', 'Bose Speaker')).called(1);
-      expect(find.text('Setup Complete'), findsOneWidget);
-    });
+        verify(
+          mockApiService.setSpeakerName('192.0.2.1', 'Bose Speaker'),
+        ).called(1);
+        expect(find.text('Setup Complete'), findsOneWidget);
+      },
+    );
 
     testWidgets('finish step shows done button that pops', (tester) async {
       stubConnectionSuccess();
-      when(mockService.performWirelessSiteSurvey()).thenAnswer((_) async => [
-            const WirelessNetwork(
-                ssid: 'Net',
-                signalStrength: -50,
-                secure: false,
-                securityType: 'none'),
-          ]);
-      when(mockService.addWirelessProfile(any, any, any))
-          .thenAnswer((_) async {});
+      when(mockService.performWirelessSiteSurvey()).thenAnswer(
+        (_) async => [
+          const WirelessNetwork(
+            ssid: 'Net',
+            signalStrength: -50,
+            secure: false,
+            securityType: 'none',
+          ),
+        ],
+      );
+      when(
+        mockService.addWirelessProfile(any, any, any),
+      ).thenAnswer((_) async {});
       when(mockService.leaveSetupMode()).thenAnswer((_) async {});
 
       await tester.pumpWidget(buildWizard());
@@ -413,8 +474,9 @@ void main() {
       expect(find.text('Done'), findsOneWidget);
     });
 
-    testWidgets('speaker list page shows Set up new speaker FAB option',
-        (tester) async {
+    testWidgets('speaker list page shows Set up new speaker FAB option', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,

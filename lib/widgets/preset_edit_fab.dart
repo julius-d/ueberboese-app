@@ -135,130 +135,124 @@ class _PresetEditFabState extends State<PresetEditFab>
     final theme = Theme.of(context);
 
     return Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              // Sub-FAB 3: Internet Radio
-              FadeTransition(
-                opacity: _fadeAnimation,
-                child: ScaleTransition(
-                  scale: _fadeAnimation,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Material(
-                          elevation: 3,
-                          borderRadius: BorderRadius.circular(8),
-                          color: theme.colorScheme.surface,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            child: Text(
-                              'Internet Radio',
-                              style: theme.textTheme.bodyMedium,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        FloatingActionButton.small(
-                          heroTag: 'edit_internet_radio_fab',
-                          onPressed: _onEditInternetRadio,
-                          tooltip: 'Edit as Internet Radio',
-                          child: const Icon(Icons.radio),
-                        ),
-                      ],
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        // Sub-FAB 3: Internet Radio
+        FadeTransition(
+          opacity: _fadeAnimation,
+          child: ScaleTransition(
+            scale: _fadeAnimation,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Material(
+                    elevation: 3,
+                    borderRadius: BorderRadius.circular(8),
+                    color: theme.colorScheme.surface,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      child: Text(
+                        'Internet Radio',
+                        style: theme.textTheme.bodyMedium,
+                      ),
                     ),
                   ),
-                ),
+                  const SizedBox(width: 12),
+                  FloatingActionButton.small(
+                    heroTag: 'edit_internet_radio_fab',
+                    onPressed: _onEditInternetRadio,
+                    tooltip: 'Edit as Internet Radio',
+                    child: const Icon(Icons.radio),
+                  ),
+                ],
               ),
-              // Sub-FAB 2: TuneIn
-              FadeTransition(
-                opacity: _fadeAnimation,
-                child: ScaleTransition(
-                  scale: _fadeAnimation,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Material(
-                          elevation: 3,
-                          borderRadius: BorderRadius.circular(8),
-                          color: theme.colorScheme.surface,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            child: Text(
-                              'TuneIn',
-                              style: theme.textTheme.bodyMedium,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        FloatingActionButton.small(
-                          heroTag: 'edit_tunein_fab',
-                          onPressed: _onEditTuneIn,
-                          tooltip: 'Edit as TuneIn',
-                          child: const Icon(Icons.podcasts),
-                        ),
-                      ],
+            ),
+          ),
+        ),
+        // Sub-FAB 2: TuneIn
+        FadeTransition(
+          opacity: _fadeAnimation,
+          child: ScaleTransition(
+            scale: _fadeAnimation,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Material(
+                    elevation: 3,
+                    borderRadius: BorderRadius.circular(8),
+                    color: theme.colorScheme.surface,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      child: Text('TuneIn', style: theme.textTheme.bodyMedium),
                     ),
                   ),
-                ),
+                  const SizedBox(width: 12),
+                  FloatingActionButton.small(
+                    heroTag: 'edit_tunein_fab',
+                    onPressed: _onEditTuneIn,
+                    tooltip: 'Edit as TuneIn',
+                    child: const Icon(Icons.podcasts),
+                  ),
+                ],
               ),
-              // Sub-FAB 1: Spotify
-              FadeTransition(
-                opacity: _fadeAnimation,
-                child: ScaleTransition(
-                  scale: _fadeAnimation,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Material(
-                          elevation: 3,
-                          borderRadius: BorderRadius.circular(8),
-                          color: theme.colorScheme.surface,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            child: Text(
-                              'Spotify',
-                              style: theme.textTheme.bodyMedium,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        FloatingActionButton.small(
-                          heroTag: 'edit_spotify_fab',
-                          onPressed: _onEditSpotify,
-                          tooltip: 'Edit as Spotify',
-                          child: const Icon(Icons.audiotrack),
-                        ),
-                      ],
+            ),
+          ),
+        ),
+        // Sub-FAB 1: Spotify
+        FadeTransition(
+          opacity: _fadeAnimation,
+          child: ScaleTransition(
+            scale: _fadeAnimation,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Material(
+                    elevation: 3,
+                    borderRadius: BorderRadius.circular(8),
+                    color: theme.colorScheme.surface,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      child: Text('Spotify', style: theme.textTheme.bodyMedium),
                     ),
                   ),
-                ),
+                  const SizedBox(width: 12),
+                  FloatingActionButton.small(
+                    heroTag: 'edit_spotify_fab',
+                    onPressed: _onEditSpotify,
+                    tooltip: 'Edit as Spotify',
+                    child: const Icon(Icons.audiotrack),
+                  ),
+                ],
               ),
-              // Main FAB
-              RotationTransition(
-                turns: _rotationAnimation,
-                child: FloatingActionButton(
-                  onPressed: _toggleFab,
-                  tooltip: 'Edit preset',
-                  child: Icon(_isFabExpanded ? Icons.close : Icons.edit),
-                ),
-              ),
-            ],
-          );
+            ),
+          ),
+        ),
+        // Main FAB
+        RotationTransition(
+          turns: _rotationAnimation,
+          child: FloatingActionButton(
+            onPressed: _toggleFab,
+            tooltip: 'Edit preset',
+            child: Icon(_isFabExpanded ? Icons.close : Icons.edit),
+          ),
+        ),
+      ],
+    );
   }
 }

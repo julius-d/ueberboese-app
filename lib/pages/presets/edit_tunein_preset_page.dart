@@ -96,9 +96,7 @@ class _EditTuneInPresetPageState extends State<EditTuneInPresetPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Search TuneIn Stations'),
-      ),
+      appBar: AppBar(title: const Text('Search TuneIn Stations')),
       body: Column(
         children: [
           Padding(
@@ -157,7 +155,10 @@ class _EditTuneInPresetPageState extends State<EditTuneInPresetPage> {
                 ),
               ),
             ),
-          if (_hasSearched && !_isSearching && _searchResults.isEmpty && _searchError == null)
+          if (_hasSearched &&
+              !_isSearching &&
+              _searchResults.isEmpty &&
+              _searchError == null)
             Expanded(
               child: Center(
                 child: Column(
@@ -219,11 +220,15 @@ class _EditTuneInPresetPageState extends State<EditTuneInPresetPage> {
             Expanded(
               child: ListView.separated(
                 itemCount: _searchResults.length,
-                separatorBuilder: (context, index) => const Divider(height: 1, indent: 88),
+                separatorBuilder: (context, index) =>
+                    const Divider(height: 1, indent: 88),
                 itemBuilder: (context, index) {
                   final station = _searchResults[index];
                   return ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 8.0,
+                    ),
                     leading: station.image != null
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(8),
@@ -237,7 +242,9 @@ class _EditTuneInPresetPageState extends State<EditTuneInPresetPage> {
                                   width: 56,
                                   height: 56,
                                   decoration: BoxDecoration(
-                                    color: theme.colorScheme.surfaceContainerHighest,
+                                    color: theme
+                                        .colorScheme
+                                        .surfaceContainerHighest,
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Icon(

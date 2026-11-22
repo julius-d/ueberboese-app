@@ -28,8 +28,9 @@ class _FakeSetup extends SpeakerSetupService {
   String? lastIp;
 
   @override
-  Future<List<WirelessNetwork>> performWirelessSiteSurvey(
-      {String speakerIp = kSetupSpeakerIp}) async {
+  Future<List<WirelessNetwork>> performWirelessSiteSurvey({
+    String speakerIp = kSetupSpeakerIp,
+  }) async {
     lastIp = speakerIp;
     if (scanError != null) throw scanError!;
     return networks;
@@ -37,8 +38,11 @@ class _FakeSetup extends SpeakerSetupService {
 
   @override
   Future<void> addWirelessProfile(
-      String ssid, String password, String securityType,
-      {String speakerIp = kSetupSpeakerIp}) async {
+    String ssid,
+    String password,
+    String securityType, {
+    String speakerIp = kSetupSpeakerIp,
+  }) async {
     if (addError != null) throw addError!;
     lastIp = speakerIp;
     added.add([ssid, password, securityType]);
@@ -72,10 +76,15 @@ void main() {
   });
 
   Future<void> pump(WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
-      home: SpeakerWifiPage(
-          speaker: speaker, apiService: api, setupService: setup),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        home: SpeakerWifiPage(
+          speaker: speaker,
+          apiService: api,
+          setupService: setup,
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
   }
 
@@ -100,8 +109,10 @@ void main() {
   testWidgets('shows error and retries', (tester) async {
     api.error = Exception('boom');
     await pump(tester);
-    expect(find.textContaining('Failed to load network information'),
-        findsOneWidget);
+    expect(
+      find.textContaining('Failed to load network information'),
+      findsOneWidget,
+    );
 
     api.error = null;
     await tester.tap(find.text('Retry'));
@@ -117,19 +128,22 @@ void main() {
     expect(api.calls, 2);
   });
 
-  testWidgets('scan lists networks and marks the connected one',
-      (tester) async {
+  testWidgets('scan lists networks and marks the connected one', (
+    tester,
+  ) async {
     setup.networks = const [
       WirelessNetwork(
-          ssid: 'YAWL6',
-          signalStrength: -40,
-          secure: true,
-          securityType: 'wpa2aes'),
+        ssid: 'YAWL6',
+        signalStrength: -40,
+        secure: true,
+        securityType: 'wpa2aes',
+      ),
       WirelessNetwork(
-          ssid: 'Open',
-          signalStrength: -75,
-          secure: false,
-          securityType: 'none'),
+        ssid: 'Open',
+        signalStrength: -75,
+        secure: false,
+        securityType: 'none',
+      ),
     ];
     await pump(tester);
 
@@ -152,14 +166,16 @@ void main() {
     expect(find.textContaining('Scan failed'), findsOneWidget);
   });
 
-  testWidgets('connecting to a secure network asks for the password',
-      (tester) async {
+  testWidgets('connecting to a secure network asks for the password', (
+    tester,
+  ) async {
     setup.networks = const [
       WirelessNetwork(
-          ssid: 'Home',
-          signalStrength: -40,
-          secure: true,
-          securityType: 'wpa2aes'),
+        ssid: 'Home',
+        signalStrength: -40,
+        secure: true,
+        securityType: 'wpa2aes',
+      ),
     ];
     await pump(tester);
     await tester.tap(find.text('Scan for networks'));
@@ -172,7 +188,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(setup.added, [
-      ['Home', 'secret', 'wpa2aes']
+      ['Home', 'secret', 'wpa2aes'],
     ]);
     expect(setup.lastIp, '192.168.1.100');
     expect(find.text('Wi-Fi profile saved'), findsOneWidget);
@@ -184,10 +200,11 @@ void main() {
   testWidgets('open network connects without a password', (tester) async {
     setup.networks = const [
       WirelessNetwork(
-          ssid: 'Open',
-          signalStrength: -40,
-          secure: false,
-          securityType: 'none'),
+        ssid: 'Open',
+        signalStrength: -40,
+        secure: false,
+        securityType: 'none',
+      ),
     ];
     await pump(tester);
     await tester.tap(find.text('Scan for networks'));
@@ -197,17 +214,18 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(setup.added, [
-      ['Open', '', 'none']
+      ['Open', '', 'none'],
     ]);
   });
 
   testWidgets('cancelling the password dialog does nothing', (tester) async {
     setup.networks = const [
       WirelessNetwork(
-          ssid: 'Home',
-          signalStrength: -40,
-          secure: true,
-          securityType: 'wpa2aes'),
+        ssid: 'Home',
+        signalStrength: -40,
+        secure: true,
+        securityType: 'wpa2aes',
+      ),
     ];
     await pump(tester);
     await tester.tap(find.text('Scan for networks'));
@@ -225,10 +243,11 @@ void main() {
     setup.addError = Exception('bad password');
     setup.networks = const [
       WirelessNetwork(
-          ssid: 'Open',
-          signalStrength: -40,
-          secure: false,
-          securityType: 'none'),
+        ssid: 'Open',
+        signalStrength: -40,
+        secure: false,
+        securityType: 'none',
+      ),
     ];
     await pump(tester);
     await tester.tap(find.text('Scan for networks'));
@@ -240,8 +259,9 @@ void main() {
     expect(find.text('Failed to configure Wi-Fi'), findsOneWidget);
   });
 
-  testWidgets('manual network defaults to wpa_or_wpa2 and needs input',
-      (tester) async {
+  testWidgets('manual network defaults to wpa_or_wpa2 and needs input', (
+    tester,
+  ) async {
     await pump(tester);
     await tester.tap(find.text('Manual network…'));
     await tester.pumpAndSettle();
@@ -256,12 +276,13 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(setup.added, [
-      ['Hidden', 'pw', 'wpa_or_wpa2']
+      ['Hidden', 'pw', 'wpa_or_wpa2'],
     ]);
   });
 
-  testWidgets('manual network with None security hides the password',
-      (tester) async {
+  testWidgets('manual network with None security hides the password', (
+    tester,
+  ) async {
     await pump(tester);
     await tester.tap(find.text('Manual network…'));
     await tester.pumpAndSettle();
@@ -278,7 +299,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(setup.added, [
-      ['Cafe', '', 'none']
+      ['Cafe', '', 'none'],
     ]);
   });
 }

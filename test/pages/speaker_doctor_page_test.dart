@@ -130,13 +130,18 @@ void main() {
     testWidgets('shows loading indicator initially', (tester) async {
       final service = SpeakerSetupService(
         envswitchDelay: Duration.zero,
-        socketConnect: (host, port, {timeout}) =>
-            Completer<Socket>().future,
+        socketConnect: (host, port, {timeout}) => Completer<Socket>().future,
       );
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(speaker: _testSpeaker, setupService: service, apiService: _successApiService()),
-      ));
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: service,
+            apiService: _successApiService(),
+          ),
+        ),
+      );
 
       // Don't pumpAndSettle — loading spinners should appear before async completes.
       // Both the config and info sections show a spinner simultaneously.
@@ -146,9 +151,15 @@ void main() {
     testWidgets('shows config table after successful load', (tester) async {
       final service = _buildService(configResponseText: _configResponse);
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(speaker: _testSpeaker, setupService: service, apiService: _successApiService()),
-      ));
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: service,
+            apiService: _successApiService(),
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('margeServerUrl'), findsOneWidget);
@@ -160,9 +171,15 @@ void main() {
     testWidgets('config table is inside a Card', (tester) async {
       final service = _buildService(configResponseText: _configResponse);
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(speaker: _testSpeaker, setupService: service, apiService: _successApiService()),
-      ));
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: service,
+            apiService: _successApiService(),
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byType(Card), findsWidgets);
@@ -171,9 +188,15 @@ void main() {
     testWidgets('config keys are selectable', (tester) async {
       final service = _buildService(configResponseText: _configResponse);
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(speaker: _testSpeaker, setupService: service, apiService: _successApiService()),
-      ));
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: service,
+            apiService: _successApiService(),
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       // Keys are rendered as SelectableText.
@@ -184,15 +207,23 @@ void main() {
       expect(texts, contains('margeServerUrl'));
     });
 
-    testWidgets('row with wrong value uses errorContainer color', (tester) async {
+    testWidgets('row with wrong value uses errorContainer color', (
+      tester,
+    ) async {
       final service = _buildService(configResponseText: _wrongConfigResponse);
       final appState = MyAppState();
       appState.config = const AppConfig(apiUrl: 'https://api.example.com');
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(speaker: _testSpeaker, setupService: service, apiService: _successApiService()),
-        appState: appState,
-      ));
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: service,
+            apiService: _successApiService(),
+          ),
+          appState: appState,
+        ),
+      );
       await tester.pumpAndSettle();
 
       // margeServerUrl is "https://old.server.com" but expected "https://api.example.com".
@@ -207,9 +238,15 @@ void main() {
     testWidgets('shows error message on socket failure', (tester) async {
       final service = _failingService();
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(speaker: _testSpeaker, setupService: service, apiService: _successApiService()),
-      ));
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: service,
+            apiService: _successApiService(),
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.textContaining('Failed'), findsWidgets);
@@ -222,8 +259,15 @@ void main() {
       appState.config = const AppConfig(apiUrl: '');
 
       await tester.pumpWidget(
-          _wrap(SpeakerDoctorPage(speaker: _testSpeaker, setupService: service, apiService: _successApiService()),
-              appState: appState));
+        _wrap(
+          SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: service,
+            apiService: _successApiService(),
+          ),
+          appState: appState,
+        ),
+      );
       await tester.pumpAndSettle();
 
       final button = tester.widget<FilledButton>(
@@ -238,8 +282,15 @@ void main() {
       appState.config = const AppConfig(apiUrl: 'https://api.example.com');
 
       await tester.pumpWidget(
-          _wrap(SpeakerDoctorPage(speaker: _testSpeaker, setupService: service, apiService: _successApiService()),
-              appState: appState));
+        _wrap(
+          SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: service,
+            apiService: _successApiService(),
+          ),
+          appState: appState,
+        ),
+      );
       await tester.pumpAndSettle();
 
       final button = tester.widget<FilledButton>(
@@ -248,21 +299,31 @@ void main() {
       expect(button.onPressed, isNotNull);
     });
 
-    testWidgets('shows EnvswitchLogView after successful connect',
-        (tester) async {
+    testWidgets('shows EnvswitchLogView after successful connect', (
+      tester,
+    ) async {
       final service = _buildService(configResponseText: _configResponse);
       final appState = MyAppState();
       appState.config = const AppConfig(apiUrl: 'https://api.example.com');
 
       await tester.pumpWidget(
-          _wrap(SpeakerDoctorPage(speaker: _testSpeaker, setupService: service, apiService: _successApiService()),
-              appState: appState));
+        _wrap(
+          SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: service,
+            apiService: _successApiService(),
+          ),
+          appState: appState,
+        ),
+      );
       await tester.pumpAndSettle();
 
       await tester.ensureVisible(
-          find.widgetWithText(FilledButton, 'Connect speaker to Überböse-API'));
+        find.widgetWithText(FilledButton, 'Connect speaker to Überböse-API'),
+      );
       await tester.tap(
-          find.widgetWithText(FilledButton, 'Connect speaker to Überböse-API'));
+        find.widgetWithText(FilledButton, 'Connect speaker to Überböse-API'),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byType(EnvswitchLogView), findsOneWidget);
@@ -271,25 +332,34 @@ void main() {
     testWidgets('reboot card is shown', (tester) async {
       final service = _buildService(configResponseText: _configResponse);
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(speaker: _testSpeaker, setupService: service, apiService: _successApiService()),
-      ));
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: service,
+            apiService: _successApiService(),
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Reboot speaker'), findsOneWidget);
     });
 
-    testWidgets('reboot button shows inline spinner while rebooting',
-        (tester) async {
+    testWidgets('reboot button shows inline spinner while rebooting', (
+      tester,
+    ) async {
       final service = _buildService(configResponseText: _configResponse);
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(
-          speaker: _testSpeaker,
-          setupService: service,
-          apiService: _successApiService(),
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: service,
+            apiService: _successApiService(),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       await tester.ensureVisible(find.text('Reboot speaker'));
@@ -307,17 +377,20 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('reboot button re-enables and shows snackbar on success',
-        (tester) async {
+    testWidgets('reboot button re-enables and shows snackbar on success', (
+      tester,
+    ) async {
       final service = _buildService(configResponseText: _configResponse);
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(
-          speaker: _testSpeaker,
-          setupService: service,
-          apiService: _successApiService(),
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: service,
+            apiService: _successApiService(),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       await tester.ensureVisible(find.text('Reboot speaker'));
@@ -343,8 +416,7 @@ void main() {
             return _FakeSocket(
               stream: controller.stream,
               onWriteln: (_) {
-                controller.add(
-                    Uint8List.fromList(_configResponse.codeUnits));
+                controller.add(Uint8List.fromList(_configResponse.codeUnits));
                 controller.close();
               },
               onClose: () {
@@ -357,13 +429,15 @@ void main() {
         },
       );
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(
-          speaker: _testSpeaker,
-          setupService: mixedService,
-          apiService: _successApiService(),
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: mixedService,
+            apiService: _successApiService(),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       await tester.ensureVisible(find.text('Reboot speaker'));
@@ -380,76 +454,100 @@ void main() {
     testWidgets('info card shows deviceID, type and accountId', (tester) async {
       final service = _buildService(configResponseText: _configResponse);
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(
-          speaker: _testSpeaker,
-          setupService: service,
-          apiService: _successApiService(),
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: service,
+            apiService: _successApiService(),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(find.widgetWithText(SelectableText, 'Device ID'), findsOneWidget);
-      expect(find.widgetWithText(SelectableText, 'AABBCCDDEEFF'), findsOneWidget);
+      expect(
+        find.widgetWithText(SelectableText, 'AABBCCDDEEFF'),
+        findsOneWidget,
+      );
       expect(find.widgetWithText(SelectableText, 'Type'), findsOneWidget);
-      expect(find.widgetWithText(SelectableText, 'SoundTouch 10'), findsOneWidget);
-      expect(find.widgetWithText(SelectableText, 'Marge Account ID'), findsOneWidget);
+      expect(
+        find.widgetWithText(SelectableText, 'SoundTouch 10'),
+        findsOneWidget,
+      );
+      expect(
+        find.widgetWithText(SelectableText, 'Marge Account ID'),
+        findsOneWidget,
+      );
       expect(find.widgetWithText(SelectableText, '1234567'), findsOneWidget);
     });
 
-    testWidgets('info card shows fallback dash when accountId is null',
-        (tester) async {
+    testWidgets('info card shows fallback dash when accountId is null', (
+      tester,
+    ) async {
       final service = _buildService(configResponseText: _configResponse);
-      final apiService = _FakeApiService((_) async => const SpeakerInfo(
-            name: 'Test Speaker',
-            type: 'SoundTouch 10',
-            deviceId: 'AABBCCDDEEFF',
-          ));
-
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(
-          speaker: _testSpeaker,
-          setupService: service,
-          apiService: apiService,
+      final apiService = _FakeApiService(
+        (_) async => const SpeakerInfo(
+          name: 'Test Speaker',
+          type: 'SoundTouch 10',
+          deviceId: 'AABBCCDDEEFF',
         ),
-      ));
+      );
+
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: service,
+            apiService: apiService,
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('—'), findsOneWidget);
     });
 
-    testWidgets('info card shows warning styling when accountId is empty',
-        (tester) async {
+    testWidgets('info card shows warning styling when accountId is empty', (
+      tester,
+    ) async {
       final service = _buildService(configResponseText: _configResponse);
-      final apiService = _FakeApiService((_) async => const SpeakerInfo(
-            name: 'Test Speaker',
-            type: 'SoundTouch 10',
-            deviceId: 'AABBCCDDEEFF',
-          ));
-
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(
-          speaker: _testSpeaker,
-          setupService: service,
-          apiService: apiService,
+      final apiService = _FakeApiService(
+        (_) async => const SpeakerInfo(
+          name: 'Test Speaker',
+          type: 'SoundTouch 10',
+          deviceId: 'AABBCCDDEEFF',
         ),
-      ));
+      );
+
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: service,
+            apiService: apiService,
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.warning), findsOneWidget);
     });
 
-    testWidgets('info card shows no warning icon when accountId is set',
-        (tester) async {
+    testWidgets('info card shows no warning icon when accountId is set', (
+      tester,
+    ) async {
       final service = _buildService(configResponseText: _configResponse);
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(
-          speaker: _testSpeaker,
-          setupService: service,
-          apiService: _successApiService(),
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: service,
+            apiService: _successApiService(),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.warning), findsNothing);
@@ -458,50 +556,66 @@ void main() {
     testWidgets('info card shows error and retry on failure', (tester) async {
       final service = _buildService(configResponseText: _configResponse);
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(
-          speaker: _testSpeaker,
-          setupService: service,
-          apiService: _failingApiService(),
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
+            speaker: _testSpeaker,
+            setupService: service,
+            apiService: _failingApiService(),
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Failed to load device info:'), findsOneWidget);
       expect(find.text('Retry'), findsWidgets);
     });
 
-    testWidgets('link marge account card renders fields and button',
-        (tester) async {
+    testWidgets('link marge account card renders fields and button', (
+      tester,
+    ) async {
       final service = _buildService(configResponseText: _configResponse);
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
             speaker: _testSpeaker,
             setupService: service,
-            apiService: _successApiService()),
-      ));
+            apiService: _successApiService(),
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Link Marge Account'), findsOneWidget);
-      expect(find.widgetWithText(TextField, 'Marge Account ID'), findsOneWidget);
+      expect(
+        find.widgetWithText(TextField, 'Marge Account ID'),
+        findsOneWidget,
+      );
       expect(find.widgetWithText(TextField, 'Auth Token'), findsOneWidget);
-      expect(find.widgetWithText(AsyncFilledButton, 'Link Account'), findsOneWidget);
+      expect(
+        find.widgetWithText(AsyncFilledButton, 'Link Account'),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('account id field is pre-populated from app config',
-        (tester) async {
+    testWidgets('account id field is pre-populated from app config', (
+      tester,
+    ) async {
       final service = _buildService(configResponseText: _configResponse);
       final appState = MyAppState();
       appState.config = const AppConfig(accountId: 'my-account-id');
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
             speaker: _testSpeaker,
             setupService: service,
-            apiService: _successApiService()),
-        appState: appState,
-      ));
+            apiService: _successApiService(),
+          ),
+          appState: appState,
+        ),
+      );
       await tester.pumpAndSettle();
 
       final accountIdField = tester.widget<TextField>(
@@ -510,16 +624,20 @@ void main() {
       expect(accountIdField.controller?.text, 'my-account-id');
     });
 
-    testWidgets('auth token field is pre-populated with auth123',
-        (tester) async {
+    testWidgets('auth token field is pre-populated with auth123', (
+      tester,
+    ) async {
       final service = _buildService(configResponseText: _configResponse);
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
             speaker: _testSpeaker,
             setupService: service,
-            apiService: _successApiService()),
-      ));
+            apiService: _successApiService(),
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       final authTokenField = tester.widget<TextField>(
@@ -528,30 +646,37 @@ void main() {
       expect(authTokenField.controller?.text, 'auth123');
     });
 
-    testWidgets('link account shows inline error when fields are empty',
-        (tester) async {
+    testWidgets('link account shows inline error when fields are empty', (
+      tester,
+    ) async {
       final service = _buildService(configResponseText: _configResponse);
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
             speaker: _testSpeaker,
             setupService: service,
-            apiService: _successApiService()),
-      ));
+            apiService: _successApiService(),
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
-      await tester
-          .ensureVisible(find.widgetWithText(AsyncFilledButton, 'Link Account'));
+      await tester.ensureVisible(
+        find.widgetWithText(AsyncFilledButton, 'Link Account'),
+      );
       await tester.tap(find.widgetWithText(AsyncFilledButton, 'Link Account'));
       await tester.pump();
 
-      expect(find.text('Account ID and auth token are required.'),
-          findsOneWidget);
+      expect(
+        find.text('Account ID and auth token are required.'),
+        findsOneWidget,
+      );
     });
 
-    testWidgets(
-        'link account shows snackbar and reloads info on success',
-        (tester) async {
+    testWidgets('link account shows snackbar and reloads info on success', (
+      tester,
+    ) async {
       int fetchInfoCount = 0;
       final apiService = _FakeApiService((_) async {
         fetchInfoCount++;
@@ -565,20 +690,28 @@ void main() {
         },
       );
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
             speaker: _testSpeaker,
             setupService: service,
-            apiService: apiService),
-      ));
+            apiService: apiService,
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       await tester.enterText(
-          find.widgetWithText(TextField, 'Marge Account ID'), 'acc123');
+        find.widgetWithText(TextField, 'Marge Account ID'),
+        'acc123',
+      );
       await tester.enterText(
-          find.widgetWithText(TextField, 'Auth Token'), 'token456');
-      await tester
-          .ensureVisible(find.widgetWithText(AsyncFilledButton, 'Link Account'));
+        find.widgetWithText(TextField, 'Auth Token'),
+        'token456',
+      );
+      await tester.ensureVisible(
+        find.widgetWithText(AsyncFilledButton, 'Link Account'),
+      );
       await tester.tap(find.widgetWithText(AsyncFilledButton, 'Link Account'));
       await tester.pumpAndSettle();
 
@@ -595,40 +728,52 @@ void main() {
             Future.error(Exception('HTTP 500')),
       );
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
             speaker: _testSpeaker,
             setupService: service,
-            apiService: _successApiService()),
-      ));
+            apiService: _successApiService(),
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       await tester.enterText(
-          find.widgetWithText(TextField, 'Marge Account ID'), 'acc123');
+        find.widgetWithText(TextField, 'Marge Account ID'),
+        'acc123',
+      );
       await tester.enterText(
-          find.widgetWithText(TextField, 'Auth Token'), 'token456');
-      await tester
-          .ensureVisible(find.widgetWithText(AsyncFilledButton, 'Link Account'));
+        find.widgetWithText(TextField, 'Auth Token'),
+        'token456',
+      );
+      await tester.ensureVisible(
+        find.widgetWithText(AsyncFilledButton, 'Link Account'),
+      );
       await tester.tap(find.widgetWithText(AsyncFilledButton, 'Link Account'));
       await tester.pumpAndSettle();
 
       expect(find.textContaining('HTTP 500'), findsOneWidget);
     });
 
-    testWidgets('account ID field blocks invalid characters',
-        (tester) async {
+    testWidgets('account ID field blocks invalid characters', (tester) async {
       final service = _buildService(configResponseText: _configResponse);
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
             speaker: _testSpeaker,
             setupService: service,
-            apiService: _successApiService()),
-      ));
+            apiService: _successApiService(),
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       await tester.enterText(
-          find.widgetWithText(TextField, 'Marge Account ID'), 'abc!@#123');
+        find.widgetWithText(TextField, 'Marge Account ID'),
+        'abc!@#123',
+      );
 
       final accountIdField = tester.widget<TextField>(
         find.widgetWithText(TextField, 'Marge Account ID'),
@@ -636,20 +781,24 @@ void main() {
       expect(accountIdField.controller?.text, 'abc123');
     });
 
-    testWidgets('account ID field allows letters and digits',
-        (tester) async {
+    testWidgets('account ID field allows letters and digits', (tester) async {
       final service = _buildService(configResponseText: _configResponse);
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
             speaker: _testSpeaker,
             setupService: service,
-            apiService: _successApiService()),
-      ));
+            apiService: _successApiService(),
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       await tester.enterText(
-          find.widgetWithText(TextField, 'Marge Account ID'), 'abcXYZ123');
+        find.widgetWithText(TextField, 'Marge Account ID'),
+        'abcXYZ123',
+      );
 
       final accountIdField = tester.widget<TextField>(
         find.widgetWithText(TextField, 'Marge Account ID'),
@@ -657,21 +806,27 @@ void main() {
       expect(accountIdField.controller?.text, 'abcXYZ123');
     });
 
-    testWidgets('account ID field rejects input beyond 42 characters',
-        (tester) async {
+    testWidgets('account ID field rejects input beyond 42 characters', (
+      tester,
+    ) async {
       final service = _buildService(configResponseText: _configResponse);
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(
+      await tester.pumpWidget(
+        _wrap(
+          SpeakerDoctorPage(
             speaker: _testSpeaker,
             setupService: service,
-            apiService: _successApiService()),
-      ));
+            apiService: _successApiService(),
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
 
       final longInput = 'a' * 50;
       await tester.enterText(
-          find.widgetWithText(TextField, 'Marge Account ID'), longInput);
+        find.widgetWithText(TextField, 'Marge Account ID'),
+        longInput,
+      );
 
       final accountIdField = tester.widget<TextField>(
         find.widgetWithText(TextField, 'Marge Account ID'),
@@ -679,30 +834,44 @@ void main() {
       expect(accountIdField.controller?.text.length, 42);
     });
 
-    testWidgets('link account shows error when account ID is shorter than 3 chars',
-        (tester) async {
-      final service = _buildService(configResponseText: _configResponse);
+    testWidgets(
+      'link account shows error when account ID is shorter than 3 chars',
+      (tester) async {
+        final service = _buildService(configResponseText: _configResponse);
 
-      await tester.pumpWidget(_wrap(
-        SpeakerDoctorPage(
-            speaker: _testSpeaker,
-            setupService: service,
-            apiService: _successApiService()),
-      ));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          _wrap(
+            SpeakerDoctorPage(
+              speaker: _testSpeaker,
+              setupService: service,
+              apiService: _successApiService(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      await tester.enterText(
-          find.widgetWithText(TextField, 'Marge Account ID'), 'ab');
-      await tester.enterText(
-          find.widgetWithText(TextField, 'Auth Token'), 'token456');
-      await tester
-          .ensureVisible(find.widgetWithText(AsyncFilledButton, 'Link Account'));
-      await tester.tap(find.widgetWithText(AsyncFilledButton, 'Link Account'));
-      await tester.pump();
+        await tester.enterText(
+          find.widgetWithText(TextField, 'Marge Account ID'),
+          'ab',
+        );
+        await tester.enterText(
+          find.widgetWithText(TextField, 'Auth Token'),
+          'token456',
+        );
+        await tester.ensureVisible(
+          find.widgetWithText(AsyncFilledButton, 'Link Account'),
+        );
+        await tester.tap(
+          find.widgetWithText(AsyncFilledButton, 'Link Account'),
+        );
+        await tester.pump();
 
-      expect(find.text('Account ID must be at least 3 characters.'),
-          findsOneWidget);
-    });
+        expect(
+          find.text('Account ID must be at least 3 characters.'),
+          findsOneWidget,
+        );
+      },
+    );
   });
 }
 
@@ -710,34 +879,35 @@ void main() {
 /// getSystemConfiguration but routes setMargeAccount through a callback.
 class _FakeSetupService extends SpeakerSetupService {
   final Future<void> Function(String ip, String accountId, String authToken)
-      onSetMargeAccount;
+  onSetMargeAccount;
 
   _FakeSetupService({
     required String configResponseText,
     required this.onSetMargeAccount,
   }) : super(
-          envswitchDelay: Duration.zero,
-          socketConnect: (host, port, {timeout}) async {
-            final controller = StreamController<Uint8List>();
-            return _FakeSocket(
-              stream: controller.stream,
-              onWriteln: (_) {
-                controller
-                    .add(Uint8List.fromList(configResponseText.codeUnits));
-                controller.close();
-              },
-              onClose: () {
-                if (!controller.isClosed) controller.close();
-                return Future<void>.value();
-              },
-            );
-          },
-        );
+         envswitchDelay: Duration.zero,
+         socketConnect: (host, port, {timeout}) async {
+           final controller = StreamController<Uint8List>();
+           return _FakeSocket(
+             stream: controller.stream,
+             onWriteln: (_) {
+               controller.add(Uint8List.fromList(configResponseText.codeUnits));
+               controller.close();
+             },
+             onClose: () {
+               if (!controller.isClosed) controller.close();
+               return Future<void>.value();
+             },
+           );
+         },
+       );
 
   @override
   Future<void> setMargeAccount(
-          String speakerIp, String accountId, String authToken) =>
-      onSetMargeAccount(speakerIp, accountId, authToken);
+    String speakerIp,
+    String accountId,
+    String authToken,
+  ) => onSetMargeAccount(speakerIp, accountId, authToken);
 }
 
 class _FakeSocket extends Stream<Uint8List> implements Socket {
@@ -757,9 +927,12 @@ class _FakeSocket extends Stream<Uint8List> implements Socket {
     Function? onError,
     void Function()? onDone,
     bool? cancelOnError,
-  }) =>
-      stream.listen(onData,
-          onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+  }) => stream.listen(
+    onData,
+    onError: onError,
+    onDone: onDone,
+    cancelOnError: cancelOnError,
+  );
 
   @override
   void writeln([Object? object = '']) => onWriteln(object?.toString() ?? '');

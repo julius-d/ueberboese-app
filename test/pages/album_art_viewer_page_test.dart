@@ -88,7 +88,9 @@ void main() {
       expect(find.text(testAlbum), findsOneWidget);
     });
 
-    testWidgets('does not display track info overlay when no info provided', (tester) async {
+    testWidgets('does not display track info overlay when no info provided', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: AlbumArtViewerPage(
@@ -139,11 +141,7 @@ void main() {
 
     testWidgets('uses default hero tag when not provided', (tester) async {
       await tester.pumpWidget(
-        const MaterialApp(
-          home: AlbumArtViewerPage(
-            imageUrl: testImageUrl,
-          ),
-        ),
+        const MaterialApp(home: AlbumArtViewerPage(imageUrl: testImageUrl)),
       );
 
       // Verify Hero widget exists
@@ -154,7 +152,9 @@ void main() {
       expect(heroWidget.tag, 'album-art');
     });
 
-    testWidgets('contains InteractiveViewer for zoom functionality', (tester) async {
+    testWidgets('contains InteractiveViewer for zoom functionality', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: AlbumArtViewerPage(

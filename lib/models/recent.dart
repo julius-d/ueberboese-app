@@ -74,30 +74,30 @@ class Recent {
   }
 
   Map<String, dynamic> toJson() => {
-        'deviceId': deviceId,
-        'utcTime': utcTime,
-        'id': id,
-        'itemName': itemName,
-        'containerArt': containerArt,
-        'source': source,
-        'location': location,
-        'type': type,
-        'isPresetable': isPresetable,
-        'sourceAccount': sourceAccount,
-      };
+    'deviceId': deviceId,
+    'utcTime': utcTime,
+    'id': id,
+    'itemName': itemName,
+    'containerArt': containerArt,
+    'source': source,
+    'location': location,
+    'type': type,
+    'isPresetable': isPresetable,
+    'sourceAccount': sourceAccount,
+  };
 
   factory Recent.fromJson(Map<String, dynamic> json) => Recent(
-        deviceId: json['deviceId'] as String,
-        utcTime: json['utcTime'] as int,
-        id: json['id'] as String,
-        itemName: json['itemName'] as String,
-        containerArt: json['containerArt'] as String?,
-        source: json['source'] as String,
-        location: json['location'] as String,
-        type: json['type'] as String,
-        isPresetable: json['isPresetable'] as bool,
-        sourceAccount: json['sourceAccount'] as String?,
-      );
+    deviceId: json['deviceId'] as String,
+    utcTime: json['utcTime'] as int,
+    id: json['id'] as String,
+    itemName: json['itemName'] as String,
+    containerArt: json['containerArt'] as String?,
+    source: json['source'] as String,
+    location: json['location'] as String,
+    type: json['type'] as String,
+    isPresetable: json['isPresetable'] as bool,
+    sourceAccount: json['sourceAccount'] as String?,
+  );
 
   @override
   bool operator ==(Object other) =>

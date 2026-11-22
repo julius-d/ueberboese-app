@@ -6,7 +6,8 @@ import 'package:ueberboese_app/models/volume.dart';
 import 'package:ueberboese_app/models/now_playing.dart';
 
 // Factory function type for creating WebSocket connections
-typedef WebSocketFactory = WebSocketChannel Function(Uri uri, {List<String>? protocols});
+typedef WebSocketFactory =
+    WebSocketChannel Function(Uri uri, {List<String>? protocols});
 
 class SpeakerWebsocketService {
   final String ipAddress;
@@ -77,13 +78,17 @@ class SpeakerWebsocketService {
       final updatesElement = updatesElements.first;
 
       // Check for volume updates
-      final volumeUpdatedElements = updatesElement.findElements('volumeUpdated');
+      final volumeUpdatedElements = updatesElement.findElements(
+        'volumeUpdated',
+      );
       if (volumeUpdatedElements.isNotEmpty) {
         _handleVolumeUpdate(volumeUpdatedElements.first);
       }
 
       // Check for now playing updates
-      final nowPlayingUpdatedElements = updatesElement.findElements('nowPlayingUpdated');
+      final nowPlayingUpdatedElements = updatesElement.findElements(
+        'nowPlayingUpdated',
+      );
       if (nowPlayingUpdatedElements.isNotEmpty) {
         _handleNowPlayingUpdate(nowPlayingUpdatedElements.first);
       }
@@ -95,13 +100,20 @@ class SpeakerWebsocketService {
       }
 
       // Check for now selection updates (preset selected/queued)
-      final nowSelectionUpdatedElements = updatesElement.findElements('nowSelectionUpdated');
+      final nowSelectionUpdatedElements = updatesElement.findElements(
+        'nowSelectionUpdated',
+      );
       if (nowSelectionUpdatedElements.isNotEmpty) {
         _handleNowSelectionUpdate(nowSelectionUpdatedElements.first);
       }
 
       // Check for other update types and log them
-      final knownTypes = {'volumeUpdated', 'nowPlayingUpdated', 'zoneUpdated', 'nowSelectionUpdated'};
+      final knownTypes = {
+        'volumeUpdated',
+        'nowPlayingUpdated',
+        'zoneUpdated',
+        'nowSelectionUpdated',
+      };
       final childElements = updatesElement.childElements;
       for (final child in childElements) {
         if (!knownTypes.contains(child.name.local)) {
@@ -127,14 +139,17 @@ class SpeakerWebsocketService {
       final actualVolumeElements = volumeElement.findElements('actualvolume');
       final muteEnabledElements = volumeElement.findElements('muteenabled');
 
-      if (targetVolumeElements.isEmpty || actualVolumeElements.isEmpty || muteEnabledElements.isEmpty) {
+      if (targetVolumeElements.isEmpty ||
+          actualVolumeElements.isEmpty ||
+          muteEnabledElements.isEmpty) {
         debugPrint('[WebSocket] Incomplete volume data');
         return;
       }
 
       final targetVolume = int.parse(targetVolumeElements.first.innerText);
       final actualVolume = int.parse(actualVolumeElements.first.innerText);
-      final muteEnabled = muteEnabledElements.first.innerText.toLowerCase() == 'true';
+      final muteEnabled =
+          muteEnabledElements.first.innerText.toLowerCase() == 'true';
 
       final volume = Volume(
         targetVolume: targetVolume,
@@ -154,7 +169,9 @@ class SpeakerWebsocketService {
 
   void _handleNowPlayingUpdate(XmlElement nowPlayingUpdatedElement) {
     try {
-      final nowPlayingElements = nowPlayingUpdatedElement.findElements('nowPlaying');
+      final nowPlayingElements = nowPlayingUpdatedElement.findElements(
+        'nowPlaying',
+      );
       if (nowPlayingElements.isEmpty) {
         debugPrint('[WebSocket] No <nowPlaying> element in nowPlayingUpdated');
         return;
@@ -245,7 +262,9 @@ class SpeakerWebsocketService {
         sourceAccount: sourceAccount,
       );
 
-      debugPrint('[WebSocket] Now playing update: ${track ?? "Unknown"} - ${artist ?? "Unknown"}');
+      debugPrint(
+        '[WebSocket] Now playing update: ${track ?? "Unknown"} - ${artist ?? "Unknown"}',
+      );
 
       if (!_nowPlayingController.isClosed) {
         _nowPlayingController.add(nowPlaying);
@@ -257,7 +276,9 @@ class SpeakerWebsocketService {
 
   void _handleNowSelectionUpdate(XmlElement nowSelectionUpdatedElement) {
     try {
-      final presetElement = nowSelectionUpdatedElement.findElements('preset').firstOrNull;
+      final presetElement = nowSelectionUpdatedElement
+          .findElements('preset')
+          .firstOrNull;
       if (presetElement == null) {
         debugPrint('[WebSocket] No <preset> element in nowSelectionUpdated');
         return;
@@ -265,15 +286,23 @@ class SpeakerWebsocketService {
 
       final contentItem = presetElement.findElements('ContentItem').firstOrNull;
       if (contentItem == null) {
-        debugPrint('[WebSocket] No <ContentItem> element in nowSelectionUpdated preset');
+        debugPrint(
+          '[WebSocket] No <ContentItem> element in nowSelectionUpdated preset',
+        );
         return;
       }
 
       final source = contentItem.getAttribute('source');
       final location = contentItem.getAttribute('location');
       final sourceAccount = contentItem.getAttribute('sourceAccount');
-      final itemName = contentItem.findElements('itemName').firstOrNull?.innerText;
-      final containerArt = contentItem.findElements('containerArt').firstOrNull?.innerText;
+      final itemName = contentItem
+          .findElements('itemName')
+          .firstOrNull
+          ?.innerText;
+      final containerArt = contentItem
+          .findElements('containerArt')
+          .firstOrNull
+          ?.innerText;
 
       final nowPlaying = NowPlaying(
         source: source,
@@ -330,7 +359,9 @@ class SpeakerWebsocketService {
     _reconnectAttempts++;
     final delay = _baseReconnectDelay * _reconnectAttempts;
 
-    debugPrint('[WebSocket] Scheduling reconnect attempt $_reconnectAttempts in ${delay.inSeconds}s');
+    debugPrint(
+      '[WebSocket] Scheduling reconnect attempt $_reconnectAttempts in ${delay.inSeconds}s',
+    );
 
     _reconnectTimer?.cancel();
     _reconnectTimer = Timer(delay, () {

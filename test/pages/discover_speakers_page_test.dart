@@ -58,8 +58,9 @@ void main() {
 
   group('DiscoverSpeakersPage', () {
     testWidgets('shows app bar title', (tester) async {
-      when(mockDiscovery.discover(timeout: anyNamed('timeout')))
-          .thenAnswer((_) => const Stream.empty());
+      when(
+        mockDiscovery.discover(timeout: anyNamed('timeout')),
+      ).thenAnswer((_) => const Stream.empty());
 
       await tester.pumpWidget(buildPage());
       await tester.pump();
@@ -67,10 +68,13 @@ void main() {
       expect(find.text('Discover Speakers'), findsOneWidget);
     });
 
-    testWidgets('shows linear progress indicator while searching', (tester) async {
+    testWidgets('shows linear progress indicator while searching', (
+      tester,
+    ) async {
       final controller = StreamController<PossibleSpeaker>();
-      when(mockDiscovery.discover(timeout: anyNamed('timeout')))
-          .thenAnswer((_) => controller.stream);
+      when(
+        mockDiscovery.discover(timeout: anyNamed('timeout')),
+      ).thenAnswer((_) => controller.stream);
 
       await tester.pumpWidget(buildPage());
       await tester.pump();
@@ -80,8 +84,9 @@ void main() {
     });
 
     testWidgets('hides progress and shows rescan when done', (tester) async {
-      when(mockDiscovery.discover(timeout: anyNamed('timeout')))
-          .thenAnswer((_) => const Stream.empty());
+      when(
+        mockDiscovery.discover(timeout: anyNamed('timeout')),
+      ).thenAnswer((_) => const Stream.empty());
 
       await tester.pumpWidget(buildPage());
       // Stream emits nothing and completes
@@ -92,8 +97,9 @@ void main() {
     });
 
     testWidgets('shows no speakers found when stream is empty', (tester) async {
-      when(mockDiscovery.discover(timeout: anyNamed('timeout')))
-          .thenAnswer((_) => const Stream.empty());
+      when(
+        mockDiscovery.discover(timeout: anyNamed('timeout')),
+      ).thenAnswer((_) => const Stream.empty());
 
       await tester.pumpWidget(buildPage());
       await tester.pumpAndSettle();
@@ -107,10 +113,12 @@ void main() {
         location: 'http://192.168.1.42:8090/info',
       );
 
-      when(mockDiscovery.discover(timeout: anyNamed('timeout')))
-          .thenAnswer((_) => Stream.value(possible));
-      when(mockApiService.fetchSpeakerInfo('192.168.1.42'))
-          .thenAnswer((_) async => fakeSpeakerInfo);
+      when(
+        mockDiscovery.discover(timeout: anyNamed('timeout')),
+      ).thenAnswer((_) => Stream.value(possible));
+      when(
+        mockApiService.fetchSpeakerInfo('192.168.1.42'),
+      ).thenAnswer((_) async => fakeSpeakerInfo);
 
       await tester.pumpWidget(buildPage());
       await tester.pumpAndSettle();
@@ -125,10 +133,12 @@ void main() {
         location: 'http://192.168.1.99:8090/info',
       );
 
-      when(mockDiscovery.discover(timeout: anyNamed('timeout')))
-          .thenAnswer((_) => Stream.value(possible));
-      when(mockApiService.fetchSpeakerInfo('192.168.1.99'))
-          .thenThrow(Exception('unreachable'));
+      when(
+        mockDiscovery.discover(timeout: anyNamed('timeout')),
+      ).thenAnswer((_) => Stream.value(possible));
+      when(
+        mockApiService.fetchSpeakerInfo('192.168.1.99'),
+      ).thenThrow(Exception('unreachable'));
 
       await tester.pumpWidget(buildPage());
       await tester.pumpAndSettle();
@@ -136,16 +146,20 @@ void main() {
       expect(find.text('192.168.1.99'), findsWidgets);
     });
 
-    testWidgets('shows Add Selected FAB when a speaker is checked', (tester) async {
+    testWidgets('shows Add Selected FAB when a speaker is checked', (
+      tester,
+    ) async {
       final possible = PossibleSpeaker(
         ip: '192.168.1.42',
         location: 'http://192.168.1.42:8090/info',
       );
 
-      when(mockDiscovery.discover(timeout: anyNamed('timeout')))
-          .thenAnswer((_) => Stream.value(possible));
-      when(mockApiService.fetchSpeakerInfo('192.168.1.42'))
-          .thenAnswer((_) async => fakeSpeakerInfo);
+      when(
+        mockDiscovery.discover(timeout: anyNamed('timeout')),
+      ).thenAnswer((_) => Stream.value(possible));
+      when(
+        mockApiService.fetchSpeakerInfo('192.168.1.42'),
+      ).thenAnswer((_) async => fakeSpeakerInfo);
 
       await tester.pumpWidget(buildPage());
       await tester.pumpAndSettle();
@@ -164,12 +178,15 @@ void main() {
         location: 'http://192.168.1.42:8090/info',
       );
 
-      when(mockDiscovery.discover(timeout: anyNamed('timeout')))
-          .thenAnswer((_) => Stream.value(possible));
-      when(mockApiService.fetchSpeakerInfo('192.168.1.42'))
-          .thenAnswer((_) async => fakeSpeakerInfo);
-      when(mockApiService.createSpeakerFromIp('192.168.1.42', any))
-          .thenAnswer((_) async => fakeSpeaker);
+      when(
+        mockDiscovery.discover(timeout: anyNamed('timeout')),
+      ).thenAnswer((_) => Stream.value(possible));
+      when(
+        mockApiService.fetchSpeakerInfo('192.168.1.42'),
+      ).thenAnswer((_) async => fakeSpeakerInfo);
+      when(
+        mockApiService.createSpeakerFromIp('192.168.1.42', any),
+      ).thenAnswer((_) async => fakeSpeaker);
 
       await tester.pumpWidget(buildPage());
       await tester.pumpAndSettle();
@@ -184,7 +201,9 @@ void main() {
       expect(appState.speakers, contains(fakeSpeaker));
     });
 
-    testWidgets('shows already added badge for existing speaker', (tester) async {
+    testWidgets('shows already added badge for existing speaker', (
+      tester,
+    ) async {
       appState.addSpeaker(fakeSpeaker);
 
       final possible = PossibleSpeaker(
@@ -192,10 +211,12 @@ void main() {
         location: 'http://192.168.1.42:8090/info',
       );
 
-      when(mockDiscovery.discover(timeout: anyNamed('timeout')))
-          .thenAnswer((_) => Stream.value(possible));
-      when(mockApiService.fetchSpeakerInfo('192.168.1.42'))
-          .thenAnswer((_) async => fakeSpeakerInfo);
+      when(
+        mockDiscovery.discover(timeout: anyNamed('timeout')),
+      ).thenAnswer((_) => Stream.value(possible));
+      when(
+        mockApiService.fetchSpeakerInfo('192.168.1.42'),
+      ).thenAnswer((_) async => fakeSpeakerInfo);
 
       await tester.pumpWidget(buildPage());
       await tester.pumpAndSettle();
@@ -203,7 +224,9 @@ void main() {
       expect(find.text('Already added'), findsOneWidget);
     });
 
-    testWidgets('shows configured emoji for already added speaker', (tester) async {
+    testWidgets('shows configured emoji for already added speaker', (
+      tester,
+    ) async {
       const configuredSpeaker = Speaker(
         id: '1',
         name: 'Living Room',
@@ -219,10 +242,12 @@ void main() {
         location: 'http://192.168.1.42:8090/info',
       );
 
-      when(mockDiscovery.discover(timeout: anyNamed('timeout')))
-          .thenAnswer((_) => Stream.value(possible));
-      when(mockApiService.fetchSpeakerInfo('192.168.1.42'))
-          .thenAnswer((_) async => fakeSpeakerInfo);
+      when(
+        mockDiscovery.discover(timeout: anyNamed('timeout')),
+      ).thenAnswer((_) => Stream.value(possible));
+      when(
+        mockApiService.fetchSpeakerInfo('192.168.1.42'),
+      ).thenAnswer((_) async => fakeSpeakerInfo);
 
       await tester.pumpWidget(buildPage());
       await tester.pumpAndSettle();
@@ -231,8 +256,9 @@ void main() {
     });
 
     testWidgets('rescan restarts discovery', (tester) async {
-      when(mockDiscovery.discover(timeout: anyNamed('timeout')))
-          .thenAnswer((_) => const Stream.empty());
+      when(
+        mockDiscovery.discover(timeout: anyNamed('timeout')),
+      ).thenAnswer((_) => const Stream.empty());
 
       await tester.pumpWidget(buildPage());
       await tester.pumpAndSettle();

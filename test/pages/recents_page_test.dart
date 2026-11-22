@@ -26,34 +26,28 @@ void main() {
       mockApiService = MockSpeakerApiService();
     });
 
-    testWidgets('shows loading indicator initially', (WidgetTester tester) async {
-      when(mockApiService.getRecents(any)).thenAnswer(
-        (_) async => <Recent>[],
-      );
+    testWidgets('shows loading indicator initially', (
+      WidgetTester tester,
+    ) async {
+      when(mockApiService.getRecents(any)).thenAnswer((_) async => <Recent>[]);
 
       await tester.pumpWidget(
         MaterialApp(
-          home: RecentsPage(
-            speaker: testSpeaker,
-            apiService: mockApiService,
-          ),
+          home: RecentsPage(speaker: testSpeaker, apiService: mockApiService),
         ),
       );
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
-    testWidgets('displays "No recent items" when list is empty', (WidgetTester tester) async {
-      when(mockApiService.getRecents(any)).thenAnswer(
-        (_) async => <Recent>[],
-      );
+    testWidgets('displays "No recent items" when list is empty', (
+      WidgetTester tester,
+    ) async {
+      when(mockApiService.getRecents(any)).thenAnswer((_) async => <Recent>[]);
 
       await tester.pumpWidget(
         MaterialApp(
-          home: RecentsPage(
-            speaker: testSpeaker,
-            apiService: mockApiService,
-          ),
+          home: RecentsPage(speaker: testSpeaker, apiService: mockApiService),
         ),
       );
 
@@ -62,7 +56,9 @@ void main() {
       expect(find.text('No recent items'), findsOneWidget);
     });
 
-    testWidgets('displays recents list when data is loaded', (WidgetTester tester) async {
+    testWidgets('displays recents list when data is loaded', (
+      WidgetTester tester,
+    ) async {
       final testRecents = [
         const Recent(
           deviceId: '44EAD8A17CC7',
@@ -80,23 +76,19 @@ void main() {
           id: '4',
           itemName: 'Komplett Entspannt',
           source: 'SPOTIFY',
-          location: '/playback/container/c3BvdGlmeTpwbGF5bGlzdDoybjZXMnA1QzBNQUQ5YTR6NXhUVDdu',
+          location:
+              '/playback/container/c3BvdGlmeTpwbGF5bGlzdDoybjZXMnA1QzBNQUQ5YTR6NXhUVDdu',
           type: 'tracklisturl',
           isPresetable: true,
           sourceAccount: 'z5zt8py3wuxytbza4cxa431ge',
         ),
       ];
 
-      when(mockApiService.getRecents(any)).thenAnswer(
-        (_) async => testRecents,
-      );
+      when(mockApiService.getRecents(any)).thenAnswer((_) async => testRecents);
 
       await tester.pumpWidget(
         MaterialApp(
-          home: RecentsPage(
-            speaker: testSpeaker,
-            apiService: mockApiService,
-          ),
+          home: RecentsPage(speaker: testSpeaker, apiService: mockApiService),
         ),
       );
 
@@ -110,17 +102,16 @@ void main() {
       expect(find.byType(Divider), findsOneWidget);
     });
 
-    testWidgets('displays error message and retry button on error', (WidgetTester tester) async {
+    testWidgets('displays error message and retry button on error', (
+      WidgetTester tester,
+    ) async {
       when(mockApiService.getRecents(any)).thenAnswer(
         (_) async => throw Exception('Failed to fetch recents: HTTP 500'),
       );
 
       await tester.pumpWidget(
         MaterialApp(
-          home: RecentsPage(
-            speaker: testSpeaker,
-            apiService: mockApiService,
-          ),
+          home: RecentsPage(speaker: testSpeaker, apiService: mockApiService),
         ),
       );
 
@@ -139,10 +130,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: RecentsPage(
-            speaker: testSpeaker,
-            apiService: mockApiService,
-          ),
+          home: RecentsPage(speaker: testSpeaker, apiService: mockApiService),
         ),
       );
 
@@ -164,9 +152,7 @@ void main() {
         ),
       ];
 
-      when(mockApiService.getRecents(any)).thenAnswer(
-        (_) async => testRecents,
-      );
+      when(mockApiService.getRecents(any)).thenAnswer((_) async => testRecents);
 
       // Tap retry button
       await tester.tap(find.text('Retry'));
@@ -176,38 +162,35 @@ void main() {
       expect(find.text('Failed to load recents'), findsNothing);
     });
 
-    testWidgets('displays speaker emoji and name in app bar and Recent title on page', (WidgetTester tester) async {
-      when(mockApiService.getRecents(any)).thenAnswer(
-        (_) async => <Recent>[],
-      );
+    testWidgets(
+      'displays speaker emoji and name in app bar and Recent title on page',
+      (WidgetTester tester) async {
+        when(
+          mockApiService.getRecents(any),
+        ).thenAnswer((_) async => <Recent>[]);
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: RecentsPage(speaker: testSpeaker, apiService: mockApiService),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        expect(find.text('🔊'), findsOneWidget);
+        expect(find.text('Test Speaker'), findsOneWidget);
+        expect(find.text('Recent'), findsOneWidget);
+      },
+    );
+
+    testWidgets('calls getRecents with correct IP address', (
+      WidgetTester tester,
+    ) async {
+      when(mockApiService.getRecents(any)).thenAnswer((_) async => <Recent>[]);
 
       await tester.pumpWidget(
         MaterialApp(
-          home: RecentsPage(
-            speaker: testSpeaker,
-            apiService: mockApiService,
-          ),
-        ),
-      );
-
-      await tester.pumpAndSettle();
-
-      expect(find.text('🔊'), findsOneWidget);
-      expect(find.text('Test Speaker'), findsOneWidget);
-      expect(find.text('Recent'), findsOneWidget);
-    });
-
-    testWidgets('calls getRecents with correct IP address', (WidgetTester tester) async {
-      when(mockApiService.getRecents(any)).thenAnswer(
-        (_) async => <Recent>[],
-      );
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: RecentsPage(
-            speaker: testSpeaker,
-            apiService: mockApiService,
-          ),
+          home: RecentsPage(speaker: testSpeaker, apiService: mockApiService),
         ),
       );
 
@@ -216,7 +199,9 @@ void main() {
       verify(mockApiService.getRecents('192.168.1.100')).called(1);
     });
 
-    testWidgets('displays containerArt when available', (WidgetTester tester) async {
+    testWidgets('displays containerArt when available', (
+      WidgetTester tester,
+    ) async {
       final testRecents = [
         const Recent(
           deviceId: '44EAD8A17CC7',
@@ -231,16 +216,11 @@ void main() {
         ),
       ];
 
-      when(mockApiService.getRecents(any)).thenAnswer(
-        (_) async => testRecents,
-      );
+      when(mockApiService.getRecents(any)).thenAnswer((_) async => testRecents);
 
       await tester.pumpWidget(
         MaterialApp(
-          home: RecentsPage(
-            speaker: testSpeaker,
-            apiService: mockApiService,
-          ),
+          home: RecentsPage(speaker: testSpeaker, apiService: mockApiService),
         ),
       );
 
@@ -249,7 +229,9 @@ void main() {
       expect(find.byType(Image), findsOneWidget);
     });
 
-    testWidgets('tapping play button calls selectContentItem', (WidgetTester tester) async {
+    testWidgets('tapping play button calls selectContentItem', (
+      WidgetTester tester,
+    ) async {
       final testRecents = [
         const Recent(
           deviceId: '44EAD8A17CC7',
@@ -263,20 +245,15 @@ void main() {
         ),
       ];
 
-      when(mockApiService.getRecents(any)).thenAnswer(
-        (_) async => testRecents,
-      );
+      when(mockApiService.getRecents(any)).thenAnswer((_) async => testRecents);
 
-      when(mockApiService.selectContentItem(any, any)).thenAnswer(
-        (_) async => Future<void>.value(),
-      );
+      when(
+        mockApiService.selectContentItem(any, any),
+      ).thenAnswer((_) async => Future<void>.value());
 
       await tester.pumpWidget(
         MaterialApp(
-          home: RecentsPage(
-            speaker: testSpeaker,
-            apiService: mockApiService,
-          ),
+          home: RecentsPage(speaker: testSpeaker, apiService: mockApiService),
         ),
       );
 
@@ -287,10 +264,14 @@ void main() {
       await tester.pump();
 
       // Verify selectContentItem was called
-      verify(mockApiService.selectContentItem('192.168.1.100', testRecents[0])).called(1);
+      verify(
+        mockApiService.selectContentItem('192.168.1.100', testRecents[0]),
+      ).called(1);
     });
 
-    testWidgets('shows loading indicator while playing', (WidgetTester tester) async {
+    testWidgets('shows loading indicator while playing', (
+      WidgetTester tester,
+    ) async {
       final testRecents = [
         const Recent(
           deviceId: '44EAD8A17CC7',
@@ -304,9 +285,7 @@ void main() {
         ),
       ];
 
-      when(mockApiService.getRecents(any)).thenAnswer(
-        (_) async => testRecents,
-      );
+      when(mockApiService.getRecents(any)).thenAnswer((_) async => testRecents);
 
       when(mockApiService.selectContentItem(any, any)).thenAnswer(
         (_) async => Future.delayed(const Duration(milliseconds: 100)),
@@ -314,10 +293,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: RecentsPage(
-            speaker: testSpeaker,
-            apiService: mockApiService,
-          ),
+          home: RecentsPage(speaker: testSpeaker, apiService: mockApiService),
         ),
       );
 
@@ -342,7 +318,9 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
-    testWidgets('shows success SnackBar after playing', (WidgetTester tester) async {
+    testWidgets('shows success SnackBar after playing', (
+      WidgetTester tester,
+    ) async {
       final testRecents = [
         const Recent(
           deviceId: '44EAD8A17CC7',
@@ -356,20 +334,15 @@ void main() {
         ),
       ];
 
-      when(mockApiService.getRecents(any)).thenAnswer(
-        (_) async => testRecents,
-      );
+      when(mockApiService.getRecents(any)).thenAnswer((_) async => testRecents);
 
-      when(mockApiService.selectContentItem(any, any)).thenAnswer(
-        (_) async => Future<void>.value(),
-      );
+      when(
+        mockApiService.selectContentItem(any, any),
+      ).thenAnswer((_) async => Future<void>.value());
 
       await tester.pumpWidget(
         MaterialApp(
-          home: RecentsPage(
-            speaker: testSpeaker,
-            apiService: mockApiService,
-          ),
+          home: RecentsPage(speaker: testSpeaker, apiService: mockApiService),
         ),
       );
 
@@ -397,9 +370,7 @@ void main() {
         ),
       ];
 
-      when(mockApiService.getRecents(any)).thenAnswer(
-        (_) async => testRecents,
-      );
+      when(mockApiService.getRecents(any)).thenAnswer((_) async => testRecents);
 
       when(mockApiService.selectContentItem(any, any)).thenAnswer(
         (_) async => throw Exception('Failed to select content: HTTP 500'),
@@ -407,10 +378,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: RecentsPage(
-            speaker: testSpeaker,
-            apiService: mockApiService,
-          ),
+          home: RecentsPage(speaker: testSpeaker, apiService: mockApiService),
         ),
       );
 
@@ -438,20 +406,15 @@ void main() {
         ),
       ];
 
-      when(mockApiService.getRecents(any)).thenAnswer(
-        (_) async => testRecents,
-      );
+      when(mockApiService.getRecents(any)).thenAnswer((_) async => testRecents);
 
-      when(mockApiService.selectContentItem(any, any)).thenAnswer(
-        (_) async => Future<void>.value(),
-      );
+      when(
+        mockApiService.selectContentItem(any, any),
+      ).thenAnswer((_) async => Future<void>.value());
 
       await tester.pumpWidget(
         MaterialApp(
-          home: RecentsPage(
-            speaker: testSpeaker,
-            apiService: mockApiService,
-          ),
+          home: RecentsPage(speaker: testSpeaker, apiService: mockApiService),
         ),
       );
 
@@ -468,7 +431,9 @@ void main() {
       verifyNever(mockApiService.selectContentItem(any, any));
     });
 
-    testWidgets('IconButton exists as trailing widget', (WidgetTester tester) async {
+    testWidgets('IconButton exists as trailing widget', (
+      WidgetTester tester,
+    ) async {
       final testRecents = [
         const Recent(
           deviceId: '44EAD8A17CC7',
@@ -482,16 +447,11 @@ void main() {
         ),
       ];
 
-      when(mockApiService.getRecents(any)).thenAnswer(
-        (_) async => testRecents,
-      );
+      when(mockApiService.getRecents(any)).thenAnswer((_) async => testRecents);
 
       await tester.pumpWidget(
         MaterialApp(
-          home: RecentsPage(
-            speaker: testSpeaker,
-            apiService: mockApiService,
-          ),
+          home: RecentsPage(speaker: testSpeaker, apiService: mockApiService),
         ),
       );
 
@@ -520,15 +480,14 @@ void main() {
           id: '4',
           itemName: 'Komplett Entspannt',
           source: 'SPOTIFY',
-          location: '/playback/container/c3BvdGlmeTpwbGF5bGlzdDoybjZXMnA1QzBNQUQ5YTR6NXhUVDdu',
+          location:
+              '/playback/container/c3BvdGlmeTpwbGF5bGlzdDoybjZXMnA1QzBNQUQ5YTR6NXhUVDdu',
           type: 'tracklisturl',
           isPresetable: true,
         ),
       ];
 
-      when(mockApiService.getRecents(any)).thenAnswer(
-        (_) async => testRecents,
-      );
+      when(mockApiService.getRecents(any)).thenAnswer((_) async => testRecents);
 
       when(mockApiService.selectContentItem(any, any)).thenAnswer(
         (_) async => Future.delayed(const Duration(milliseconds: 100)),
@@ -536,10 +495,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: RecentsPage(
-            speaker: testSpeaker,
-            apiService: mockApiService,
-          ),
+          home: RecentsPage(speaker: testSpeaker, apiService: mockApiService),
         ),
       );
 
@@ -558,8 +514,12 @@ void main() {
       await tester.pump();
 
       // Verify only one call was made (to the first item)
-      verify(mockApiService.selectContentItem('192.168.1.100', testRecents[0])).called(1);
-      verifyNever(mockApiService.selectContentItem('192.168.1.100', testRecents[1]));
+      verify(
+        mockApiService.selectContentItem('192.168.1.100', testRecents[0]),
+      ).called(1);
+      verifyNever(
+        mockApiService.selectContentItem('192.168.1.100', testRecents[1]),
+      );
 
       // Wait for completion
       await tester.pumpAndSettle();

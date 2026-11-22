@@ -28,7 +28,6 @@ class EditSpotifyPresetPage extends StatefulWidget {
   State<EditSpotifyPresetPage> createState() => _EditSpotifyPresetPageState();
 }
 
-
 class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
   late TextEditingController _spotifyUriController;
   late TextEditingController _nameController;
@@ -307,7 +306,9 @@ class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
       final webUrl = _convertSpotifyUriToWebUrl(spotifyUri);
 
       if (webUrl == null) {
-        _showErrorDialog('Invalid Spotify URI format. Expected format: spotify:type:id');
+        _showErrorDialog(
+          'Invalid Spotify URI format. Expected format: spotify:type:id',
+        );
         return;
       }
 
@@ -409,141 +410,43 @@ class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Spotify Preset'),
-      ),
+      appBar: AppBar(title: const Text('Edit Spotify Preset')),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-            if (_decodingError != null) ...[
-              Card(
-                elevation: 1,
-                color: theme.colorScheme.errorContainer,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.error_outline,
-                        color: theme.colorScheme.onErrorContainer,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          _decodingError!,
-                          style: TextStyle(
-                            color: theme.colorScheme.onErrorContainer,
-                          ),
+              if (_decodingError != null) ...[
+                Card(
+                  elevation: 1,
+                  color: theme.colorScheme.errorContainer,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          color: theme.colorScheme.onErrorContainer,
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-            // Entity display section
-            if (_isLoadingEntity)
-              const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                    SizedBox(width: 12),
-                    Text('Loading entity information...'),
-                  ],
-                ),
-              )
-            else if (_entity != null)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  if (_entity!.imageUrl != null)
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        _entity!.imageUrl!,
-                        width: 200,
-                        height: 200,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            width: 200,
-                            height: 200,
-                            color: theme.colorScheme.surfaceContainerHighest,
-                            child: Icon(
-                              Icons.music_note,
-                              size: 64,
-                              color: theme.colorScheme.onSurfaceVariant,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            _decodingError!,
+                            style: TextStyle(
+                              color: theme.colorScheme.onErrorContainer,
                             ),
-                          );
-                        },
-                      ),
-                    )
-                  else
-                    Container(
-                      width: 200,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(
-                        Icons.music_note,
-                        size: 64,
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                ],
-              )
-            else if (_entityFetchError != null)
-              Card(
-                elevation: 1,
-                color: theme.colorScheme.secondaryContainer,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.info_outline,
-                        color: theme.colorScheme.onSecondaryContainer,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          _entityFetchError!,
-                          style: TextStyle(
-                            color: theme.colorScheme.onSecondaryContainer,
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            if (_entity != null || _isLoadingEntity || _entityFetchError != null)
-              const SizedBox(height: 16),
-            TextField(
-              controller: _nameController,
-              enabled: _decodingError == null,
-              decoration: const InputDecoration(
-                labelText: 'Preset name',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Spotify Account Dropdown
-            if (_isLoadingAccounts)
-              const Card(
-                elevation: 1,
-                child: Padding(
+                const SizedBox(height: 16),
+              ],
+              // Entity display section
+              if (_isLoadingEntity)
+                const Padding(
                   padding: EdgeInsets.all(16.0),
                   child: Row(
                     children: [
@@ -553,102 +456,202 @@ class _EditSpotifyPresetPageState extends State<EditSpotifyPresetPage> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       ),
                       SizedBox(width: 12),
-                      Text('Loading Spotify accounts...'),
+                      Text('Loading entity information...'),
                     ],
                   ),
-                ),
-              )
-            else if (_accountsFetchError != null)
-              Card(
-                elevation: 1,
-                color: theme.colorScheme.errorContainer,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.error_outline,
-                        color: theme.colorScheme.onErrorContainer,
+                )
+              else if (_entity != null)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (_entity!.imageUrl != null)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          _entity!.imageUrl!,
+                          width: 200,
+                          height: 200,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              width: 200,
+                              height: 200,
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              child: Icon(
+                                Icons.music_note,
+                                size: 64,
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            );
+                          },
+                        ),
+                      )
+                    else
+                      Container(
+                        width: 200,
+                        height: 200,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.music_note,
+                          size: 64,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          _accountsFetchError!,
-                          style: TextStyle(
-                            color: theme.colorScheme.onErrorContainer,
+                  ],
+                )
+              else if (_entityFetchError != null)
+                Card(
+                  elevation: 1,
+                  color: theme.colorScheme.secondaryContainer,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          color: theme.colorScheme.onSecondaryContainer,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            _entityFetchError!,
+                            style: TextStyle(
+                              color: theme.colorScheme.onSecondaryContainer,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              )
-            else
-              DropdownButtonFormField<SpotifyAccount>(
-                initialValue: _selectedAccount,
+              if (_entity != null ||
+                  _isLoadingEntity ||
+                  _entityFetchError != null)
+                const SizedBox(height: 16),
+              TextField(
+                controller: _nameController,
+                enabled: _decodingError == null,
                 decoration: const InputDecoration(
-                  labelText: 'Spotify Account',
+                  labelText: 'Preset name',
                   border: OutlineInputBorder(),
-                  helperText: 'Select the Spotify account to use',
-                ),
-                items: _accounts.isEmpty
-                    ? null
-                    : _accounts.map((account) {
-                        return DropdownMenuItem<SpotifyAccount>(
-                          value: account,
-                          child: Text(account.displayName),
-                        );
-                      }).toList(),
-                onChanged: _decodingError == null
-                    ? (SpotifyAccount? newAccount) {
-                        setState(() {
-                          _selectedAccount = newAccount;
-                        });
-                      }
-                    : null,
-                hint: Text(
-                  _accounts.isEmpty
-                      ? 'No Spotify accounts connected'
-                      : 'Select an account',
                 ),
               ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _spotifyUriController,
-              enabled: _decodingError == null,
-              decoration: const InputDecoration(
-                labelText: 'Spotify URI',
-                border: OutlineInputBorder(),
-                helperText: 'e.g., spotify:playlist:... or https://open.spotify.com/playlist/...',
-              ),
-            ),
-            const SizedBox(height: 16),
-            OutlinedButton.icon(
-              onPressed: _decodingError == null ? _openInSpotify : null,
-              icon: const Icon(Icons.open_in_new),
-              label: const Text('Open in Spotify'),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _decodingError == null &&
-                      _selectedAccount != null &&
-                      _nameController.text.trim().isNotEmpty &&
-                      !_isSaving
-                  ? _onSavePressed
-                  : null,
-              child: _isSaving
-                  ? SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          Theme.of(context).colorScheme.onPrimary,
+              const SizedBox(height: 16),
+              // Spotify Account Dropdown
+              if (_isLoadingAccounts)
+                const Card(
+                  elevation: 1,
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
                         ),
-                      ),
-                    )
-                  : const Text('Save'),
-            ),
+                        SizedBox(width: 12),
+                        Text('Loading Spotify accounts...'),
+                      ],
+                    ),
+                  ),
+                )
+              else if (_accountsFetchError != null)
+                Card(
+                  elevation: 1,
+                  color: theme.colorScheme.errorContainer,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.error_outline,
+                          color: theme.colorScheme.onErrorContainer,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            _accountsFetchError!,
+                            style: TextStyle(
+                              color: theme.colorScheme.onErrorContainer,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                DropdownButtonFormField<SpotifyAccount>(
+                  initialValue: _selectedAccount,
+                  decoration: const InputDecoration(
+                    labelText: 'Spotify Account',
+                    border: OutlineInputBorder(),
+                    helperText: 'Select the Spotify account to use',
+                  ),
+                  items: _accounts.isEmpty
+                      ? null
+                      : _accounts.map((account) {
+                          return DropdownMenuItem<SpotifyAccount>(
+                            value: account,
+                            child: Text(account.displayName),
+                          );
+                        }).toList(),
+                  onChanged: _decodingError == null
+                      ? (SpotifyAccount? newAccount) {
+                          setState(() {
+                            _selectedAccount = newAccount;
+                          });
+                        }
+                      : null,
+                  hint: Text(
+                    _accounts.isEmpty
+                        ? 'No Spotify accounts connected'
+                        : 'Select an account',
+                  ),
+                ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _spotifyUriController,
+                enabled: _decodingError == null,
+                decoration: const InputDecoration(
+                  labelText: 'Spotify URI',
+                  border: OutlineInputBorder(),
+                  helperText:
+                      'e.g., spotify:playlist:... or https://open.spotify.com/playlist/...',
+                ),
+              ),
+              const SizedBox(height: 16),
+              OutlinedButton.icon(
+                onPressed: _decodingError == null ? _openInSpotify : null,
+                icon: const Icon(Icons.open_in_new),
+                label: const Text('Open in Spotify'),
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed:
+                    _decodingError == null &&
+                        _selectedAccount != null &&
+                        _nameController.text.trim().isNotEmpty &&
+                        !_isSaving
+                    ? _onSavePressed
+                    : null,
+                child: _isSaving
+                    ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Theme.of(context).colorScheme.onPrimary,
+                          ),
+                        ),
+                      )
+                    : const Text('Save'),
+              ),
             ],
           ),
         ),

@@ -52,9 +52,7 @@ void main() {
     Widget createWidgetWithProvider(Widget child) {
       return ChangeNotifierProvider<MyAppState>.value(
         value: appState,
-        child: MaterialApp(
-          home: child,
-        ),
+        child: MaterialApp(home: child),
       );
     }
 
@@ -82,7 +80,9 @@ void main() {
       expect(find.byType(AppBar), findsOneWidget);
     });
 
-    testWidgets('displays all required text fields', (WidgetTester tester) async {
+    testWidgets('displays all required text fields', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Station',
@@ -131,7 +131,9 @@ void main() {
       expect(find.widgetWithText(ElevatedButton, 'Save'), findsOneWidget);
     });
 
-    testWidgets('validates URL format in real-time', (WidgetTester tester) async {
+    testWidgets('validates URL format in real-time', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Station',
@@ -173,7 +175,9 @@ void main() {
       );
     });
 
-    testWidgets('shows error dialog when name is empty', (WidgetTester tester) async {
+    testWidgets('shows error dialog when name is empty', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Station',
@@ -206,7 +210,9 @@ void main() {
       expect(find.text('Station name cannot be empty'), findsOneWidget);
     });
 
-    testWidgets('shows error dialog when URL is empty', (WidgetTester tester) async {
+    testWidgets('shows error dialog when URL is empty', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Station',
@@ -239,7 +245,9 @@ void main() {
       expect(find.text('Stream URL cannot be empty'), findsOneWidget);
     });
 
-    testWidgets('shows error dialog when URL is invalid', (WidgetTester tester) async {
+    testWidgets('shows error dialog when URL is invalid', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Station',
@@ -279,7 +287,9 @@ void main() {
       );
     });
 
-    testWidgets('saves preset successfully with valid data', (WidgetTester tester) async {
+    testWidgets('saves preset successfully with valid data', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Station',
@@ -289,14 +299,16 @@ void main() {
         isPresetable: false,
       );
 
-      when(mockSpeakerApiService.storeInternetRadioPreset(
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-      )).thenAnswer((_) async => [testPreset]);
+      when(
+        mockSpeakerApiService.storeInternetRadioPreset(
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+        ),
+      ).thenAnswer((_) async => [testPreset]);
 
       await tester.pumpWidget(
         createWidgetWithProvider(
@@ -322,17 +334,21 @@ void main() {
       await tester.tap(find.widgetWithText(ElevatedButton, 'Save'));
       await tester.pump();
 
-      verify(mockSpeakerApiService.storeInternetRadioPreset(
-        '192.168.1.100',
-        '1',
-        'https://stream.example.com/radio',
-        'My Radio Station',
-        null,
-        'https://ueberboese.example.com',
-      )).called(1);
+      verify(
+        mockSpeakerApiService.storeInternetRadioPreset(
+          '192.168.1.100',
+          '1',
+          'https://stream.example.com/radio',
+          'My Radio Station',
+          null,
+          'https://ueberboese.example.com',
+        ),
+      ).called(1);
     });
 
-    testWidgets('saves preset with container art URL', (WidgetTester tester) async {
+    testWidgets('saves preset with container art URL', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Station',
@@ -342,14 +358,16 @@ void main() {
         isPresetable: false,
       );
 
-      when(mockSpeakerApiService.storeInternetRadioPreset(
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-      )).thenAnswer((_) async => [testPreset]);
+      when(
+        mockSpeakerApiService.storeInternetRadioPreset(
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+        ),
+      ).thenAnswer((_) async => [testPreset]);
 
       await tester.pumpWidget(
         createWidgetWithProvider(
@@ -379,17 +397,21 @@ void main() {
       await tester.tap(find.widgetWithText(ElevatedButton, 'Save'));
       await tester.pump();
 
-      verify(mockSpeakerApiService.storeInternetRadioPreset(
-        '192.168.1.100',
-        '1',
-        'https://stream.example.com/radio',
-        'My Radio Station',
-        'https://example.com/art.png',
-        'https://ueberboese.example.com',
-      )).called(1);
+      verify(
+        mockSpeakerApiService.storeInternetRadioPreset(
+          '192.168.1.100',
+          '1',
+          'https://stream.example.com/radio',
+          'My Radio Station',
+          'https://example.com/art.png',
+          'https://ueberboese.example.com',
+        ),
+      ).called(1);
     });
 
-    testWidgets('shows error dialog when save fails', (WidgetTester tester) async {
+    testWidgets('shows error dialog when save fails', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Station',
@@ -399,14 +421,16 @@ void main() {
         isPresetable: false,
       );
 
-      when(mockSpeakerApiService.storeInternetRadioPreset(
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-      )).thenThrow(Exception('Network error'));
+      when(
+        mockSpeakerApiService.storeInternetRadioPreset(
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+        ),
+      ).thenThrow(Exception('Network error'));
 
       await tester.pumpWidget(
         createWidgetWithProvider(
@@ -432,10 +456,15 @@ void main() {
       await tester.tap(find.widgetWithText(ElevatedButton, 'Save'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Failed to save preset: Exception: Network error'), findsOneWidget);
+      expect(
+        find.text('Failed to save preset: Exception: Network error'),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('uses the provided speakerIp when saving', (WidgetTester tester) async {
+    testWidgets('uses the provided speakerIp when saving', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Station',
@@ -445,14 +474,16 @@ void main() {
         isPresetable: false,
       );
 
-      when(mockSpeakerApiService.storeInternetRadioPreset(
-        any,
-        any,
-        any,
-        any,
-        any,
-        any,
-      )).thenAnswer((_) async => [testPreset]);
+      when(
+        mockSpeakerApiService.storeInternetRadioPreset(
+          any,
+          any,
+          any,
+          any,
+          any,
+          any,
+        ),
+      ).thenAnswer((_) async => [testPreset]);
 
       await tester.pumpWidget(
         createWidgetWithProvider(
@@ -476,14 +507,16 @@ void main() {
       await tester.tap(find.widgetWithText(ElevatedButton, 'Save'));
       await tester.pump();
 
-      verify(mockSpeakerApiService.storeInternetRadioPreset(
-        '10.0.0.42',
-        '1',
-        'https://stream.example.com/radio',
-        'My Radio Station',
-        null,
-        'https://ueberboese.example.com',
-      )).called(1);
+      verify(
+        mockSpeakerApiService.storeInternetRadioPreset(
+          '10.0.0.42',
+          '1',
+          'https://stream.example.com/radio',
+          'My Radio Station',
+          null,
+          'https://ueberboese.example.com',
+        ),
+      ).called(1);
     });
 
     testWidgets('search button is visible', (WidgetTester tester) async {
@@ -511,7 +544,9 @@ void main() {
       expect(find.byType(IconButton), findsOneWidget);
     });
 
-    testWidgets('search button disabled when name is empty', (WidgetTester tester) async {
+    testWidgets('search button disabled when name is empty', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Station',
@@ -536,7 +571,9 @@ void main() {
       expect(iconButton.onPressed, isNull);
     });
 
-    testWidgets('successful search populates containerArt field', (WidgetTester tester) async {
+    testWidgets('successful search populates containerArt field', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Station',
@@ -552,8 +589,9 @@ void main() {
         image: 'https://example.com/image.png',
       );
 
-      when(mockTuneInApiService.searchStations(any))
-          .thenAnswer((_) async => [testStation]);
+      when(
+        mockTuneInApiService.searchStations(any),
+      ).thenAnswer((_) async => [testStation]);
 
       await tester.pumpWidget(
         createWidgetWithProvider(
@@ -578,10 +616,15 @@ void main() {
       final containerArtField = tester.widget<TextField>(
         find.widgetWithText(TextField, 'Cover Art URL'),
       );
-      expect(containerArtField.controller?.text, 'https://example.com/image.png');
+      expect(
+        containerArtField.controller?.text,
+        'https://example.com/image.png',
+      );
     });
 
-    testWidgets('search shows error when no results found', (WidgetTester tester) async {
+    testWidgets('search shows error when no results found', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Station',
@@ -591,8 +634,9 @@ void main() {
         isPresetable: false,
       );
 
-      when(mockTuneInApiService.searchStations(any))
-          .thenAnswer((_) async => []);
+      when(
+        mockTuneInApiService.searchStations(any),
+      ).thenAnswer((_) async => []);
 
       await tester.pumpWidget(
         createWidgetWithProvider(
@@ -614,10 +658,15 @@ void main() {
       await tester.tap(find.byIcon(Icons.search));
       await tester.pumpAndSettle();
 
-      expect(find.text('No stations found for "Unknown Station"'), findsOneWidget);
+      expect(
+        find.text('No stations found for "Unknown Station"'),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('image preview shown when containerArt has value', (WidgetTester tester) async {
+    testWidgets('image preview shown when containerArt has value', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Station',
@@ -649,7 +698,9 @@ void main() {
       expect(find.byType(Image), findsOneWidget);
     });
 
-    testWidgets('search uses case-insensitive matching', (WidgetTester tester) async {
+    testWidgets('search uses case-insensitive matching', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Station',
@@ -672,8 +723,9 @@ void main() {
         ),
       ];
 
-      when(mockTuneInApiService.searchStations(any))
-          .thenAnswer((_) async => testStations);
+      when(
+        mockTuneInApiService.searchStations(any),
+      ).thenAnswer((_) async => testStations);
 
       await tester.pumpWidget(
         createWidgetWithProvider(
@@ -701,7 +753,9 @@ void main() {
       expect(containerArtField.controller?.text, 'https://example.com/bbc.png');
     });
 
-    testWidgets('search falls back to first result if no exact match', (WidgetTester tester) async {
+    testWidgets('search falls back to first result if no exact match', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Station',
@@ -724,8 +778,9 @@ void main() {
         ),
       ];
 
-      when(mockTuneInApiService.searchStations(any))
-          .thenAnswer((_) async => testStations);
+      when(
+        mockTuneInApiService.searchStations(any),
+      ).thenAnswer((_) async => testStations);
 
       await tester.pumpWidget(
         createWidgetWithProvider(
@@ -750,7 +805,10 @@ void main() {
       final containerArtField = tester.widget<TextField>(
         find.widgetWithText(TextField, 'Cover Art URL'),
       );
-      expect(containerArtField.controller?.text, 'https://example.com/bbc-extra.png');
+      expect(
+        containerArtField.controller?.text,
+        'https://example.com/bbc-extra.png',
+      );
     });
   });
 }

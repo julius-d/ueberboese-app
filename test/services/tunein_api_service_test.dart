@@ -40,10 +40,14 @@ void main() {
 
         final response = http.Response(responseBody, 200);
 
-        when(mockClient.get(
-          Uri.parse('https://opml.radiotime.com/search.ashx?query=radio%20potsdam'),
-          headers: {'Accept': 'text/xml'},
-        )).thenAnswer((_) async => response);
+        when(
+          mockClient.get(
+            Uri.parse(
+              'https://opml.radiotime.com/search.ashx?query=radio%20potsdam',
+            ),
+            headers: {'Accept': 'text/xml'},
+          ),
+        ).thenAnswer((_) async => response);
 
         final result = await service.searchStations(query);
 
@@ -56,10 +60,14 @@ void main() {
         expect(result[1].guideId, 's999');
         expect(result[1].text, 'Test Station');
 
-        verify(mockClient.get(
-          Uri.parse('https://opml.radiotime.com/search.ashx?query=radio%20potsdam'),
-          headers: {'Accept': 'text/xml'},
-        )).called(1);
+        verify(
+          mockClient.get(
+            Uri.parse(
+              'https://opml.radiotime.com/search.ashx?query=radio%20potsdam',
+            ),
+            headers: {'Accept': 'text/xml'},
+          ),
+        ).called(1);
       });
 
       test('should return empty list for empty query', () async {
@@ -80,30 +88,28 @@ void main() {
         const query = 'test';
         final response = http.Response('Not Found', 404);
 
-        when(mockClient.get(
-          Uri.parse('https://opml.radiotime.com/search.ashx?query=test'),
-          headers: {'Accept': 'text/xml'},
-        )).thenAnswer((_) async => response);
+        when(
+          mockClient.get(
+            Uri.parse('https://opml.radiotime.com/search.ashx?query=test'),
+            headers: {'Accept': 'text/xml'},
+          ),
+        ).thenAnswer((_) async => response);
 
-        expect(
-          () => service.searchStations(query),
-          throwsA(isA<Exception>()),
-        );
+        expect(() => service.searchStations(query), throwsA(isA<Exception>()));
       });
 
       test('should throw exception on malformed XML', () async {
         const query = 'test';
         final response = http.Response('not valid xml', 200);
 
-        when(mockClient.get(
-          Uri.parse('https://opml.radiotime.com/search.ashx?query=test'),
-          headers: {'Accept': 'text/xml'},
-        )).thenAnswer((_) async => response);
+        when(
+          mockClient.get(
+            Uri.parse('https://opml.radiotime.com/search.ashx?query=test'),
+            headers: {'Accept': 'text/xml'},
+          ),
+        ).thenAnswer((_) async => response);
 
-        expect(
-          () => service.searchStations(query),
-          throwsA(isA<Exception>()),
-        );
+        expect(() => service.searchStations(query), throwsA(isA<Exception>()));
       });
 
       test('should throw exception on timeout', () async {
@@ -113,10 +119,12 @@ void main() {
           timeout: const Duration(milliseconds: 100),
         );
 
-        when(mockClient.get(
-          Uri.parse('https://opml.radiotime.com/search.ashx?query=test'),
-          headers: {'Accept': 'text/xml'},
-        )).thenAnswer(
+        when(
+          mockClient.get(
+            Uri.parse('https://opml.radiotime.com/search.ashx?query=test'),
+            headers: {'Accept': 'text/xml'},
+          ),
+        ).thenAnswer(
           (_) async => Future.delayed(
             const Duration(milliseconds: 200),
             () => http.Response('{}', 200),
@@ -159,17 +167,22 @@ void main() {
 
         final response = http.Response(responseBody, 200);
 
-        when(mockClient.get(
-          Uri.parse('https://opml.radiotime.com/describe.ashx?id=s288368'),
-          headers: {'Accept': 'text/xml'},
-        )).thenAnswer((_) async => response);
+        when(
+          mockClient.get(
+            Uri.parse('https://opml.radiotime.com/describe.ashx?id=s288368'),
+            headers: {'Accept': 'text/xml'},
+          ),
+        ).thenAnswer((_) async => response);
 
         final result = await service.getStationDetails(stationId);
 
         expect(result.guideId, 's288368');
         expect(result.name, 'Radio Potsdam');
         expect(result.slogan, 'WILLKOMMEN ZUHAUSE');
-        expect(result.logo, 'https://cdn-profiles.tunein.com/s288368/images/logoq.png');
+        expect(
+          result.logo,
+          'https://cdn-profiles.tunein.com/s288368/images/logoq.png',
+        );
         expect(result.description, 'Das Radio fuer Potsdam');
         expect(result.url, 'http://www.radio-potsdam.de');
         expect(result.location, 'Germany');
@@ -178,10 +191,12 @@ void main() {
         expect(result.isFamilyContent, false);
         expect(result.isMatureContent, false);
 
-        verify(mockClient.get(
-          Uri.parse('https://opml.radiotime.com/describe.ashx?id=s288368'),
-          headers: {'Accept': 'text/xml'},
-        )).called(1);
+        verify(
+          mockClient.get(
+            Uri.parse('https://opml.radiotime.com/describe.ashx?id=s288368'),
+            headers: {'Accept': 'text/xml'},
+          ),
+        ).called(1);
       });
 
       test('should throw ArgumentError for empty station ID', () async {
@@ -206,10 +221,12 @@ void main() {
         const stationId = 's12345';
         final response = http.Response('Not Found', 404);
 
-        when(mockClient.get(
-          Uri.parse('https://opml.radiotime.com/describe.ashx?id=s12345'),
-          headers: {'Accept': 'text/xml'},
-        )).thenAnswer((_) async => response);
+        when(
+          mockClient.get(
+            Uri.parse('https://opml.radiotime.com/describe.ashx?id=s12345'),
+            headers: {'Accept': 'text/xml'},
+          ),
+        ).thenAnswer((_) async => response);
 
         expect(
           () => service.getStationDetails(stationId),
@@ -231,10 +248,12 @@ void main() {
 
         final response = http.Response(responseBody, 200);
 
-        when(mockClient.get(
-          Uri.parse('https://opml.radiotime.com/describe.ashx?id=s12345'),
-          headers: {'Accept': 'text/xml'},
-        )).thenAnswer((_) async => response);
+        when(
+          mockClient.get(
+            Uri.parse('https://opml.radiotime.com/describe.ashx?id=s12345'),
+            headers: {'Accept': 'text/xml'},
+          ),
+        ).thenAnswer((_) async => response);
 
         expect(
           () => service.getStationDetails(stationId),
@@ -246,10 +265,12 @@ void main() {
         const stationId = 's12345';
         final response = http.Response('not valid xml', 200);
 
-        when(mockClient.get(
-          Uri.parse('https://opml.radiotime.com/describe.ashx?id=s12345'),
-          headers: {'Accept': 'text/xml'},
-        )).thenAnswer((_) async => response);
+        when(
+          mockClient.get(
+            Uri.parse('https://opml.radiotime.com/describe.ashx?id=s12345'),
+            headers: {'Accept': 'text/xml'},
+          ),
+        ).thenAnswer((_) async => response);
 
         expect(
           () => service.getStationDetails(stationId),
@@ -264,10 +285,12 @@ void main() {
           timeout: const Duration(milliseconds: 100),
         );
 
-        when(mockClient.get(
-          Uri.parse('https://opml.radiotime.com/describe.ashx?id=s12345'),
-          headers: {'Accept': 'text/xml'},
-        )).thenAnswer(
+        when(
+          mockClient.get(
+            Uri.parse('https://opml.radiotime.com/describe.ashx?id=s12345'),
+            headers: {'Accept': 'text/xml'},
+          ),
+        ).thenAnswer(
           (_) async => Future.delayed(
             const Duration(milliseconds: 200),
             () => http.Response('{}', 200),

@@ -16,29 +16,27 @@ class Speaker {
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'emoji': emoji,
-        'ipAddress': ipAddress,
-        'type': type,
-        'deviceId': deviceId,
-      };
+    'id': id,
+    'name': name,
+    'emoji': emoji,
+    'ipAddress': ipAddress,
+    'type': type,
+    'deviceId': deviceId,
+  };
 
   factory Speaker.fromJson(Map<String, dynamic> json) => Speaker(
-        id: json['id'] as String,
-        name: json['name'] as String,
-        emoji: json['emoji'] as String,
-        ipAddress: json['ipAddress'] as String,
-        type: json['type'] as String,
-        deviceId: json['deviceId'] as String,
-      );
+    id: json['id'] as String,
+    name: json['name'] as String,
+    emoji: json['emoji'] as String,
+    ipAddress: json['ipAddress'] as String,
+    type: json['type'] as String,
+    deviceId: json['deviceId'] as String,
+  );
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Speaker &&
-          runtimeType == other.runtimeType &&
-          id == other.id;
+      other is Speaker && runtimeType == other.runtimeType && id == other.id;
 
   @override
   int get hashCode => id.hashCode;

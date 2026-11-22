@@ -20,9 +20,7 @@ void main() {
       return MaterialApp(
         home: ChangeNotifierProvider.value(
           value: appState,
-          child: const Scaffold(
-            body: SpotifyAccountsPage(),
-          ),
+          child: const Scaffold(body: SpotifyAccountsPage()),
         ),
       );
     }
@@ -42,26 +40,37 @@ void main() {
       expect(find.byIcon(Icons.music_note), findsOneWidget);
     });
 
-    testWidgets('should show error dialog when API URL not configured',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(createTestWidget(
-        config: const AppConfig(apiUrl: '', accountId: 'test'),
-      ));
+    testWidgets('should show error dialog when API URL not configured', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        createTestWidget(
+          config: const AppConfig(apiUrl: '', accountId: 'test'),
+        ),
+      );
 
       await tester.tap(find.byIcon(Icons.add));
       await tester.pumpAndSettle();
 
       expect(find.text('Configuration Required'), findsOneWidget);
-      expect(find.text('Überböse API URL is not configured.\n\n'
-          'Please configure it in Settings first.'), findsOneWidget);
+      expect(
+        find.text(
+          'Überböse API URL is not configured.\n\n'
+          'Please configure it in Settings first.',
+        ),
+        findsOneWidget,
+      );
       expect(find.text('OK'), findsOneWidget);
     });
 
-    testWidgets('should dismiss error dialog when OK is tapped',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(createTestWidget(
-        config: const AppConfig(apiUrl: '', accountId: 'test'),
-      ));
+    testWidgets('should dismiss error dialog when OK is tapped', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        createTestWidget(
+          config: const AppConfig(apiUrl: '', accountId: 'test'),
+        ),
+      );
 
       await tester.tap(find.byIcon(Icons.add));
       await tester.pumpAndSettle();
@@ -74,14 +83,17 @@ void main() {
       expect(find.text('Configuration Required'), findsNothing);
     });
 
-    testWidgets('should not show error when API URL is configured',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(createTestWidget(
-        config: const AppConfig(
-          apiUrl: 'https://api.example.com',
-          accountId: 'test',
+    testWidgets('should not show error when API URL is configured', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        createTestWidget(
+          config: const AppConfig(
+            apiUrl: 'https://api.example.com',
+            accountId: 'test',
+          ),
         ),
-      ));
+      );
 
       await tester.tap(find.byIcon(Icons.add));
       await tester.pump();
@@ -89,20 +101,26 @@ void main() {
       expect(find.text('Configuration Required'), findsNothing);
     });
 
-    testWidgets('should show error dialog on API failure',
-        (WidgetTester tester) async {
-      await tester.pumpWidget(createTestWidget(
-        config: const AppConfig(
-          apiUrl: 'https://api.example.com',
-          accountId: 'test',
+    testWidgets('should show error dialog on API failure', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(
+        createTestWidget(
+          config: const AppConfig(
+            apiUrl: 'https://api.example.com',
+            accountId: 'test',
+          ),
         ),
-      ));
+      );
 
       await tester.tap(find.byIcon(Icons.add));
       await tester.pumpAndSettle();
 
       expect(find.text('Error'), findsOneWidget);
-      expect(find.textContaining('Failed to initialize Spotify authentication'), findsOneWidget);
+      expect(
+        find.textContaining('Failed to initialize Spotify authentication'),
+        findsOneWidget,
+      );
     });
   });
 }

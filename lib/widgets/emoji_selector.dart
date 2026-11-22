@@ -73,17 +73,11 @@ class EmojiSelector extends StatelessWidget {
                         : theme.colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(8),
                     border: isSelected
-                        ? Border.all(
-                            color: theme.colorScheme.primary,
-                            width: 2,
-                          )
+                        ? Border.all(color: theme.colorScheme.primary, width: 2)
                         : null,
                   ),
                   child: Center(
-                    child: Text(
-                      emoji,
-                      style: const TextStyle(fontSize: 32),
-                    ),
+                    child: Text(emoji, style: const TextStyle(fontSize: 32)),
                   ),
                 ),
               );

@@ -27,9 +27,7 @@ class SpeakerApiService {
     final client = httpClient ?? http.Client();
 
     try {
-      final response = await client
-          .get(url)
-          .timeout(timeout);
+      final response = await client.get(url).timeout(timeout);
 
       if (response.statusCode != 200) {
         throw Exception(
@@ -74,7 +72,9 @@ class SpeakerApiService {
 
       // Find margeAccountUUID element (optional)
       String? accountId;
-      final margeAccountUUIDElements = document.findAllElements('margeAccountUUID');
+      final margeAccountUUIDElements = document.findAllElements(
+        'margeAccountUUID',
+      );
       if (margeAccountUUIDElements.isNotEmpty) {
         accountId = margeAccountUUIDElements.first.innerText;
       }
@@ -115,14 +115,10 @@ class SpeakerApiService {
     final client = httpClient ?? http.Client();
 
     try {
-      final response = await client
-          .get(url)
-          .timeout(timeout);
+      final response = await client.get(url).timeout(timeout);
 
       if (response.statusCode != 200) {
-        throw Exception(
-          'Failed to fetch volume: HTTP ${response.statusCode}',
-        );
+        throw Exception('Failed to fetch volume: HTTP ${response.statusCode}');
       }
 
       final bodyText = utf8.decode(response.bodyBytes);
@@ -147,7 +143,8 @@ class SpeakerApiService {
       if (muteEnabledElements.isEmpty) {
         throw Exception('Mute enabled not found in response');
       }
-      final muteEnabled = muteEnabledElements.first.innerText.toLowerCase() == 'true';
+      final muteEnabled =
+          muteEnabledElements.first.innerText.toLowerCase() == 'true';
 
       return Volume(
         targetVolume: targetVolume,
@@ -177,17 +174,11 @@ class SpeakerApiService {
     try {
       final body = '<volume>$volume</volume>';
       final response = await client
-          .post(
-            url,
-            headers: {'Content-Type': 'text/xml'},
-            body: body,
-          )
+          .post(url, headers: {'Content-Type': 'text/xml'}, body: body)
           .timeout(timeout);
 
       if (response.statusCode != 200) {
-        throw Exception(
-          'Failed to set volume: HTTP ${response.statusCode}',
-        );
+        throw Exception('Failed to set volume: HTTP ${response.statusCode}');
       }
 
       // Some speakers return empty body, so fetch the current volume instead
@@ -217,7 +208,8 @@ class SpeakerApiService {
         if (muteEnabledElements.isEmpty) {
           return await getVolume(ipAddress);
         }
-        final muteEnabled = muteEnabledElements.first.innerText.toLowerCase() == 'true';
+        final muteEnabled =
+            muteEnabledElements.first.innerText.toLowerCase() == 'true';
 
         return Volume(
           targetVolume: targetVolume,
@@ -245,9 +237,7 @@ class SpeakerApiService {
     final client = httpClient ?? http.Client();
 
     try {
-      final response = await client
-          .get(url)
-          .timeout(timeout);
+      final response = await client.get(url).timeout(timeout);
 
       if (response.statusCode != 200) {
         throw Exception(
@@ -348,14 +338,10 @@ class SpeakerApiService {
     final client = httpClient ?? http.Client();
 
     try {
-      final response = await client
-          .get(url)
-          .timeout(timeout);
+      final response = await client.get(url).timeout(timeout);
 
       if (response.statusCode != 200) {
-        throw Exception(
-          'Failed to fetch zone: HTTP ${response.statusCode}',
-        );
+        throw Exception('Failed to fetch zone: HTTP ${response.statusCode}');
       }
 
       final bodyText = utf8.decode(response.bodyBytes);
@@ -406,7 +392,11 @@ class SpeakerApiService {
     }
   }
 
-  Future<void> createZone(String ipAddress, String masterId, List<ZoneMember> members) async {
+  Future<void> createZone(
+    String ipAddress,
+    String masterId,
+    List<ZoneMember> members,
+  ) async {
     final url = Uri.parse('http://$ipAddress:8090/setZone');
     final client = httpClient ?? http.Client();
 
@@ -416,17 +406,11 @@ class SpeakerApiService {
       final body = '<zone master="$masterId">\n  $membersXml\n</zone>';
 
       final response = await client
-          .post(
-            url,
-            headers: {'Content-Type': 'text/xml'},
-            body: body,
-          )
+          .post(url, headers: {'Content-Type': 'text/xml'}, body: body)
           .timeout(timeout);
 
       if (response.statusCode != 200) {
-        throw Exception(
-          'Failed to create zone: HTTP ${response.statusCode}',
-        );
+        throw Exception('Failed to create zone: HTTP ${response.statusCode}');
       }
     } catch (e) {
       if (e is Exception) {
@@ -440,7 +424,11 @@ class SpeakerApiService {
     }
   }
 
-  Future<void> addZoneMembers(String ipAddress, String masterId, List<ZoneMember> members) async {
+  Future<void> addZoneMembers(
+    String ipAddress,
+    String masterId,
+    List<ZoneMember> members,
+  ) async {
     final url = Uri.parse('http://$ipAddress:8090/addZoneSlave');
     final client = httpClient ?? http.Client();
 
@@ -450,11 +438,7 @@ class SpeakerApiService {
       final body = '<zone master="$masterId">\n  $membersXml\n</zone>';
 
       final response = await client
-          .post(
-            url,
-            headers: {'Content-Type': 'text/xml'},
-            body: body,
-          )
+          .post(url, headers: {'Content-Type': 'text/xml'}, body: body)
           .timeout(timeout);
 
       if (response.statusCode != 200) {
@@ -474,7 +458,11 @@ class SpeakerApiService {
     }
   }
 
-  Future<void> removeZoneMembers(String ipAddress, String masterId, List<ZoneMember> members) async {
+  Future<void> removeZoneMembers(
+    String ipAddress,
+    String masterId,
+    List<ZoneMember> members,
+  ) async {
     final url = Uri.parse('http://$ipAddress:8090/removeZoneSlave');
     final client = httpClient ?? http.Client();
 
@@ -484,11 +472,7 @@ class SpeakerApiService {
       final body = '<zone master="$masterId">\n  $membersXml\n</zone>';
 
       final response = await client
-          .post(
-            url,
-            headers: {'Content-Type': 'text/xml'},
-            body: body,
-          )
+          .post(url, headers: {'Content-Type': 'text/xml'}, body: body)
           .timeout(timeout);
 
       if (response.statusCode != 200) {
@@ -509,9 +493,16 @@ class SpeakerApiService {
   }
 
   Future<void> userPlayControl(String ipAddress, String controlType) async {
-    final validControls = ['PAUSE_CONTROL', 'PLAY_CONTROL', 'PLAY_PAUSE_CONTROL', 'STOP_CONTROL'];
+    final validControls = [
+      'PAUSE_CONTROL',
+      'PLAY_CONTROL',
+      'PLAY_PAUSE_CONTROL',
+      'STOP_CONTROL',
+    ];
     if (!validControls.contains(controlType)) {
-      throw ArgumentError('Invalid control type. Must be one of: ${validControls.join(", ")}');
+      throw ArgumentError(
+        'Invalid control type. Must be one of: ${validControls.join(", ")}',
+      );
     }
 
     final url = Uri.parse('http://$ipAddress:8090/userPlayControl');
@@ -520,11 +511,7 @@ class SpeakerApiService {
     try {
       final body = '<PlayControl>$controlType</PlayControl>';
       final response = await client
-          .post(
-            url,
-            headers: {'Content-Type': 'text/xml'},
-            body: body,
-          )
+          .post(url, headers: {'Content-Type': 'text/xml'}, body: body)
           .timeout(timeout);
 
       if (response.statusCode != 200) {
@@ -549,14 +536,10 @@ class SpeakerApiService {
     final client = httpClient ?? http.Client();
 
     try {
-      final response = await client
-          .get(url)
-          .timeout(timeout);
+      final response = await client.get(url).timeout(timeout);
 
       if (response.statusCode != 200) {
-        throw Exception(
-          'Failed to fetch presets: HTTP ${response.statusCode}',
-        );
+        throw Exception('Failed to fetch presets: HTTP ${response.statusCode}');
       }
 
       final bodyText = utf8.decode(response.bodyBytes);
@@ -588,14 +571,10 @@ class SpeakerApiService {
     final client = httpClient ?? http.Client();
 
     try {
-      final response = await client
-          .get(url)
-          .timeout(timeout);
+      final response = await client.get(url).timeout(timeout);
 
       if (response.statusCode != 200) {
-        throw Exception(
-          'Failed to fetch recents: HTTP ${response.statusCode}',
-        );
+        throw Exception('Failed to fetch recents: HTTP ${response.statusCode}');
       }
 
       final bodyText = utf8.decode(response.bodyBytes);
@@ -632,17 +611,11 @@ class SpeakerApiService {
     try {
       final body = '<preset id="$presetId"></preset>';
       final response = await client
-          .post(
-            url,
-            headers: {'Content-Type': 'text/xml'},
-            body: body,
-          )
+          .post(url, headers: {'Content-Type': 'text/xml'}, body: body)
           .timeout(timeout);
 
       if (response.statusCode != 200) {
-        throw Exception(
-          'Failed to remove preset: HTTP ${response.statusCode}',
-        );
+        throw Exception('Failed to remove preset: HTTP ${response.statusCode}');
       }
 
       final bodyText = utf8.decode(response.bodyBytes);
@@ -674,14 +647,10 @@ class SpeakerApiService {
     final client = httpClient ?? http.Client();
 
     try {
-      final response = await client
-          .get(url)
-          .timeout(timeout);
+      final response = await client.get(url).timeout(timeout);
 
       if (response.statusCode != 200) {
-        throw Exception(
-          'Failed to set standby: HTTP ${response.statusCode}',
-        );
+        throw Exception('Failed to set standby: HTTP ${response.statusCode}');
       }
     } catch (e) {
       if (e is Exception) {
@@ -708,7 +677,8 @@ class SpeakerApiService {
 
     try {
       // Construct location by base64 encoding the Spotify URI
-      final location = '/playback/container/${base64Encode(utf8.encode(spotifyUri))}';
+      final location =
+          '/playback/container/${base64Encode(utf8.encode(spotifyUri))}';
 
       // Get current timestamp in seconds
       final timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
@@ -718,24 +688,19 @@ class SpeakerApiService {
           ? '<containerArt>$containerArt</containerArt>'
           : '';
 
-      final body = '''<preset id="$presetId" createdOn="$timestamp" updatedOn="$timestamp">
+      final body =
+          '''<preset id="$presetId" createdOn="$timestamp" updatedOn="$timestamp">
   <ContentItem source="SPOTIFY" type="tracklisturl" location="$location" sourceAccount="$spotifyUserId" isPresetable="true">
     <itemName>$itemName</itemName>$containerArtElement
   </ContentItem>
 </preset>''';
 
       final response = await client
-          .post(
-            url,
-            headers: {'Content-Type': 'text/xml'},
-            body: body,
-          )
+          .post(url, headers: {'Content-Type': 'text/xml'}, body: body)
           .timeout(timeout);
 
       if (response.statusCode != 200) {
-        throw Exception(
-          'Failed to store preset: HTTP ${response.statusCode}',
-        );
+        throw Exception('Failed to store preset: HTTP ${response.statusCode}');
       }
 
       // Parse response XML
@@ -785,18 +750,15 @@ class SpeakerApiService {
           ? '<containerArt>$containerArt</containerArt>'
           : '';
 
-      final body = '''<preset id="$presetId" createdOn="$timestamp" updatedOn="$timestamp">
+      final body =
+          '''<preset id="$presetId" createdOn="$timestamp" updatedOn="$timestamp">
   <ContentItem source="TUNEIN" type="stationurl" location="$location" isPresetable="true">
     <itemName>$itemName</itemName>$containerArtElement
   </ContentItem>
 </preset>''';
 
       final response = await client
-          .post(
-            url,
-            headers: {'Content-Type': 'text/xml'},
-            body: body,
-          )
+          .post(url, headers: {'Content-Type': 'text/xml'}, body: body)
           .timeout(timeout);
 
       if (response.statusCode != 200) {
@@ -857,25 +819,24 @@ class SpeakerApiService {
       final base64Data = base64Encode(utf8.encode(jsonString));
 
       // Build location URL with encoded data
-      final location = '$apiUrl/core02/svc-bmx-adapter-orion/prod/orion/station?data=$base64Data';
+      final location =
+          '$apiUrl/core02/svc-bmx-adapter-orion/prod/orion/station?data=$base64Data';
 
       // Build XML body
-      final containerArtElement = containerArt != null && containerArt.isNotEmpty
+      final containerArtElement =
+          containerArt != null && containerArt.isNotEmpty
           ? '<containerArt>$containerArt</containerArt>'
           : '';
 
-      final body = '''<preset id="$presetId" createdOn="$timestamp" updatedOn="$timestamp">
+      final body =
+          '''<preset id="$presetId" createdOn="$timestamp" updatedOn="$timestamp">
   <ContentItem source="LOCAL_INTERNET_RADIO" type="stationurl" location="$location" isPresetable="true">
     <itemName>$itemName</itemName>$containerArtElement
   </ContentItem>
 </preset>''';
 
       final response = await client
-          .post(
-            presetUrl,
-            headers: {'Content-Type': 'text/xml'},
-            body: body,
-          )
+          .post(presetUrl, headers: {'Content-Type': 'text/xml'}, body: body)
           .timeout(timeout);
 
       if (response.statusCode != 200) {
@@ -945,11 +906,15 @@ class SpeakerApiService {
     const validStates = ['press', 'release', 'repeat'];
 
     if (!validKeys.contains(keyValue)) {
-      throw ArgumentError('Invalid key value: $keyValue. Must be one of: ${validKeys.join(", ")}');
+      throw ArgumentError(
+        'Invalid key value: $keyValue. Must be one of: ${validKeys.join(", ")}',
+      );
     }
 
     if (!validStates.contains(state)) {
-      throw ArgumentError('Invalid state: $state. Must be one of: ${validStates.join(", ")}');
+      throw ArgumentError(
+        'Invalid state: $state. Must be one of: ${validStates.join(", ")}',
+      );
     }
 
     final url = Uri.parse('http://$ipAddress:8090/key');
@@ -958,17 +923,11 @@ class SpeakerApiService {
     try {
       final body = '<key state="$state" sender="Gabbo">$keyValue</key>';
       final response = await client
-          .post(
-            url,
-            headers: {'Content-Type': 'text/xml'},
-            body: body,
-          )
+          .post(url, headers: {'Content-Type': 'text/xml'}, body: body)
           .timeout(timeout);
 
       if (response.statusCode != 200) {
-        throw Exception(
-          'Failed to send key: HTTP ${response.statusCode}',
-        );
+        throw Exception('Failed to send key: HTTP ${response.statusCode}');
       }
     } catch (e) {
       if (e is Exception) {
@@ -989,11 +948,7 @@ class SpeakerApiService {
     try {
       final body = '<name>$name</name>';
       final response = await client
-          .post(
-            url,
-            headers: {'Content-Type': 'text/xml'},
-            body: body,
-          )
+          .post(url, headers: {'Content-Type': 'text/xml'}, body: body)
           .timeout(Duration(seconds: timeout.inSeconds * 3));
 
       if (response.statusCode != 200) {
@@ -1020,26 +975,25 @@ class SpeakerApiService {
     try {
       // Build ContentItem XML using XmlBuilder for proper escaping
       final builder = XmlBuilder();
-      builder.element('ContentItem', nest: () {
-        builder.attribute('source', recent.source);
-        builder.attribute('type', recent.type);
-        builder.attribute('location', recent.location);
-        final sourceAccount = recent.sourceAccount;
-        if (sourceAccount != null && sourceAccount.isNotEmpty) {
-          builder.attribute('sourceAccount', sourceAccount);
-        }
-        builder.attribute('isPresetable', 'true');
-        builder.element('itemName', nest: recent.itemName);
-      });
+      builder.element(
+        'ContentItem',
+        nest: () {
+          builder.attribute('source', recent.source);
+          builder.attribute('type', recent.type);
+          builder.attribute('location', recent.location);
+          final sourceAccount = recent.sourceAccount;
+          if (sourceAccount != null && sourceAccount.isNotEmpty) {
+            builder.attribute('sourceAccount', sourceAccount);
+          }
+          builder.attribute('isPresetable', 'true');
+          builder.element('itemName', nest: recent.itemName);
+        },
+      );
 
       final body = builder.buildDocument().toXmlString();
 
       final response = await client
-          .post(
-            url,
-            headers: {'Content-Type': 'text/xml'},
-            body: body,
-          )
+          .post(url, headers: {'Content-Type': 'text/xml'}, body: body)
           .timeout(timeout);
 
       if (response.statusCode != 200) {
@@ -1066,26 +1020,25 @@ class SpeakerApiService {
     try {
       // Build ContentItem XML using XmlBuilder for proper escaping
       final builder = XmlBuilder();
-      builder.element('ContentItem', nest: () {
-        builder.attribute('source', preset.source);
-        builder.attribute('type', preset.type);
-        builder.attribute('location', preset.location);
-        final sourceAccount = preset.sourceAccount;
-        if (sourceAccount != null && sourceAccount.isNotEmpty) {
-          builder.attribute('sourceAccount', sourceAccount);
-        }
-        builder.attribute('isPresetable', 'true');
-        builder.element('itemName', nest: preset.itemName);
-      });
+      builder.element(
+        'ContentItem',
+        nest: () {
+          builder.attribute('source', preset.source);
+          builder.attribute('type', preset.type);
+          builder.attribute('location', preset.location);
+          final sourceAccount = preset.sourceAccount;
+          if (sourceAccount != null && sourceAccount.isNotEmpty) {
+            builder.attribute('sourceAccount', sourceAccount);
+          }
+          builder.attribute('isPresetable', 'true');
+          builder.element('itemName', nest: preset.itemName);
+        },
+      );
 
       final body = builder.buildDocument().toXmlString();
 
       final response = await client
-          .post(
-            url,
-            headers: {'Content-Type': 'text/xml'},
-            body: body,
-          )
+          .post(url, headers: {'Content-Type': 'text/xml'}, body: body)
           .timeout(timeout);
 
       if (response.statusCode != 200) {
@@ -1162,9 +1115,7 @@ class SpeakerApiService {
       final response = await client.get(url).timeout(timeout);
 
       if (response.statusCode != 200) {
-        throw Exception(
-          'Failed to get language: HTTP ${response.statusCode}',
-        );
+        throw Exception('Failed to get language: HTTP ${response.statusCode}');
       }
 
       final bodyText = utf8.decode(response.bodyBytes);
@@ -1205,7 +1156,8 @@ class SpeakerApiService {
       bool bassAvailable = false;
       final bassAvailableElements = document.findAllElements('bassAvailable');
       if (bassAvailableElements.isNotEmpty) {
-        bassAvailable = bassAvailableElements.first.innerText.toLowerCase() == 'true';
+        bassAvailable =
+            bassAvailableElements.first.innerText.toLowerCase() == 'true';
       }
 
       int bassMin = -9;
@@ -1248,9 +1200,7 @@ class SpeakerApiService {
       final response = await client.get(url).timeout(timeout);
 
       if (response.statusCode != 200) {
-        throw Exception(
-          'Failed to get bass: HTTP ${response.statusCode}',
-        );
+        throw Exception('Failed to get bass: HTTP ${response.statusCode}');
       }
 
       final bodyText = utf8.decode(response.bodyBytes);
@@ -1284,17 +1234,11 @@ class SpeakerApiService {
     try {
       final body = '<bass>$bass</bass>';
       final response = await client
-          .post(
-            url,
-            headers: {'Content-Type': 'text/xml'},
-            body: body,
-          )
+          .post(url, headers: {'Content-Type': 'text/xml'}, body: body)
           .timeout(timeout);
 
       if (response.statusCode != 200) {
-        throw Exception(
-          'Failed to set bass: HTTP ${response.statusCode}',
-        );
+        throw Exception('Failed to set bass: HTTP ${response.statusCode}');
       }
     } catch (e) {
       if (e is Exception) rethrow;
@@ -1311,17 +1255,11 @@ class SpeakerApiService {
     try {
       final body = '<sysLanguage>$languageCode</sysLanguage>';
       final response = await client
-          .post(
-            url,
-            headers: {'Content-Type': 'text/xml'},
-            body: body,
-          )
+          .post(url, headers: {'Content-Type': 'text/xml'}, body: body)
           .timeout(timeout);
 
       if (response.statusCode != 200) {
-        throw Exception(
-          'Failed to set language: HTTP ${response.statusCode}',
-        );
+        throw Exception('Failed to set language: HTTP ${response.statusCode}');
       }
     } catch (e) {
       if (e is Exception) rethrow;
@@ -1376,8 +1314,7 @@ class SpeakerApiService {
       final el = elements.first;
 
       final userEnable = el.getAttribute('userEnable')?.toLowerCase() == 'true';
-      final timeFormat =
-          el.getAttribute('timeFormat') ?? ClockConfig.format12h;
+      final timeFormat = el.getAttribute('timeFormat') ?? ClockConfig.format12h;
       final brightnessLevel =
           int.tryParse(el.getAttribute('brightnessLevel') ?? '') ?? 0;
       final timezoneInfo = el.getAttribute('timezoneInfo') ?? '';
@@ -1407,7 +1344,8 @@ class SpeakerApiService {
     final client = httpClient ?? http.Client();
 
     try {
-      final body = '<?xml version="1.0" encoding="UTF-8" ?>'
+      final body =
+          '<?xml version="1.0" encoding="UTF-8" ?>'
           '<clockDisplay>'
           '<clockConfig'
           ' timezoneInfo="${config.timezoneInfo}"'
@@ -1419,11 +1357,7 @@ class SpeakerApiService {
           '/>'
           '</clockDisplay>';
       final response = await client
-          .post(
-            url,
-            headers: {'Content-Type': 'text/xml'},
-            body: body,
-          )
+          .post(url, headers: {'Content-Type': 'text/xml'}, body: body)
           .timeout(timeout);
 
       if (response.statusCode != 200) {
@@ -1471,13 +1405,16 @@ class SpeakerApiService {
 
     try {
       final builder = XmlBuilder();
-      builder.element('ContentItem', nest: () {
-        builder.attribute('source', source.source);
-        final account = source.sourceAccount;
-        if (account != null && account.isNotEmpty) {
-          builder.attribute('sourceAccount', account);
-        }
-      });
+      builder.element(
+        'ContentItem',
+        nest: () {
+          builder.attribute('source', source.source);
+          final account = source.sourceAccount;
+          if (account != null && account.isNotEmpty) {
+            builder.attribute('sourceAccount', account);
+          }
+        },
+      );
       final body = builder.buildDocument().toXmlString();
 
       final response = await client

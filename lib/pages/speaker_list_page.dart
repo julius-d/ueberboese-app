@@ -16,7 +16,8 @@ class SpeakerListPage extends StatefulWidget {
   State<SpeakerListPage> createState() => _SpeakerListPageState();
 }
 
-class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProviderStateMixin {
+class _SpeakerListPageState extends State<SpeakerListPage>
+    with SingleTickerProviderStateMixin {
   bool _isFabExpanded = false;
   late AnimationController _animationController;
   late Animation<double> _rotationAnimation;
@@ -114,8 +115,8 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.bold,
           color: hasArtwork
-            ? cardTheme.colorScheme.surface
-            : !isConnected
+              ? cardTheme.colorScheme.surface
+              : !isConnected
               ? cardTheme.colorScheme.onErrorContainer
               : null,
         ),
@@ -130,8 +131,8 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
                 color: hasArtwork
                     ? cardTheme.colorScheme.surface
                     : !isConnected
-                      ? cardTheme.colorScheme.onErrorContainer
-                      : Theme.of(context).colorScheme.secondary,
+                    ? cardTheme.colorScheme.onErrorContainer
+                    : Theme.of(context).colorScheme.secondary,
               ),
             ),
           ),
@@ -169,10 +170,7 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
 
     return Hero(
       tag: 'speaker-info-${speaker.id}',
-      child: Material(
-        color: Colors.transparent,
-        child: listTile,
-      ),
+      child: Material(color: Colors.transparent, child: listTile),
     );
   }
 
@@ -183,9 +181,7 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
 
     Widget content;
     if (appState.speakers.isEmpty) {
-      content = const Center(
-        child: Text('No speakers available'),
-      );
+      content = const Center(child: Text('No speakers available'));
     } else {
       content = ListView.builder(
         padding: const EdgeInsets.all(16),
@@ -193,22 +189,22 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
         itemBuilder: (context, index) {
           final speaker = appState.speakers[index];
           final nowPlaying = appState.getCachedNowPlaying(speaker.ipAddress);
-          final isConnected = appState.getSpeakerConnectionStatus(speaker.ipAddress);
+          final isConnected = appState.getSpeakerConnectionStatus(
+            speaker.ipAddress,
+          );
           final isPlaying = nowPlaying?.playStatus == 'PLAY_STATE';
           final artworkUrl = _getFullArtworkUrl(speaker, nowPlaying);
           // Show artwork if present, regardless of play status (consistent with detail page)
-          final hasArtwork = appState.config.showAlbumArtInList &&
-                            artworkUrl != null &&
-                            artworkUrl.isNotEmpty &&
-                            nowPlaying?.artImageStatus == 'IMAGE_PRESENT';
+          final hasArtwork =
+              appState.config.showAlbumArtInList &&
+              artworkUrl != null &&
+              artworkUrl.isNotEmpty &&
+              nowPlaying?.artImageStatus == 'IMAGE_PRESENT';
           final cardTheme = Theme.of(context);
 
           return Card(
             elevation: 1,
-            margin: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 8,
-            ),
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             color: !isConnected ? cardTheme.colorScheme.errorContainer : null,
             clipBehavior: Clip.antiAlias,
             child: Stack(
@@ -224,22 +220,30 @@ class _SpeakerListPageState extends State<SpeakerListPage> with SingleTickerProv
                           Image.network(
                             artworkUrl,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => const SizedBox(),
-                            frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                              // Only show the image with overlay if it loaded successfully
-                              if (frame == null) {
-                                return const SizedBox();
-                              }
-                              return Stack(
-                                fit: StackFit.expand,
-                                children: [
+                            errorBuilder: (context, error, stackTrace) =>
+                                const SizedBox(),
+                            frameBuilder:
+                                (
+                                  context,
                                   child,
-                                  Container(
-                                    color: cardTheme.colorScheme.scrim.withValues(alpha: 0.4),
-                                  ),
-                                ],
-                              );
-                            },
+                                  frame,
+                                  wasSynchronouslyLoaded,
+                                ) {
+                                  // Only show the image with overlay if it loaded successfully
+                                  if (frame == null) {
+                                    return const SizedBox();
+                                  }
+                                  return Stack(
+                                    fit: StackFit.expand,
+                                    children: [
+                                      child,
+                                      Container(
+                                        color: cardTheme.colorScheme.scrim
+                                            .withValues(alpha: 0.4),
+                                      ),
+                                    ],
+                                  );
+                                },
                           ),
                         ],
                       ),

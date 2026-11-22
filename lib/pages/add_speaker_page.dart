@@ -15,8 +15,6 @@ class AddSpeakerPage extends StatefulWidget {
   State<AddSpeakerPage> createState() => _AddSpeakerPageState();
 }
 
-
-
 class _AddSpeakerPageState extends State<AddSpeakerPage> {
   final _formKey = GlobalKey<FormState>();
   final _ipController = TextEditingController();
@@ -54,9 +52,7 @@ class _AddSpeakerPageState extends State<AddSpeakerPage> {
   }
 
   bool _isValidIpAddress(String ip) {
-    final ipRegex = RegExp(
-      r'^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$',
-    );
+    final ipRegex = RegExp(r'^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$');
 
     if (!ipRegex.hasMatch(ip)) {
       return false;
@@ -77,7 +73,6 @@ class _AddSpeakerPageState extends State<AddSpeakerPage> {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-
 
     setState(() {
       _isLoading = true;
@@ -128,7 +123,6 @@ class _AddSpeakerPageState extends State<AddSpeakerPage> {
           appState.config.accountId.isEmpty &&
           speakerInfo.margeUrl != null &&
           speakerInfo.accountId != null) {
-
         // Check if margeURL is not a Bose domain
         final margeUrl = speakerInfo.margeUrl!;
         final isBoseDomain = margeUrl.contains('bose.com');
@@ -143,7 +137,10 @@ class _AddSpeakerPageState extends State<AddSpeakerPage> {
         }
       }
 
-      final newSpeaker = await _apiService.createSpeakerFromIp(ipAddress, _selectedEmoji);
+      final newSpeaker = await _apiService.createSpeakerFromIp(
+        ipAddress,
+        _selectedEmoji,
+      );
 
       if (!mounted) return;
 
@@ -179,9 +176,7 @@ class _AddSpeakerPageState extends State<AddSpeakerPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Speaker'),
-      ),
+      appBar: AppBar(title: const Text('Add Speaker')),
       body: Stack(
         children: [
           Form(

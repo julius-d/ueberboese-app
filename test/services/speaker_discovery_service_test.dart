@@ -8,12 +8,19 @@ void main() {
   group('SpeakerDiscoveryService.parseResponse', () {
     test('returns null for non-200 response', () {
       const response = 'HTTP/1.1 404 Not Found\r\n\r\n';
-      expect(SpeakerDiscoveryService.parseResponse(response, '192.168.1.1'), isNull);
+      expect(
+        SpeakerDiscoveryService.parseResponse(response, '192.168.1.1'),
+        isNull,
+      );
     });
 
     test('returns null when LOCATION header is missing', () {
-      const response = 'HTTP/1.1 200 OK\r\nST: urn:schemas-upnp-org:device:MediaRenderer:1\r\n\r\n';
-      expect(SpeakerDiscoveryService.parseResponse(response, '192.168.1.1'), isNull);
+      const response =
+          'HTTP/1.1 200 OK\r\nST: urn:schemas-upnp-org:device:MediaRenderer:1\r\n\r\n';
+      expect(
+        SpeakerDiscoveryService.parseResponse(response, '192.168.1.1'),
+        isNull,
+      );
     });
 
     test('returns null for empty response', () {
@@ -27,7 +34,10 @@ void main() {
           'LOCATION: http://192.168.1.42:8090/info\r\n'
           'ST: urn:schemas-upnp-org:device:MediaRenderer:1\r\n'
           '\r\n';
-      final result = SpeakerDiscoveryService.parseResponse(response, '192.168.1.42');
+      final result = SpeakerDiscoveryService.parseResponse(
+        response,
+        '192.168.1.42',
+      );
       expect(result, isNotNull);
       expect(result!.ip, '192.168.1.42');
       expect(result.location, 'http://192.168.1.42:8090/info');
@@ -38,7 +48,10 @@ void main() {
           'HTTP/1.1 200 OK\r\n'
           'Location: http://192.168.1.55:8090/info\r\n'
           '\r\n';
-      final result = SpeakerDiscoveryService.parseResponse(response, '192.168.1.55');
+      final result = SpeakerDiscoveryService.parseResponse(
+        response,
+        '192.168.1.55',
+      );
       expect(result, isNotNull);
       expect(result!.location, 'http://192.168.1.55:8090/info');
     });
@@ -48,7 +61,10 @@ void main() {
           'HTTP/1.1 200 OK\r\n'
           'location:  http://192.168.1.10:8090/info  \r\n'
           '\r\n';
-      final result = SpeakerDiscoveryService.parseResponse(response, '192.168.1.10');
+      final result = SpeakerDiscoveryService.parseResponse(
+        response,
+        '192.168.1.10',
+      );
       expect(result!.location, 'http://192.168.1.10:8090/info');
     });
   });
@@ -78,22 +94,25 @@ void main() {
 
     tearDown(() => responder.close());
 
-    test('sends M-SEARCH and emits parsed speaker, deduplicated by IP', () async {
-      await startResponder([okResponse, okResponse]);
+    test(
+      'sends M-SEARCH and emits parsed speaker, deduplicated by IP',
+      () async {
+        await startResponder([okResponse, okResponse]);
 
-      final speakers = await SpeakerDiscoveryService()
-          .discover(
-            timeout: const Duration(milliseconds: 500),
-            target: InternetAddress.loopbackIPv4,
-            targetPort: responder.port,
-          )
-          .toList();
+        final speakers = await SpeakerDiscoveryService()
+            .discover(
+              timeout: const Duration(milliseconds: 500),
+              target: InternetAddress.loopbackIPv4,
+              targetPort: responder.port,
+            )
+            .toList();
 
-      expect(requests, 1);
-      expect(speakers, hasLength(1));
-      expect(speakers.single.ip, '127.0.0.1');
-      expect(speakers.single.location, 'http://127.0.0.1:8090/info');
-    });
+        expect(requests, 1);
+        expect(speakers, hasLength(1));
+        expect(speakers.single.ip, '127.0.0.1');
+        expect(speakers.single.location, 'http://127.0.0.1:8090/info');
+      },
+    );
 
     test('ignores responses that are not valid speakers', () async {
       await startResponder(['HTTP/1.1 404 Not Found\r\n\r\n']);

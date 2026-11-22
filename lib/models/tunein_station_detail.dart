@@ -29,7 +29,9 @@ class TuneInStationDetail {
 
   factory TuneInStationDetail.fromXml(XmlElement stationElement) {
     final guideIdElements = stationElement.findElements('guide_id');
-    final guideId = guideIdElements.isNotEmpty ? guideIdElements.first.innerText : '';
+    final guideId = guideIdElements.isNotEmpty
+        ? guideIdElements.first.innerText
+        : '';
 
     final nameElements = stationElement.findElements('name');
     final name = nameElements.isNotEmpty ? nameElements.first.innerText : '';
@@ -38,31 +40,45 @@ class TuneInStationDetail {
     final logo = logoElements.isNotEmpty ? logoElements.first.innerText : null;
 
     final sloganElements = stationElement.findElements('slogan');
-    final slogan = sloganElements.isNotEmpty ? sloganElements.first.innerText : null;
+    final slogan = sloganElements.isNotEmpty
+        ? sloganElements.first.innerText
+        : null;
 
     final descriptionElements = stationElement.findElements('description');
-    final description = descriptionElements.isNotEmpty ? descriptionElements.first.innerText : null;
+    final description = descriptionElements.isNotEmpty
+        ? descriptionElements.first.innerText
+        : null;
 
     final urlElements = stationElement.findElements('url');
     final url = urlElements.isNotEmpty ? urlElements.first.innerText : null;
 
     final locationElements = stationElement.findElements('location');
-    final location = locationElements.isNotEmpty ? locationElements.first.innerText : null;
+    final location = locationElements.isNotEmpty
+        ? locationElements.first.innerText
+        : null;
 
     final genreNameElements = stationElement.findElements('genre_name');
-    final genreName = genreNameElements.isNotEmpty ? genreNameElements.first.innerText : null;
+    final genreName = genreNameElements.isNotEmpty
+        ? genreNameElements.first.innerText
+        : null;
 
-    final contentClassificationElements = stationElement.findElements('content_classification');
+    final contentClassificationElements = stationElement.findElements(
+      'content_classification',
+    );
     final contentClassification = contentClassificationElements.isNotEmpty
         ? contentClassificationElements.first.innerText
         : null;
 
-    final isFamilyContentElements = stationElement.findElements('is_family_content');
+    final isFamilyContentElements = stationElement.findElements(
+      'is_family_content',
+    );
     final isFamilyContent = isFamilyContentElements.isNotEmpty
         ? isFamilyContentElements.first.innerText.toLowerCase() == 'true'
         : null;
 
-    final isMatureContentElements = stationElement.findElements('is_mature_content');
+    final isMatureContentElements = stationElement.findElements(
+      'is_mature_content',
+    );
     final isMatureContent = isMatureContentElements.isNotEmpty
         ? isMatureContentElements.first.innerText.toLowerCase() == 'true'
         : null;
@@ -83,20 +99,21 @@ class TuneInStationDetail {
   }
 
   Map<String, dynamic> toJson() => {
-        'guideId': guideId,
-        'name': name,
-        'logo': logo,
-        'slogan': slogan,
-        'description': description,
-        'url': url,
-        'location': location,
-        'genreName': genreName,
-        'contentClassification': contentClassification,
-        'isFamilyContent': isFamilyContent,
-        'isMatureContent': isMatureContent,
-      };
+    'guideId': guideId,
+    'name': name,
+    'logo': logo,
+    'slogan': slogan,
+    'description': description,
+    'url': url,
+    'location': location,
+    'genreName': genreName,
+    'contentClassification': contentClassification,
+    'isFamilyContent': isFamilyContent,
+    'isMatureContent': isMatureContent,
+  };
 
-  factory TuneInStationDetail.fromJson(Map<String, dynamic> json) => TuneInStationDetail(
+  factory TuneInStationDetail.fromJson(Map<String, dynamic> json) =>
+      TuneInStationDetail(
         guideId: json['guideId'] as String,
         name: json['name'] as String,
         logo: json['logo'] as String?,

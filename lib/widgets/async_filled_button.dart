@@ -20,9 +20,8 @@ class AsyncFilledButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final foregroundColor = style
-            ?.foregroundColor
-            ?.resolve(<WidgetState>{}) ??
+    final foregroundColor =
+        style?.foregroundColor?.resolve(<WidgetState>{}) ??
         Theme.of(context).colorScheme.onPrimary;
 
     return FilledButton.icon(

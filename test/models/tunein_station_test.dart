@@ -18,7 +18,10 @@ void main() {
       expect(station.guideId, 's288368');
       expect(station.text, 'Radio Potsdam');
       expect(station.subtext, 'WILLKOMMEN ZUHAUSE');
-      expect(station.image, 'http://cdn-profiles.tunein.com/s288368/images/logoq.png?t=155066');
+      expect(
+        station.image,
+        'http://cdn-profiles.tunein.com/s288368/images/logoq.png?t=155066',
+      );
       expect(station.bitrate, '192');
       expect(station.reliability, '100');
     });
@@ -79,30 +82,21 @@ void main() {
     });
 
     test('should handle equality correctly', () {
-      const station1 = TuneInStation(
-        guideId: 's288368',
-        text: 'Radio Potsdam',
-      );
+      const station1 = TuneInStation(guideId: 's288368', text: 'Radio Potsdam');
 
       const station2 = TuneInStation(
         guideId: 's288368',
         text: 'Different Name',
       );
 
-      const station3 = TuneInStation(
-        guideId: 's999999',
-        text: 'Radio Potsdam',
-      );
+      const station3 = TuneInStation(guideId: 's999999', text: 'Radio Potsdam');
 
       expect(station1, equals(station2));
       expect(station1, isNot(equals(station3)));
     });
 
     test('should have consistent hashCode', () {
-      const station1 = TuneInStation(
-        guideId: 's288368',
-        text: 'Radio Potsdam',
-      );
+      const station1 = TuneInStation(guideId: 's288368', text: 'Radio Potsdam');
 
       const station2 = TuneInStation(
         guideId: 's288368',

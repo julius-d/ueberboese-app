@@ -18,10 +18,12 @@ class TuneInStoredPresetDetailPage extends StatefulWidget {
   });
 
   @override
-  State<TuneInStoredPresetDetailPage> createState() => _TuneInStoredPresetDetailPageState();
+  State<TuneInStoredPresetDetailPage> createState() =>
+      _TuneInStoredPresetDetailPageState();
 }
 
-class _TuneInStoredPresetDetailPageState extends State<TuneInStoredPresetDetailPage> {
+class _TuneInStoredPresetDetailPageState
+    extends State<TuneInStoredPresetDetailPage> {
   late final SpeakerApiService _speakerApiService;
   bool _isDeleting = false;
   final _fabExpandedNotifier = ValueNotifier<bool>(false);
@@ -35,7 +37,10 @@ class _TuneInStoredPresetDetailPageState extends State<TuneInStoredPresetDetailP
   Future<Preset?> _getPreset() async {
     final appState = context.read<MyAppState>();
     // First check cache
-    final cachedPreset = appState.getPresetById(widget.speakerIp, widget.presetId);
+    final cachedPreset = appState.getPresetById(
+      widget.speakerIp,
+      widget.presetId,
+    );
     if (cachedPreset != null) {
       return cachedPreset;
     }
@@ -84,10 +89,7 @@ class _TuneInStoredPresetDetailPageState extends State<TuneInStoredPresetDetailP
     });
 
     try {
-      await _speakerApiService.removePreset(
-        widget.speakerIp,
-        widget.presetId,
-      );
+      await _speakerApiService.removePreset(widget.speakerIp, widget.presetId);
 
       if (!mounted) return;
 
@@ -131,7 +133,6 @@ class _TuneInStoredPresetDetailPageState extends State<TuneInStoredPresetDetailP
     );
   }
 
-
   String? _extractStationId(String location) {
     // Extract station ID from location format: /v1/playback/station/s288368
     const prefix = '/v1/playback/station/';
@@ -153,24 +154,16 @@ class _TuneInStoredPresetDetailPageState extends State<TuneInStoredPresetDetailP
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
-            appBar: AppBar(
-              title: Text('TuneIn Preset ${widget.presetId}'),
-            ),
-            body: const Center(
-              child: CircularProgressIndicator(),
-            ),
+            appBar: AppBar(title: Text('TuneIn Preset ${widget.presetId}')),
+            body: const Center(child: CircularProgressIndicator()),
           );
         }
 
         final preset = snapshot.data;
         if (preset == null) {
           return Scaffold(
-            appBar: AppBar(
-              title: Text('TuneIn Preset ${widget.presetId}'),
-            ),
-            body: const Center(
-              child: Text('Preset not found'),
-            ),
+            appBar: AppBar(title: Text('TuneIn Preset ${widget.presetId}')),
+            body: const Center(child: Text('Preset not found')),
           );
         }
 
@@ -178,142 +171,149 @@ class _TuneInStoredPresetDetailPageState extends State<TuneInStoredPresetDetailP
 
         return Scaffold(
           appBar: AppBar(
-        title: Text('TuneIn Preset ${preset.id}'),
-        actions: [
-          if (_isDeleting)
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
-            )
-          else
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert),
-              onSelected: (value) {
-                if (value == 'delete') {
-                  _showDeleteConfirmationDialog();
-                }
-              },
-              itemBuilder: (BuildContext context) => [
-                const PopupMenuItem<String>(
-                  value: 'delete',
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete),
-                      SizedBox(width: 8),
-                      Text('Delete preset'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-        ],
-      ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (preset.containerArt != null && preset.containerArt!.isNotEmpty)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.network(
-                      preset.containerArt!,
-                      width: 200,
-                      height: 200,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          width: 200,
-                          height: 200,
-                          color: theme.colorScheme.surfaceContainerHighest,
-                          child: Icon(
-                            Icons.radio,
-                            size: 100,
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        );
-                      },
+            title: Text('TuneIn Preset ${preset.id}'),
+            actions: [
+              if (_isDeleting)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
                     ),
                   ),
-                ),
-              ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 88.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: SelectableText(
-                      preset.itemName,
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+                )
+              else
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert),
+                  onSelected: (value) {
+                    if (value == 'delete') {
+                      _showDeleteConfirmationDialog();
+                    }
+                  },
+                  itemBuilder: (BuildContext context) => [
+                    const PopupMenuItem<String>(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete),
+                          SizedBox(width: 8),
+                          Text('Delete preset'),
+                        ],
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  _buildDetailRow(
-                    context,
-                    'Preset Number',
-                    preset.id,
-                    Icons.numbers,
-                  ),
-                  const Divider(),
-                  _buildDetailRow(
-                    context,
-                    'Source',
-                    preset.source,
-                    Icons.source,
-                  ),
-                  if (stationId != null) ...[
-                    const Divider(),
-                    _buildDetailRow(
-                      context,
-                      'Station ID',
-                      stationId,
-                      Icons.radio,
                     ),
                   ],
-                ],
-              ),
-            ),
+                ),
             ],
           ),
-        ),
-          ValueListenableBuilder<bool>(
-            valueListenable: _fabExpandedNotifier,
-            builder: (context, isExpanded, child) {
-              if (!isExpanded) return const SizedBox.shrink();
-              return Positioned.fill(
-                child: GestureDetector(
-                  onTap: () => _fabExpandedNotifier.value = false,
-                  child: Container(
-                    color: theme.colorScheme.scrim.withValues(alpha: 0.4),
-                  ),
+          body: Stack(
+            fit: StackFit.expand,
+            children: [
+              SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (preset.containerArt != null &&
+                        preset.containerArt!.isNotEmpty)
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.network(
+                              preset.containerArt!,
+                              width: 200,
+                              height: 200,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  width: 200,
+                                  height: 200,
+                                  color:
+                                      theme.colorScheme.surfaceContainerHighest,
+                                  child: Icon(
+                                    Icons.radio,
+                                    size: 100,
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        16.0,
+                        16.0,
+                        16.0,
+                        88.0,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Center(
+                            child: SelectableText(
+                              preset.itemName,
+                              style: theme.textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          _buildDetailRow(
+                            context,
+                            'Preset Number',
+                            preset.id,
+                            Icons.numbers,
+                          ),
+                          const Divider(),
+                          _buildDetailRow(
+                            context,
+                            'Source',
+                            preset.source,
+                            Icons.source,
+                          ),
+                          if (stationId != null) ...[
+                            const Divider(),
+                            _buildDetailRow(
+                              context,
+                              'Station ID',
+                              stationId,
+                              Icons.radio,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              );
-            },
+              ),
+              ValueListenableBuilder<bool>(
+                valueListenable: _fabExpandedNotifier,
+                builder: (context, isExpanded, child) {
+                  if (!isExpanded) return const SizedBox.shrink();
+                  return Positioned.fill(
+                    child: GestureDetector(
+                      onTap: () => _fabExpandedNotifier.value = false,
+                      child: Container(
+                        color: theme.colorScheme.scrim.withValues(alpha: 0.4),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
-        ],
-      ),
-      floatingActionButton: PresetActionFabs(
-        preset: preset,
-        speakerIp: widget.speakerIp,
-        isExpandedNotifier: _fabExpandedNotifier,
-        speakerApiService: _speakerApiService,
-      ),
-    );
+          floatingActionButton: PresetActionFabs(
+            preset: preset,
+            speakerIp: widget.speakerIp,
+            isExpandedNotifier: _fabExpandedNotifier,
+            speakerApiService: _speakerApiService,
+          ),
+        );
       },
     );
   }
@@ -331,11 +331,7 @@ class _TuneInStoredPresetDetailPageState extends State<TuneInStoredPresetDetailP
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            size: 24,
-            color: theme.colorScheme.primary,
-          ),
+          Icon(icon, size: 24, color: theme.colorScheme.primary),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -349,10 +345,7 @@ class _TuneInStoredPresetDetailPageState extends State<TuneInStoredPresetDetailP
                   ),
                 ),
                 const SizedBox(height: 4),
-                SelectableText(
-                  value,
-                  style: theme.textTheme.bodyLarge,
-                ),
+                SelectableText(value, style: theme.textTheme.bodyLarge),
               ],
             ),
           ),

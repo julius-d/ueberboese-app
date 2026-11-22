@@ -46,14 +46,18 @@ void main() {
       );
     }
 
-    testWidgets('should show loading indicator while fetching accounts',
-        (WidgetTester tester) async {
+    testWidgets('should show loading indicator while fetching accounts', (
+      WidgetTester tester,
+    ) async {
       // Mock the API call to delay
-      final expectedAuth = 'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
-      when(mockClient.get(
-        Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
-        headers: {'Authorization': expectedAuth},
-      )).thenAnswer(
+      final expectedAuth =
+          'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
+      when(
+        mockClient.get(
+          Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
+          headers: {'Authorization': expectedAuth},
+        ),
+      ).thenAnswer(
         (_) => Future.delayed(
           const Duration(milliseconds: 100),
           () => http.Response('{"accounts": []}', 200),
@@ -71,15 +75,17 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
-    testWidgets('should show empty state when no accounts',
-        (WidgetTester tester) async {
-      final expectedAuth = 'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
-      when(mockClient.get(
-        Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
-        headers: {'Authorization': expectedAuth},
-      )).thenAnswer(
-        (_) async => http.Response('{"accounts": []}', 200),
-      );
+    testWidgets('should show empty state when no accounts', (
+      WidgetTester tester,
+    ) async {
+      final expectedAuth =
+          'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
+      when(
+        mockClient.get(
+          Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
+          headers: {'Authorization': expectedAuth},
+        ),
+      ).thenAnswer((_) async => http.Response('{"accounts": []}', 200));
 
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
@@ -89,8 +95,9 @@ void main() {
       expect(find.byIcon(Icons.music_note), findsOneWidget);
     });
 
-    testWidgets('should display list of accounts when accounts exist',
-        (WidgetTester tester) async {
+    testWidgets('should display list of accounts when accounts exist', (
+      WidgetTester tester,
+    ) async {
       final responseBody = jsonEncode({
         'accounts': [
           {
@@ -106,13 +113,14 @@ void main() {
         ],
       });
 
-      final expectedAuth = 'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
-      when(mockClient.get(
-        Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
-        headers: {'Authorization': expectedAuth},
-      )).thenAnswer(
-        (_) async => http.Response(responseBody, 200),
-      );
+      final expectedAuth =
+          'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
+      when(
+        mockClient.get(
+          Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
+          headers: {'Authorization': expectedAuth},
+        ),
+      ).thenAnswer((_) async => http.Response(responseBody, 200));
 
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
@@ -123,8 +131,9 @@ void main() {
       expect(find.byType(ListTile), findsNWidgets(2));
     });
 
-    testWidgets('should display formatted dates for accounts',
-        (WidgetTester tester) async {
+    testWidgets('should display formatted dates for accounts', (
+      WidgetTester tester,
+    ) async {
       final now = DateTime.now();
       final twoDaysAgo = now.subtract(const Duration(days: 2));
 
@@ -138,13 +147,14 @@ void main() {
         ],
       });
 
-      final expectedAuth = 'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
-      when(mockClient.get(
-        Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
-        headers: {'Authorization': expectedAuth},
-      )).thenAnswer(
-        (_) async => http.Response(responseBody, 200),
-      );
+      final expectedAuth =
+          'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
+      when(
+        mockClient.get(
+          Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
+          headers: {'Authorization': expectedAuth},
+        ),
+      ).thenAnswer((_) async => http.Response(responseBody, 200));
 
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
@@ -153,32 +163,39 @@ void main() {
       expect(find.textContaining('days ago'), findsOneWidget);
     });
 
-    testWidgets('should show error snackbar when API fails',
-        (WidgetTester tester) async {
-      final expectedAuth = 'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
-      when(mockClient.get(
-        Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
-        headers: {'Authorization': expectedAuth},
-      )).thenAnswer(
-        (_) async => http.Response('Internal Server Error', 500),
-      );
+    testWidgets('should show error snackbar when API fails', (
+      WidgetTester tester,
+    ) async {
+      final expectedAuth =
+          'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
+      when(
+        mockClient.get(
+          Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
+          headers: {'Authorization': expectedAuth},
+        ),
+      ).thenAnswer((_) async => http.Response('Internal Server Error', 500));
 
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
 
       expect(find.byType(SnackBar), findsOneWidget);
-      expect(find.textContaining('Failed to load Spotify accounts'), findsOneWidget);
+      expect(
+        find.textContaining('Failed to load Spotify accounts'),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('should show empty state when API returns empty list',
-        (WidgetTester tester) async {
-      final expectedAuth = 'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
-      when(mockClient.get(
-        Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
-        headers: {'Authorization': expectedAuth},
-      )).thenAnswer(
-        (_) async => http.Response('{"accounts": []}', 200),
-      );
+    testWidgets('should show empty state when API returns empty list', (
+      WidgetTester tester,
+    ) async {
+      final expectedAuth =
+          'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
+      when(
+        mockClient.get(
+          Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
+          headers: {'Authorization': expectedAuth},
+        ),
+      ).thenAnswer((_) async => http.Response('{"accounts": []}', 200));
 
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
@@ -187,8 +204,9 @@ void main() {
       expect(find.byType(ListView), findsNothing);
     });
 
-    testWidgets('should have music note icon for each account',
-        (WidgetTester tester) async {
+    testWidgets('should have music note icon for each account', (
+      WidgetTester tester,
+    ) async {
       final responseBody = jsonEncode({
         'accounts': [
           {
@@ -204,13 +222,14 @@ void main() {
         ],
       });
 
-      final expectedAuth = 'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
-      when(mockClient.get(
-        Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
-        headers: {'Authorization': expectedAuth},
-      )).thenAnswer(
-        (_) async => http.Response(responseBody, 200),
-      );
+      final expectedAuth =
+          'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
+      when(
+        mockClient.get(
+          Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
+          headers: {'Authorization': expectedAuth},
+        ),
+      ).thenAnswer((_) async => http.Response(responseBody, 200));
 
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();
@@ -219,8 +238,9 @@ void main() {
       expect(find.byIcon(Icons.music_note), findsNWidgets(2));
     });
 
-    testWidgets('should display ListView when accounts are present',
-        (WidgetTester tester) async {
+    testWidgets('should display ListView when accounts are present', (
+      WidgetTester tester,
+    ) async {
       final responseBody = jsonEncode({
         'accounts': [
           {
@@ -231,13 +251,14 @@ void main() {
         ],
       });
 
-      final expectedAuth = 'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
-      when(mockClient.get(
-        Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
-        headers: {'Authorization': expectedAuth},
-      )).thenAnswer(
-        (_) async => http.Response(responseBody, 200),
-      );
+      final expectedAuth =
+          'Basic ${base64Encode(utf8.encode('admin:testpass'))}';
+      when(
+        mockClient.get(
+          Uri.parse('https://api.example.com/mgmt/spotify/accounts'),
+          headers: {'Authorization': expectedAuth},
+        ),
+      ).thenAnswer((_) async => http.Response(responseBody, 200));
 
       await tester.pumpWidget(createTestWidget());
       await tester.pumpAndSettle();

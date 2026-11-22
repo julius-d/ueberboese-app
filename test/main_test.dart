@@ -92,10 +92,12 @@ void main() {
 
       test('fetches all speakers and updates cache', () async {
         final mockApi = MockSpeakerApiService();
-        when(mockApi.getNowPlaying('192.168.1.10'))
-            .thenAnswer((_) async => nowPlaying1);
-        when(mockApi.getNowPlaying('192.168.1.11'))
-            .thenAnswer((_) async => nowPlaying2);
+        when(
+          mockApi.getNowPlaying('192.168.1.10'),
+        ).thenAnswer((_) async => nowPlaying1);
+        when(
+          mockApi.getNowPlaying('192.168.1.11'),
+        ).thenAnswer((_) async => nowPlaying2);
 
         final appState = MyAppState(speakerApiService: mockApi);
         await appState.initializeSpeakers();
@@ -114,10 +116,12 @@ void main() {
 
       test('marks speaker as disconnected when API throws', () async {
         final mockApi = MockSpeakerApiService();
-        when(mockApi.getNowPlaying('192.168.1.10'))
-            .thenAnswer((_) async => nowPlaying1);
-        when(mockApi.getNowPlaying('192.168.1.11'))
-            .thenThrow(Exception('connection refused'));
+        when(
+          mockApi.getNowPlaying('192.168.1.10'),
+        ).thenAnswer((_) async => nowPlaying1);
+        when(
+          mockApi.getNowPlaying('192.168.1.11'),
+        ).thenThrow(Exception('connection refused'));
 
         final appState = MyAppState(speakerApiService: mockApi);
         await appState.initializeSpeakers();
@@ -135,10 +139,12 @@ void main() {
       test('notifies listeners after each speaker resolves', () async {
         final mockApi = MockSpeakerApiService();
         // Use completer to control resolution order
-        when(mockApi.getNowPlaying('192.168.1.10'))
-            .thenAnswer((_) async => nowPlaying1);
-        when(mockApi.getNowPlaying('192.168.1.11'))
-            .thenAnswer((_) async => nowPlaying2);
+        when(
+          mockApi.getNowPlaying('192.168.1.10'),
+        ).thenAnswer((_) async => nowPlaying1);
+        when(
+          mockApi.getNowPlaying('192.168.1.11'),
+        ).thenAnswer((_) async => nowPlaying2);
 
         final appState = MyAppState(speakerApiService: mockApi);
         await appState.initializeSpeakers();
@@ -198,15 +204,20 @@ void main() {
         await pollFuture;
 
         // If concurrent, both starts happened before either end
-        expect(callOrder.indexOf('start-1'), lessThan(callOrder.indexOf('end-2')));
-        expect(callOrder.indexOf('start-2'), lessThan(callOrder.indexOf('end-1')));
+        expect(
+          callOrder.indexOf('start-1'),
+          lessThan(callOrder.indexOf('end-2')),
+        );
+        expect(
+          callOrder.indexOf('start-2'),
+          lessThan(callOrder.indexOf('end-1')),
+        );
       });
     });
   });
 
   group('MyApp', () {
-    testWidgets('builds correctly in light mode',
-        (WidgetTester tester) async {
+    testWidgets('builds correctly in light mode', (WidgetTester tester) async {
       SharedPreferences.setMockInitialValues({});
       final appState = MyAppState();
       await appState.initialize();
@@ -218,8 +229,7 @@ void main() {
       expect(find.byType(MaterialApp), findsOneWidget);
     });
 
-    testWidgets('builds correctly in dark mode',
-        (WidgetTester tester) async {
+    testWidgets('builds correctly in dark mode', (WidgetTester tester) async {
       SharedPreferences.setMockInitialValues({});
       final appState = MyAppState();
       await appState.initialize();

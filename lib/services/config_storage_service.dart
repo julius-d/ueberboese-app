@@ -25,7 +25,8 @@ class ConfigStorageService {
         return const AppConfig();
       }
 
-      final Map<String, dynamic> json = jsonDecode(jsonString) as Map<String, dynamic>;
+      final Map<String, dynamic> json =
+          jsonDecode(jsonString) as Map<String, dynamic>;
       return AppConfig.fromJson(json);
     } catch (e) {
       debugPrint('Error loading config: $e');

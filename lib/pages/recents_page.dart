@@ -8,11 +8,7 @@ class RecentsPage extends StatefulWidget {
   final Speaker speaker;
   final SpeakerApiService? apiService;
 
-  const RecentsPage({
-    super.key,
-    required this.speaker,
-    this.apiService,
-  });
+  const RecentsPage({super.key, required this.speaker, this.apiService});
 
   @override
   State<RecentsPage> createState() => _RecentsPageState();
@@ -48,11 +44,14 @@ class _RecentsPageState extends State<RecentsPage> {
     });
 
     try {
-      await _speakerApiService.selectContentItem(widget.speaker.ipAddress, recent);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Playing "${recent.itemName}"')),
+      await _speakerApiService.selectContentItem(
+        widget.speaker.ipAddress,
+        recent,
       );
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Playing "${recent.itemName}"')));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -148,9 +147,7 @@ class _RecentsPageState extends State<RecentsPage> {
               future: _recentsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return const Center(child: CircularProgressIndicator());
                 }
 
                 if (snapshot.hasError) {
@@ -191,14 +188,13 @@ class _RecentsPageState extends State<RecentsPage> {
                 final recents = snapshot.data ?? [];
 
                 if (recents.isEmpty) {
-                  return const Center(
-                    child: Text('No recent items'),
-                  );
+                  return const Center(child: Text('No recent items'));
                 }
 
                 return ListView.separated(
                   itemCount: recents.length,
-                  separatorBuilder: (context, index) => const Divider(height: 1, indent: 88),
+                  separatorBuilder: (context, index) =>
+                      const Divider(height: 1, indent: 88),
                   itemBuilder: (context, index) {
                     final recent = recents[index];
                     final sourceColor = _getSourceColor(context, recent.source);
@@ -206,8 +202,12 @@ class _RecentsPageState extends State<RecentsPage> {
                     final isPlayingThis = _playingRecentId == recent.id;
 
                     return ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                      leading: recent.containerArt != null &&
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8.0,
+                      ),
+                      leading:
+                          recent.containerArt != null &&
                               recent.containerArt!.isNotEmpty
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(8),
@@ -221,7 +221,9 @@ class _RecentsPageState extends State<RecentsPage> {
                                     width: 56,
                                     height: 56,
                                     decoration: BoxDecoration(
-                                      color: theme.colorScheme.surfaceContainerHighest,
+                                      color: theme
+                                          .colorScheme
+                                          .surfaceContainerHighest,
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Icon(
@@ -236,7 +238,8 @@ class _RecentsPageState extends State<RecentsPage> {
                               width: 56,
                               height: 56,
                               decoration: BoxDecoration(
-                                color: theme.colorScheme.surfaceContainerHighest,
+                                color:
+                                    theme.colorScheme.surfaceContainerHighest,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Icon(
@@ -256,11 +259,7 @@ class _RecentsPageState extends State<RecentsPage> {
                           const SizedBox(height: 4),
                           Row(
                             children: [
-                              Icon(
-                                sourceIcon,
-                                size: 14,
-                                color: sourceColor,
-                              ),
+                              Icon(sourceIcon, size: 14, color: sourceColor),
                               const SizedBox(width: 4),
                               Text(
                                 recent.source,
@@ -280,12 +279,16 @@ class _RecentsPageState extends State<RecentsPage> {
                         ],
                       ),
                       trailing: IconButton.filledTonal(
-                        onPressed: _isPlaying ? null : () => _playRecent(recent),
+                        onPressed: _isPlaying
+                            ? null
+                            : () => _playRecent(recent),
                         icon: isPlayingThis
                             ? const SizedBox(
                                 width: 24,
                                 height: 24,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
                             : const Icon(Icons.play_arrow),
                       ),

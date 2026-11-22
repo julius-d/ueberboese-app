@@ -68,7 +68,6 @@ void main() {
       expect(speakers[0].deviceId, 'device-123');
     });
 
-
     test('loadSpeakers handles empty string', () async {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('speakers', '');

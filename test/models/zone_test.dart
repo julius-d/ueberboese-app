@@ -5,7 +5,8 @@ import 'package:ueberboese_app/models/zone.dart';
 void main() {
   group('ZoneMember', () {
     test('creates ZoneMember from XML', () {
-      const xmlString = '<member ipaddress="192.168.1.131">1004567890AA</member>';
+      const xmlString =
+          '<member ipaddress="192.168.1.131">1004567890AA</member>';
       final element = XmlDocument.parse(xmlString).rootElement;
 
       final member = ZoneMember.fromXml(element);
@@ -62,10 +63,7 @@ void main() {
     });
 
     test('isEmpty returns true for empty zone', () {
-      const zone = Zone(
-        masterId: '1004567890AA',
-        members: [],
-      );
+      const zone = Zone(masterId: '1004567890AA', members: []);
 
       expect(zone.isEmpty, true);
       expect(zone.isNotEmpty, false);
@@ -110,8 +108,14 @@ void main() {
       final xml = zone.toXml();
 
       expect(xml, contains('<zone master="1004567890AA">'));
-      expect(xml, contains('<member ipaddress="192.168.1.131">1004567890AA</member>'));
-      expect(xml, contains('<member ipaddress="192.168.1.130">3004567890BB</member>'));
+      expect(
+        xml,
+        contains('<member ipaddress="192.168.1.131">1004567890AA</member>'),
+      );
+      expect(
+        xml,
+        contains('<member ipaddress="192.168.1.130">3004567890BB</member>'),
+      );
       expect(xml, contains('</zone>'));
     });
 
@@ -170,10 +174,7 @@ void main() {
     });
 
     test('allMemberDeviceIds returns only master when no members', () {
-      const zone = Zone(
-        masterId: 'MASTER123ABC',
-        members: [],
-      );
+      const zone = Zone(masterId: 'MASTER123ABC', members: []);
 
       final allMembers = zone.allMemberDeviceIds;
 
@@ -213,26 +214,29 @@ void main() {
       expect(zone.isInZone('UNKNOWN'), false); // Not in zone
     });
 
-    test('allMemberDeviceIds does not duplicate master when it appears in members', () {
-      // This happens when querying a non-master device
-      // The API includes the master in the members list
-      const zone = Zone(
-        masterId: 'MASTER123ABC',
-        members: [
-          ZoneMember(deviceId: 'MASTER123ABC', ipAddress: '192.168.1.100'),
-          ZoneMember(deviceId: 'MEMBER456DEF', ipAddress: '192.168.1.101'),
-        ],
-      );
+    test(
+      'allMemberDeviceIds does not duplicate master when it appears in members',
+      () {
+        // This happens when querying a non-master device
+        // The API includes the master in the members list
+        const zone = Zone(
+          masterId: 'MASTER123ABC',
+          members: [
+            ZoneMember(deviceId: 'MASTER123ABC', ipAddress: '192.168.1.100'),
+            ZoneMember(deviceId: 'MEMBER456DEF', ipAddress: '192.168.1.101'),
+          ],
+        );
 
-      final allMembers = zone.allMemberDeviceIds;
+        final allMembers = zone.allMemberDeviceIds;
 
-      // Should only contain 2 unique devices, not 3
-      expect(allMembers.length, 2);
-      expect(allMembers[0], 'MASTER123ABC'); // Master first
-      expect(allMembers[1], 'MEMBER456DEF'); // Member second
+        // Should only contain 2 unique devices, not 3
+        expect(allMembers.length, 2);
+        expect(allMembers[0], 'MASTER123ABC'); // Master first
+        expect(allMembers[1], 'MEMBER456DEF'); // Member second
 
-      // Ensure no duplicates
-      expect(allMembers.toSet().length, 2);
-    });
+        // Ensure no duplicates
+        expect(allMembers.toSet().length, 2);
+      },
+    );
   });
 }

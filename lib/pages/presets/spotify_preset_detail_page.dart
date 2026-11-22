@@ -23,7 +23,8 @@ class SpotifyPresetDetailPage extends StatefulWidget {
   });
 
   @override
-  State<SpotifyPresetDetailPage> createState() => _SpotifyPresetDetailPageState();
+  State<SpotifyPresetDetailPage> createState() =>
+      _SpotifyPresetDetailPageState();
 }
 
 class _SpotifyPresetDetailPageState extends State<SpotifyPresetDetailPage> {
@@ -44,7 +45,8 @@ class _SpotifyPresetDetailPageState extends State<SpotifyPresetDetailPage> {
     _speakerApiService = widget.speakerApiService ?? SpeakerApiService();
 
     final config = context.read<MyAppState>().config;
-    _spotifyApiService = widget.spotifyApiService ??
+    _spotifyApiService =
+        widget.spotifyApiService ??
         SpotifyApiService(
           username: config.mgmtUsername,
           password: config.mgmtPassword,
@@ -65,7 +67,10 @@ class _SpotifyPresetDetailPageState extends State<SpotifyPresetDetailPage> {
   Future<Preset?> _getPreset() async {
     final appState = context.read<MyAppState>();
     // First check cache
-    final cachedPreset = appState.getPresetById(widget.speakerIp, widget.presetId);
+    final cachedPreset = appState.getPresetById(
+      widget.speakerIp,
+      widget.presetId,
+    );
     if (cachedPreset != null) {
       return cachedPreset;
     }
@@ -163,7 +168,9 @@ class _SpotifyPresetDetailPageState extends State<SpotifyPresetDetailPage> {
       final webUrl = _convertSpotifyUriToWebUrl(_decodedUri!);
 
       if (webUrl == null) {
-        _showErrorDialog('Invalid Spotify URI format. Expected format: spotify:type:id');
+        _showErrorDialog(
+          'Invalid Spotify URI format. Expected format: spotify:type:id',
+        );
         return;
       }
 
@@ -223,10 +230,7 @@ class _SpotifyPresetDetailPageState extends State<SpotifyPresetDetailPage> {
     });
 
     try {
-      await _speakerApiService.removePreset(
-        widget.speakerIp,
-        widget.presetId,
-      );
+      await _speakerApiService.removePreset(widget.speakerIp, widget.presetId);
 
       if (!mounted) return;
 
@@ -270,7 +274,6 @@ class _SpotifyPresetDetailPageState extends State<SpotifyPresetDetailPage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -281,215 +284,225 @@ class _SpotifyPresetDetailPageState extends State<SpotifyPresetDetailPage> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
-            appBar: AppBar(
-              title: Text('Spotify Preset ${widget.presetId}'),
-            ),
-            body: const Center(
-              child: CircularProgressIndicator(),
-            ),
+            appBar: AppBar(title: Text('Spotify Preset ${widget.presetId}')),
+            body: const Center(child: CircularProgressIndicator()),
           );
         }
 
         final preset = snapshot.data;
         if (preset == null) {
           return Scaffold(
-            appBar: AppBar(
-              title: Text('Spotify Preset ${widget.presetId}'),
-            ),
-            body: const Center(
-              child: Text('Preset not found'),
-            ),
+            appBar: AppBar(title: Text('Spotify Preset ${widget.presetId}')),
+            body: const Center(child: Text('Preset not found')),
           );
         }
 
         return Scaffold(
-      appBar: AppBar(
-        title: Text('Spotify Preset ${preset.id}'),
-        actions: [
-          if (_isDeleting)
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
-            )
-          else
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert),
-              onSelected: (value) {
-                if (value == 'delete') {
-                  _showDeleteConfirmationDialog();
-                }
-              },
-              itemBuilder: (BuildContext context) => [
-                const PopupMenuItem<String>(
-                  value: 'delete',
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete),
-                      SizedBox(width: 8),
-                      Text('Delete preset'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-        ],
-      ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-            if (preset.containerArt != null && preset.containerArt!.isNotEmpty)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      preset.containerArt!,
-                      width: 200,
-                      height: 200,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          width: 200,
-                          height: 200,
-                          color: theme.colorScheme.surfaceContainerHighest,
-                          child: Icon(
-                            Icons.music_note,
-                            size: 100,
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        );
-                      },
+          appBar: AppBar(
+            title: Text('Spotify Preset ${preset.id}'),
+            actions: [
+              if (_isDeleting)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
                     ),
                   ),
-                ),
-              ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 88.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: SelectableText(
-                      preset.itemName,
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+                )
+              else
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert),
+                  onSelected: (value) {
+                    if (value == 'delete') {
+                      _showDeleteConfirmationDialog();
+                    }
+                  },
+                  itemBuilder: (BuildContext context) => [
+                    const PopupMenuItem<String>(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete),
+                          SizedBox(width: 8),
+                          Text('Delete preset'),
+                        ],
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  _buildDetailRow(
-                    context,
-                    'Preset Number',
-                    preset.id,
-                    Icons.numbers,
-                  ),
-                  if (preset.sourceAccount != null) ...[
-                    const Divider(),
-                    if (_isLoadingAccount)
-                      _buildLoadingRow(context, 'Spotify Account', Icons.account_circle)
-                    else if (_accountDisplayName != null)
-                      _buildDetailRow(
-                        context,
-                        'Spotify Account',
-                        _accountDisplayName!,
-                        Icons.account_circle,
-                      )
-                    else if (_accountFetchError != null)
-                      _buildDetailRow(
-                        context,
-                        'Spotify Account',
-                        preset.sourceAccount!,
-                        Icons.account_circle,
-                      ),
-                  ],
-                  if (_decodedUri != null) ...[
-                    const Divider(),
-                    _buildDetailRow(
-                      context,
-                      'Spotify URI',
-                      _decodedUri!,
-                      Icons.link,
                     ),
                   ],
-                  if (_decodingError != null) ...[
-                    const Divider(),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12.0),
-                      child: Card(
-                        color: theme.colorScheme.errorContainer,
+                ),
+            ],
+          ),
+          body: Stack(
+            fit: StackFit.expand,
+            children: [
+              SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (preset.containerArt != null &&
+                        preset.containerArt!.isNotEmpty)
+                      Center(
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.error_outline,
-                                color: theme.colorScheme.onErrorContainer,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  _decodingError!,
-                                  style: TextStyle(
-                                    color: theme.colorScheme.onErrorContainer,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              preset.containerArt!,
+                              width: 200,
+                              height: 200,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  width: 200,
+                                  height: 200,
+                                  color:
+                                      theme.colorScheme.surfaceContainerHighest,
+                                  child: Icon(
+                                    Icons.music_note,
+                                    size: 100,
+                                    color: theme.colorScheme.onSurfaceVariant,
                                   ),
-                                ),
-                              ),
-                            ],
+                                );
+                              },
+                            ),
                           ),
                         ),
                       ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        16.0,
+                        16.0,
+                        16.0,
+                        88.0,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Center(
+                            child: SelectableText(
+                              preset.itemName,
+                              style: theme.textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          _buildDetailRow(
+                            context,
+                            'Preset Number',
+                            preset.id,
+                            Icons.numbers,
+                          ),
+                          if (preset.sourceAccount != null) ...[
+                            const Divider(),
+                            if (_isLoadingAccount)
+                              _buildLoadingRow(
+                                context,
+                                'Spotify Account',
+                                Icons.account_circle,
+                              )
+                            else if (_accountDisplayName != null)
+                              _buildDetailRow(
+                                context,
+                                'Spotify Account',
+                                _accountDisplayName!,
+                                Icons.account_circle,
+                              )
+                            else if (_accountFetchError != null)
+                              _buildDetailRow(
+                                context,
+                                'Spotify Account',
+                                preset.sourceAccount!,
+                                Icons.account_circle,
+                              ),
+                          ],
+                          if (_decodedUri != null) ...[
+                            const Divider(),
+                            _buildDetailRow(
+                              context,
+                              'Spotify URI',
+                              _decodedUri!,
+                              Icons.link,
+                            ),
+                          ],
+                          if (_decodingError != null) ...[
+                            const Divider(),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12.0,
+                              ),
+                              child: Card(
+                                color: theme.colorScheme.errorContainer,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.error_outline,
+                                        color:
+                                            theme.colorScheme.onErrorContainer,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          _decodingError!,
+                                          style: TextStyle(
+                                            color: theme
+                                                .colorScheme
+                                                .onErrorContainer,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              onPressed: _decodingError == null
+                                  ? _openInSpotify
+                                  : null,
+                              icon: const Icon(Icons.open_in_new),
+                              label: const Text('Open in Spotify'),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
-                  const SizedBox(height: 16),
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: _decodingError == null ? _openInSpotify : null,
-                      icon: const Icon(Icons.open_in_new),
-                      label: const Text('Open in Spotify'),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
+              ValueListenableBuilder<bool>(
+                valueListenable: _fabExpandedNotifier,
+                builder: (context, isExpanded, child) {
+                  if (!isExpanded) return const SizedBox.shrink();
+                  return Positioned.fill(
+                    child: GestureDetector(
+                      onTap: () => _fabExpandedNotifier.value = false,
+                      child: Container(
+                        color: theme.colorScheme.scrim.withValues(alpha: 0.4),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
-        ),
-          ValueListenableBuilder<bool>(
-            valueListenable: _fabExpandedNotifier,
-            builder: (context, isExpanded, child) {
-              if (!isExpanded) return const SizedBox.shrink();
-              return Positioned.fill(
-                child: GestureDetector(
-                  onTap: () => _fabExpandedNotifier.value = false,
-                  child: Container(
-                    color: theme.colorScheme.scrim.withValues(alpha: 0.4),
-                  ),
-                ),
-              );
-            },
+          floatingActionButton: PresetActionFabs(
+            preset: preset,
+            speakerIp: widget.speakerIp,
+            isExpandedNotifier: _fabExpandedNotifier,
+            speakerApiService: _speakerApiService,
           ),
-        ],
-      ),
-      floatingActionButton: PresetActionFabs(
-        preset: preset,
-        speakerIp: widget.speakerIp,
-        isExpandedNotifier: _fabExpandedNotifier,
-        speakerApiService: _speakerApiService,
-      ),
-    );
+        );
       },
     );
   }
@@ -507,11 +520,7 @@ class _SpotifyPresetDetailPageState extends State<SpotifyPresetDetailPage> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            size: 20,
-            color: theme.colorScheme.primary,
-          ),
+          Icon(icon, size: 20, color: theme.colorScheme.primary),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -525,10 +534,7 @@ class _SpotifyPresetDetailPageState extends State<SpotifyPresetDetailPage> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                SelectableText(
-                  value,
-                  style: theme.textTheme.bodyLarge,
-                ),
+                SelectableText(value, style: theme.textTheme.bodyLarge),
               ],
             ),
           ),
@@ -545,11 +551,7 @@ class _SpotifyPresetDetailPageState extends State<SpotifyPresetDetailPage> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            size: 20,
-            color: theme.colorScheme.primary,
-          ),
+          Icon(icon, size: 20, color: theme.colorScheme.primary),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

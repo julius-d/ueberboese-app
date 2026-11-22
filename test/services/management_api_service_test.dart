@@ -23,30 +23,33 @@ void main() {
     const username = 'admin';
     const password = 'secret123';
 
-    test('fetchAccountSpeakers returns list of IP addresses on success', () async {
-      final responseBody = json.encode({
-        'speakers': [
-          {'ipAddress': '192.168.1.100'},
-          {'ipAddress': '192.168.1.101'},
-        ],
-      });
+    test(
+      'fetchAccountSpeakers returns list of IP addresses on success',
+      () async {
+        final responseBody = json.encode({
+          'speakers': [
+            {'ipAddress': '192.168.1.100'},
+            {'ipAddress': '192.168.1.101'},
+          ],
+        });
 
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response(responseBody, 200),
-      );
+        when(
+          mockClient.get(
+            Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
+            headers: anyNamed('headers'),
+          ),
+        ).thenAnswer((_) async => http.Response(responseBody, 200));
 
-      final result = await service.fetchAccountSpeakers(
-        apiUrl,
-        accountId,
-        username,
-        password,
-      );
+        final result = await service.fetchAccountSpeakers(
+          apiUrl,
+          accountId,
+          username,
+          password,
+        );
 
-      expect(result, ['192.168.1.100', '192.168.1.101']);
-    });
+        expect(result, ['192.168.1.100', '192.168.1.101']);
+      },
+    );
 
     test('fetchAccountSpeakers handles trailing slash in API URL', () async {
       final responseBody = json.encode({
@@ -55,12 +58,12 @@ void main() {
         ],
       });
 
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response(responseBody, 200),
-      );
+      when(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
+          headers: anyNamed('headers'),
+        ),
+      ).thenAnswer((_) async => http.Response(responseBody, 200));
 
       final result = await service.fetchAccountSpeakers(
         '$apiUrl/',
@@ -75,38 +78,32 @@ void main() {
     test('fetchAccountSpeakers sends correct Basic Auth header', () async {
       final responseBody = json.encode({'speakers': <String>[]});
 
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response(responseBody, 200),
-      );
-
-      await service.fetchAccountSpeakers(
-        apiUrl,
-        accountId,
-        username,
-        password,
-      );
-
-      verify(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
-        headers: argThat(
-          contains('Authorization'),
-          named: 'headers',
+      when(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
+          headers: anyNamed('headers'),
         ),
-      ));
+      ).thenAnswer((_) async => http.Response(responseBody, 200));
+
+      await service.fetchAccountSpeakers(apiUrl, accountId, username, password);
+
+      verify(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
+          headers: argThat(contains('Authorization'), named: 'headers'),
+        ),
+      );
     });
 
     test('fetchAccountSpeakers returns empty list when no speakers', () async {
       final responseBody = json.encode({'speakers': <String>[]});
 
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response(responseBody, 200),
-      );
+      when(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
+          headers: anyNamed('headers'),
+        ),
+      ).thenAnswer((_) async => http.Response(responseBody, 200));
 
       final result = await service.fetchAccountSpeakers(
         apiUrl,
@@ -119,15 +116,16 @@ void main() {
     });
 
     test('fetchAccountSpeakers throws exception on 401 Unauthorized', () async {
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response('Unauthorized', 401),
-      );
+      when(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
+          headers: anyNamed('headers'),
+        ),
+      ).thenAnswer((_) async => http.Response('Unauthorized', 401));
 
       expect(
-        () => service.fetchAccountSpeakers(apiUrl, accountId, username, password),
+        () =>
+            service.fetchAccountSpeakers(apiUrl, accountId, username, password),
         throwsA(
           isA<Exception>().having(
             (e) => e.toString(),
@@ -139,15 +137,16 @@ void main() {
     });
 
     test('fetchAccountSpeakers throws exception on 403 Forbidden', () async {
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response('Forbidden', 403),
-      );
+      when(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
+          headers: anyNamed('headers'),
+        ),
+      ).thenAnswer((_) async => http.Response('Forbidden', 403));
 
       expect(
-        () => service.fetchAccountSpeakers(apiUrl, accountId, username, password),
+        () =>
+            service.fetchAccountSpeakers(apiUrl, accountId, username, password),
         throwsA(
           isA<Exception>().having(
             (e) => e.toString(),
@@ -159,15 +158,16 @@ void main() {
     });
 
     test('fetchAccountSpeakers throws exception on 404 Not Found', () async {
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response('Not Found', 404),
-      );
+      when(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
+          headers: anyNamed('headers'),
+        ),
+      ).thenAnswer((_) async => http.Response('Not Found', 404));
 
       expect(
-        () => service.fetchAccountSpeakers(apiUrl, accountId, username, password),
+        () =>
+            service.fetchAccountSpeakers(apiUrl, accountId, username, password),
         throwsA(
           isA<Exception>().having(
             (e) => e.toString(),
@@ -178,36 +178,45 @@ void main() {
       );
     });
 
-    test('fetchAccountSpeakers throws exception on other HTTP errors', () async {
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response('Server Error', 500),
-      );
-
-      expect(
-        () => service.fetchAccountSpeakers(apiUrl, accountId, username, password),
-        throwsA(
-          isA<Exception>().having(
-            (e) => e.toString(),
-            'message',
-            contains('HTTP 500'),
+    test(
+      'fetchAccountSpeakers throws exception on other HTTP errors',
+      () async {
+        when(
+          mockClient.get(
+            Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
+            headers: anyNamed('headers'),
           ),
-        ),
-      );
-    });
+        ).thenAnswer((_) async => http.Response('Server Error', 500));
+
+        expect(
+          () => service.fetchAccountSpeakers(
+            apiUrl,
+            accountId,
+            username,
+            password,
+          ),
+          throwsA(
+            isA<Exception>().having(
+              (e) => e.toString(),
+              'message',
+              contains('HTTP 500'),
+            ),
+          ),
+        );
+      },
+    );
 
     test('fetchAccountSpeakers throws exception on invalid JSON', () async {
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response('not valid json', 200),
-      );
+      when(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
+          headers: anyNamed('headers'),
+        ),
+      ).thenAnswer((_) async => http.Response('not valid json', 200));
 
       expect(
-        () => service.fetchAccountSpeakers(apiUrl, accountId, username, password),
+        () =>
+            service.fetchAccountSpeakers(apiUrl, accountId, username, password),
         throwsA(
           isA<Exception>().having(
             (e) => e.toString(),
@@ -218,66 +227,80 @@ void main() {
       );
     });
 
-    test('fetchAccountSpeakers throws exception when speakers field is missing', () async {
-      final responseBody = json.encode({'data': <String>[]});
+    test(
+      'fetchAccountSpeakers throws exception when speakers field is missing',
+      () async {
+        final responseBody = json.encode({'data': <String>[]});
 
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response(responseBody, 200),
-      );
-
-      expect(
-        () => service.fetchAccountSpeakers(apiUrl, accountId, username, password),
-        throwsA(
-          isA<Exception>().having(
-            (e) => e.toString(),
-            'message',
-            contains('missing speakers field'),
+        when(
+          mockClient.get(
+            Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
+            headers: anyNamed('headers'),
           ),
-        ),
-      );
-    });
+        ).thenAnswer((_) async => http.Response(responseBody, 200));
+
+        expect(
+          () => service.fetchAccountSpeakers(
+            apiUrl,
+            accountId,
+            username,
+            password,
+          ),
+          throwsA(
+            isA<Exception>().having(
+              (e) => e.toString(),
+              'message',
+              contains('missing speakers field'),
+            ),
+          ),
+        );
+      },
+    );
 
     test('fetchAccountSpeakers handles network errors', () async {
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
-        headers: anyNamed('headers'),
-      )).thenThrow(Exception('Network error'));
+      when(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
+          headers: anyNamed('headers'),
+        ),
+      ).thenThrow(Exception('Network error'));
 
       expect(
-        () => service.fetchAccountSpeakers(apiUrl, accountId, username, password),
+        () =>
+            service.fetchAccountSpeakers(apiUrl, accountId, username, password),
         throwsException,
       );
     });
 
-    test('fetchAccountSpeakers filters out speakers without IP addresses', () async {
-      final responseBody = json.encode({
-        'speakers': [
-          {'ipAddress': '192.168.1.100'},
-          {'name': 'Speaker without IP'},
-          {'ipAddress': ''},
-          {'ipAddress': '192.168.1.101'},
-        ],
-      });
+    test(
+      'fetchAccountSpeakers filters out speakers without IP addresses',
+      () async {
+        final responseBody = json.encode({
+          'speakers': [
+            {'ipAddress': '192.168.1.100'},
+            {'name': 'Speaker without IP'},
+            {'ipAddress': ''},
+            {'ipAddress': '192.168.1.101'},
+          ],
+        });
 
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response(responseBody, 200),
-      );
+        when(
+          mockClient.get(
+            Uri.parse('$apiUrl/mgmt/accounts/$accountId/speakers'),
+            headers: anyNamed('headers'),
+          ),
+        ).thenAnswer((_) async => http.Response(responseBody, 200));
 
-      final result = await service.fetchAccountSpeakers(
-        apiUrl,
-        accountId,
-        username,
-        password,
-      );
+        final result = await service.fetchAccountSpeakers(
+          apiUrl,
+          accountId,
+          username,
+          password,
+        );
 
-      expect(result, ['192.168.1.100', '192.168.1.101']);
-    });
+        expect(result, ['192.168.1.100', '192.168.1.101']);
+      },
+    );
   });
 
   group('fetchDeviceEvents', () {
@@ -304,12 +327,12 @@ void main() {
         ],
       });
 
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response(responseBody, 200),
-      );
+      when(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
+          headers: anyNamed('headers'),
+        ),
+      ).thenAnswer((_) async => http.Response(responseBody, 200));
 
       final result = await service.fetchDeviceEvents(
         apiUrl,
@@ -336,12 +359,12 @@ void main() {
         ],
       });
 
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response(responseBody, 200),
-      );
+      when(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
+          headers: anyNamed('headers'),
+        ),
+      ).thenAnswer((_) async => http.Response(responseBody, 200));
 
       final result = await service.fetchDeviceEvents(
         '$apiUrl/',
@@ -357,38 +380,32 @@ void main() {
     test('sends correct Basic Auth header', () async {
       final responseBody = json.encode({'events': <Map<String, dynamic>>[]});
 
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response(responseBody, 200),
-      );
-
-      await service.fetchDeviceEvents(
-        apiUrl,
-        deviceId,
-        username,
-        password,
-      );
-
-      verify(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
-        headers: argThat(
-          contains('Authorization'),
-          named: 'headers',
+      when(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
+          headers: anyNamed('headers'),
         ),
-      ));
+      ).thenAnswer((_) async => http.Response(responseBody, 200));
+
+      await service.fetchDeviceEvents(apiUrl, deviceId, username, password);
+
+      verify(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
+          headers: argThat(contains('Authorization'), named: 'headers'),
+        ),
+      );
     });
 
     test('returns empty list when no events', () async {
       final responseBody = json.encode({'events': <Map<String, dynamic>>[]});
 
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response(responseBody, 200),
-      );
+      when(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
+          headers: anyNamed('headers'),
+        ),
+      ).thenAnswer((_) async => http.Response(responseBody, 200));
 
       final result = await service.fetchDeviceEvents(
         apiUrl,
@@ -401,12 +418,12 @@ void main() {
     });
 
     test('throws exception on 401 Unauthorized', () async {
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response('Unauthorized', 401),
-      );
+      when(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
+          headers: anyNamed('headers'),
+        ),
+      ).thenAnswer((_) async => http.Response('Unauthorized', 401));
 
       expect(
         () => service.fetchDeviceEvents(apiUrl, deviceId, username, password),
@@ -421,12 +438,12 @@ void main() {
     });
 
     test('throws exception on 403 Forbidden', () async {
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response('Forbidden', 403),
-      );
+      when(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
+          headers: anyNamed('headers'),
+        ),
+      ).thenAnswer((_) async => http.Response('Forbidden', 403));
 
       expect(
         () => service.fetchDeviceEvents(apiUrl, deviceId, username, password),
@@ -441,12 +458,12 @@ void main() {
     });
 
     test('throws exception on 404 Not Found', () async {
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response('Not Found', 404),
-      );
+      when(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
+          headers: anyNamed('headers'),
+        ),
+      ).thenAnswer((_) async => http.Response('Not Found', 404));
 
       expect(
         () => service.fetchDeviceEvents(apiUrl, deviceId, username, password),
@@ -461,12 +478,12 @@ void main() {
     });
 
     test('throws exception on other HTTP errors', () async {
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response('Server Error', 500),
-      );
+      when(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
+          headers: anyNamed('headers'),
+        ),
+      ).thenAnswer((_) async => http.Response('Server Error', 500));
 
       expect(
         () => service.fetchDeviceEvents(apiUrl, deviceId, username, password),
@@ -481,12 +498,12 @@ void main() {
     });
 
     test('throws exception on invalid JSON', () async {
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response('not valid json', 200),
-      );
+      when(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
+          headers: anyNamed('headers'),
+        ),
+      ).thenAnswer((_) async => http.Response('not valid json', 200));
 
       expect(
         () => service.fetchDeviceEvents(apiUrl, deviceId, username, password),
@@ -503,12 +520,12 @@ void main() {
     test('throws exception when events field is missing', () async {
       final responseBody = json.encode({'data': <Map<String, dynamic>>[]});
 
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response(responseBody, 200),
-      );
+      when(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
+          headers: anyNamed('headers'),
+        ),
+      ).thenAnswer((_) async => http.Response(responseBody, 200));
 
       expect(
         () => service.fetchDeviceEvents(apiUrl, deviceId, username, password),
@@ -523,10 +540,12 @@ void main() {
     });
 
     test('handles network errors', () async {
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
-        headers: anyNamed('headers'),
-      )).thenThrow(Exception('Network error'));
+      when(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
+          headers: anyNamed('headers'),
+        ),
+      ).thenThrow(Exception('Network error'));
 
       expect(
         () => service.fetchDeviceEvents(apiUrl, deviceId, username, password),
@@ -556,12 +575,12 @@ void main() {
         ],
       });
 
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response(responseBody, 200),
-      );
+      when(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
+          headers: anyNamed('headers'),
+        ),
+      ).thenAnswer((_) async => http.Response(responseBody, 200));
 
       final result = await service.fetchDeviceEvents(
         apiUrl,
@@ -588,12 +607,12 @@ void main() {
         ],
       });
 
-      when(mockClient.get(
-        Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
-        headers: anyNamed('headers'),
-      )).thenAnswer(
-        (_) async => http.Response(responseBody, 200),
-      );
+      when(
+        mockClient.get(
+          Uri.parse('$apiUrl/mgmt/devices/$deviceId/events'),
+          headers: anyNamed('headers'),
+        ),
+      ).thenAnswer((_) async => http.Response(responseBody, 200));
 
       final result = await service.fetchDeviceEvents(
         apiUrl,

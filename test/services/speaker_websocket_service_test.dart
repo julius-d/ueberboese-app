@@ -160,20 +160,22 @@ void main() {
       service.dispose();
     });
 
-    test('normalizes empty string fields to null in nowPlayingUpdated', () async {
-      final service = SpeakerWebsocketService(
-        '192.168.1.100',
-        webSocketFactory: (uri, {protocols}) => mockChannel,
-      );
+    test(
+      'normalizes empty string fields to null in nowPlayingUpdated',
+      () async {
+        final service = SpeakerWebsocketService(
+          '192.168.1.100',
+          webSocketFactory: (uri, {protocols}) => mockChannel,
+        );
 
-      final nowPlayingUpdates = <NowPlaying>[];
-      service.nowPlayingStream.listen((nowPlaying) {
-        nowPlayingUpdates.add(nowPlaying);
-      });
+        final nowPlayingUpdates = <NowPlaying>[];
+        service.nowPlayingStream.listen((nowPlaying) {
+          nowPlayingUpdates.add(nowPlaying);
+        });
 
-      service.connect();
+        service.connect();
 
-      const xmlMessage = '''<?xml version="1.0" encoding="UTF-8"?>
+        const xmlMessage = '''<?xml version="1.0" encoding="UTF-8"?>
 <updates deviceID="9884E39E1EA8">
   <nowPlayingUpdated>
     <nowPlaying deviceID="9884E39E1EA8" source="TUNEIN" sourceAccount="">
@@ -189,18 +191,19 @@ void main() {
   </nowPlayingUpdated>
 </updates>''';
 
-      messageController.add(xmlMessage);
-      await Future<void>.delayed(Duration.zero);
+        messageController.add(xmlMessage);
+        await Future<void>.delayed(Duration.zero);
 
-      expect(nowPlayingUpdates.length, 1);
-      expect(nowPlayingUpdates[0].track, isNull);
-      expect(nowPlayingUpdates[0].artist, isNull);
-      expect(nowPlayingUpdates[0].album, isNull);
-      expect(nowPlayingUpdates[0].art, isNull);
-      expect(nowPlayingUpdates[0].playStatus, 'BUFFERING_STATE');
+        expect(nowPlayingUpdates.length, 1);
+        expect(nowPlayingUpdates[0].track, isNull);
+        expect(nowPlayingUpdates[0].artist, isNull);
+        expect(nowPlayingUpdates[0].album, isNull);
+        expect(nowPlayingUpdates[0].art, isNull);
+        expect(nowPlayingUpdates[0].playStatus, 'BUFFERING_STATE');
 
-      service.dispose();
-    });
+        service.dispose();
+      },
+    );
 
     test('parses nowSelectionUpdated XML correctly', () async {
       final service = SpeakerWebsocketService(
@@ -232,7 +235,10 @@ void main() {
 
       expect(nowPlayingUpdates.length, 1);
       expect(nowPlayingUpdates[0].source, 'SPOTIFY');
-      expect(nowPlayingUpdates[0].location, '/playback/container/c3BvdGlmeTpwbGF5bGlzdDoybjZXMnA1QzBNQUQ5YTR6NXhUVDdu');
+      expect(
+        nowPlayingUpdates[0].location,
+        '/playback/container/c3BvdGlmeTpwbGF5bGlzdDoybjZXMnA1QzBNQUQ5YTR6NXhUVDdu',
+      );
       expect(nowPlayingUpdates[0].sourceAccount, 'z5zt8py3wuxytbza4cxa431ge');
       expect(nowPlayingUpdates[0].track, 'Komplett Entspannt');
       expect(nowPlayingUpdates[0].playStatus, 'PLAY_STATE');
@@ -331,12 +337,19 @@ void main() {
 
       // Use expectLater with emitsDone to properly wait for stream closure
       final volumeStreamDone = expectLater(service.volumeStream, emitsDone);
-      final nowPlayingStreamDone = expectLater(service.nowPlayingStream, emitsDone);
+      final nowPlayingStreamDone = expectLater(
+        service.nowPlayingStream,
+        emitsDone,
+      );
       final zoneStreamDone = expectLater(service.zoneStream, emitsDone);
 
       service.dispose();
 
-      await Future.wait([volumeStreamDone, nowPlayingStreamDone, zoneStreamDone]);
+      await Future.wait([
+        volumeStreamDone,
+        nowPlayingStreamDone,
+        zoneStreamDone,
+      ]);
     });
 
     test('disconnect prevents reconnection', () {

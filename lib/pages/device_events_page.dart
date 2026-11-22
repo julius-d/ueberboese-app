@@ -14,11 +14,7 @@ class DeviceEventsPage extends StatefulWidget {
   final Speaker speaker;
   final ManagementApiService? apiService;
 
-  const DeviceEventsPage({
-    super.key,
-    required this.speaker,
-    this.apiService,
-  });
+  const DeviceEventsPage({super.key, required this.speaker, this.apiService});
 
   @override
   State<DeviceEventsPage> createState() => _DeviceEventsPageState();
@@ -101,7 +97,8 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
     'favorite-changed': _EventHandler(
       icon: Icons.favorite,
       getSummary: (data) {
-        final isFavorite = data['favorite-value'] == 'true' || data['favorite-value'] == true;
+        final isFavorite =
+            data['favorite-value'] == 'true' || data['favorite-value'] == true;
         return isFavorite ? 'Marked as favorite' : 'Removed from favorites';
       },
     ),
@@ -110,15 +107,18 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
       getSummary: (data) {
         final nowPlaying = data['nowPlaying'] as Map<String, dynamic>?;
         final source = nowPlaying?['source'] as String?;
-        final track = (nowPlaying?['track'] as Map<String, dynamic>?)?['text'] as String?;
+        final track =
+            (nowPlaying?['track'] as Map<String, dynamic>?)?['text'] as String?;
         if (track == null || track.isEmpty) {
           if (source == 'BLUETOOTH') {
-            final connInfo = nowPlaying?['connectionStatusInfo'] as Map<String, dynamic>?;
+            final connInfo =
+                nowPlaying?['connectionStatusInfo'] as Map<String, dynamic>?;
             final deviceName = connInfo?['deviceName'] as String?;
             final status = connInfo?['status'] as String?;
             if (deviceName != null && deviceName.isNotEmpty) {
               if (status != null && status.isNotEmpty) {
-                final formattedStatus = status[0].toUpperCase() + status.substring(1).toLowerCase();
+                final formattedStatus =
+                    status[0].toUpperCase() + status.substring(1).toLowerCase();
                 return 'Bluetooth: $deviceName ($formattedStatus)';
               }
               return 'Bluetooth: $deviceName';
@@ -126,7 +126,9 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
           }
           return 'Playback stopped';
         }
-        final artist = (nowPlaying?['artist'] as Map<String, dynamic>?)?['text'] as String?;
+        final artist =
+            (nowPlaying?['artist'] as Map<String, dynamic>?)?['text']
+                as String?;
         if (artist != null && artist.isNotEmpty) return '$track — $artist';
         return track;
       },
@@ -137,8 +139,11 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
         final lang = data['language'] as String?;
         if (lang == null || lang.isEmpty) return 'No additional data';
         const prefix = 'DISPLAY_LANGUAGE_';
-        final name = lang.startsWith(prefix) ? lang.substring(prefix.length) : lang;
-        final capitalized = name[0].toUpperCase() + name.substring(1).toLowerCase();
+        final name = lang.startsWith(prefix)
+            ? lang.substring(prefix.length)
+            : lang;
+        final capitalized =
+            name[0].toUpperCase() + name.substring(1).toLowerCase();
         return 'Language: $capitalized';
       },
     ),
@@ -156,13 +161,15 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
     ),
     'play-state-changed': _EventHandler(
       icon: Icons.play_arrow,
-      getSummary: (data) => _staticFormatPlayState(data['play-state'] as String?),
+      getSummary: (data) =>
+          _staticFormatPlayState(data['play-state'] as String?),
     ),
     'playpause-pressed': _EventHandler(
       icon: Icons.play_arrow,
       getSummary: (data) {
         final origin = data['origin'] as String?;
-        if (origin != null && origin.isNotEmpty) return 'Play/Pause via $origin';
+        if (origin != null && origin.isNotEmpty)
+          return 'Play/Pause via $origin';
         return 'Play/Pause pressed';
       },
     ),
@@ -218,7 +225,10 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
         final brightness = data['brightness'];
         if (brightness != null) parts.add('Brightness: $brightness');
         final enabled = data['enabled'];
-        if (enabled != null) parts.add('Display: ${enabled == 'true' || enabled == true ? 'on' : 'off'}');
+        if (enabled != null)
+          parts.add(
+            'Display: ${enabled == 'true' || enabled == true ? 'on' : 'off'}',
+          );
         final useroffset = data['useroffset'];
         if (useroffset != null) parts.add('Offset: $useroffset');
         final usertime = data['usertime'];
@@ -244,7 +254,8 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
         final preset = data['preset'] as String?;
         final origin = data['origin'] as String?;
         if (preset != null && preset.isNotEmpty) {
-          if (origin != null && origin.isNotEmpty) return '$preset assigned via $origin';
+          if (origin != null && origin.isNotEmpty)
+            return '$preset assigned via $origin';
           return '$preset assigned';
         }
         return 'Preset assigned';
@@ -287,18 +298,22 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
       getSummary: (data) {
         final presets = data['presets'] as List<dynamic>?;
         if (presets == null || presets.isEmpty) return 'Presets updated';
-        final parts = presets.map((p) {
-          final preset = p as Map<String, dynamic>;
-          final id = preset['id'] as String? ?? '';
-          final name = preset['name'] as String? ?? '';
-          return '$id: $name';
-        }).where((s) => s != ': ').toList();
+        final parts = presets
+            .map((p) {
+              final preset = p as Map<String, dynamic>;
+              final id = preset['id'] as String? ?? '';
+              final name = preset['name'] as String? ?? '';
+              return '$id: $name';
+            })
+            .where((s) => s != ': ')
+            .toList();
         return parts.isNotEmpty ? parts.join(' \u2013 ') : 'Presets updated';
       },
     ),
     'source-state-changed': _EventHandler(
       icon: Icons.input,
-      getSummary: (data) => 'Source: ${_staticFormatSourceState(data['source-state'] as String?)}',
+      getSummary: (data) =>
+          'Source: ${_staticFormatSourceState(data['source-state'] as String?)}',
     ),
     'system-state-changed': _EventHandler(
       icon: Icons.settings,
@@ -314,7 +329,8 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
         if (data.containsKey('volume-change')) {
           final volumeChange = data['volume-change'];
           if (volumeChange is List && volumeChange.isNotEmpty) {
-            if (volumeChange.length >= 2) return 'Volume: ${volumeChange.first} → ${volumeChange.last}';
+            if (volumeChange.length >= 2)
+              return 'Volume: ${volumeChange.first} → ${volumeChange.last}';
             return 'Volume: ${volumeChange.first}';
           }
         }
@@ -381,7 +397,8 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
       final nowPlaying = event.data['nowPlaying'] as Map<String, dynamic>?;
       if (nowPlaying == null) return false;
 
-      final track = (nowPlaying['track'] as Map<String, dynamic>?)?['text'] as String?;
+      final track =
+          (nowPlaying['track'] as Map<String, dynamic>?)?['text'] as String?;
       if (track == null || track.isEmpty) return false;
     }
 
@@ -401,10 +418,16 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
       final type = contentItemElement.getAttribute('type') ?? '';
       final location = contentItemElement.getAttribute('location') ?? '';
       final sourceAccount = contentItemElement.getAttribute('sourceAccount');
-      final isPresetable = contentItemElement.getAttribute('isPresetable') == 'true';
+      final isPresetable =
+          contentItemElement.getAttribute('isPresetable') == 'true';
 
-      final itemName = contentItemElement.findElements('itemName').firstOrNull?.innerText ?? '';
-      final containerArt = contentItemElement.findElements('containerArt').firstOrNull?.innerText;
+      final itemName =
+          contentItemElement.findElements('itemName').firstOrNull?.innerText ??
+          '';
+      final containerArt = contentItemElement
+          .findElements('containerArt')
+          .firstOrNull
+          ?.innerText;
 
       return Recent(
         deviceId: widget.speaker.deviceId,
@@ -428,10 +451,14 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
       final nowPlaying = event.data['nowPlaying'] as Map<String, dynamic>?;
       if (nowPlaying == null) return null;
 
-      final track = (nowPlaying['track'] as Map<String, dynamic>?)?['text'] as String?;
-      final artist = (nowPlaying['artist'] as Map<String, dynamic>?)?['text'] as String?;
-      final album = (nowPlaying['album'] as Map<String, dynamic>?)?['text'] as String?;
-      final artUrl = (nowPlaying['art'] as Map<String, dynamic>?)?['text'] as String?;
+      final track =
+          (nowPlaying['track'] as Map<String, dynamic>?)?['text'] as String?;
+      final artist =
+          (nowPlaying['artist'] as Map<String, dynamic>?)?['text'] as String?;
+      final album =
+          (nowPlaying['album'] as Map<String, dynamic>?)?['text'] as String?;
+      final artUrl =
+          (nowPlaying['art'] as Map<String, dynamic>?)?['text'] as String?;
 
       final result = <String, String>{};
       if (track != null) result['track'] = track;
@@ -481,7 +508,8 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
     // Get source from various places
     String? source;
     if (data.containsKey('nowPlaying')) {
-      source = (data['nowPlaying'] as Map<String, dynamic>?)?['source'] as String?;
+      source =
+          (data['nowPlaying'] as Map<String, dynamic>?)?['source'] as String?;
     }
 
     // Try to parse source from contentItem if not in nowPlaying
@@ -540,11 +568,14 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
     });
 
     try {
-      await _speakerApiService.selectContentItem(widget.speaker.ipAddress, recent);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Playing "${recent.itemName}"')),
+      await _speakerApiService.selectContentItem(
+        widget.speaker.ipAddress,
+        recent,
       );
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Playing "${recent.itemName}"')));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -592,9 +623,7 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
               future: _eventsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                  return const Center(child: CircularProgressIndicator());
                 }
 
                 if (snapshot.hasError) {
@@ -635,9 +664,7 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
                 final events = snapshot.data ?? [];
 
                 if (events.isEmpty) {
-                  return const Center(
-                    child: Text('No events found'),
-                  );
+                  return const Center(child: Text('No events found'));
                 }
 
                 // Sort events by time, newest first
@@ -646,7 +673,8 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
 
                 return ListView.separated(
                   itemCount: sortedEvents.length,
-                  separatorBuilder: (context, index) => const Divider(height: 1, indent: 72),
+                  separatorBuilder: (context, index) =>
+                      const Divider(height: 1, indent: 72),
                   itemBuilder: (context, index) {
                     final event = sortedEvents[index];
                     final isPlayable = _isPlayableEvent(event);
@@ -657,16 +685,23 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
                       final recentItem = _parseContentItem(event);
 
                       // Get title - prefer track from nowPlaying, fallback to itemName from contentItem
-                      final track = nowPlayingInfo?['track'] ?? recentItem?.itemName ?? 'Unknown Track';
+                      final track =
+                          nowPlayingInfo?['track'] ??
+                          recentItem?.itemName ??
+                          'Unknown Track';
                       final artist = nowPlayingInfo?['artist'] ?? '';
                       final album = nowPlayingInfo?['album'];
-                      final artUrl = nowPlayingInfo?['artUrl'] ?? recentItem?.containerArt;
+                      final artUrl =
+                          nowPlayingInfo?['artUrl'] ?? recentItem?.containerArt;
                       final contextInfo = _getEventContextInfo(event);
                       final eventId = '${event.monoTime}';
                       final isPlayingThis = _playingEventId == eventId;
 
                       return ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 8.0,
+                        ),
                         leading: artUrl != null && artUrl.isNotEmpty
                             ? ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
@@ -680,12 +715,15 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
                                       width: 56,
                                       height: 56,
                                       decoration: BoxDecoration(
-                                        color: theme.colorScheme.surfaceContainerHighest,
+                                        color: theme
+                                            .colorScheme
+                                            .surfaceContainerHighest,
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: Icon(
                                         Icons.music_note,
-                                        color: theme.colorScheme.onSurfaceVariant,
+                                        color:
+                                            theme.colorScheme.onSurfaceVariant,
                                       ),
                                     );
                                   },
@@ -695,7 +733,8 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
                                 width: 56,
                                 height: 56,
                                 decoration: BoxDecoration(
-                                  color: theme.colorScheme.surfaceContainerHighest,
+                                  color:
+                                      theme.colorScheme.surfaceContainerHighest,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Icon(
@@ -748,12 +787,16 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
                           ],
                         ),
                         trailing: IconButton.filledTonal(
-                          onPressed: _isPlaying ? null : () => _playContent(event),
+                          onPressed: _isPlaying
+                              ? null
+                              : () => _playContent(event),
                           icon: isPlayingThis
                               ? const SizedBox(
                                   width: 24,
                                   height: 24,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
                                 )
                               : const Icon(Icons.play_arrow),
                         ),
@@ -766,7 +809,10 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
                     final showArt = artUri != null && artUri.isNotEmpty;
 
                     return ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8.0,
+                      ),
                       leading: showArt
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(8),
@@ -785,7 +831,8 @@ class _DeviceEventsPageState extends State<DeviceEventsPage> {
                                     ),
                                     child: Icon(
                                       eventIcon,
-                                      color: theme.colorScheme.onPrimaryContainer,
+                                      color:
+                                          theme.colorScheme.onPrimaryContainer,
                                     ),
                                   );
                                 },

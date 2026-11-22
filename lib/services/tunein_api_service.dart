@@ -19,15 +19,14 @@ class TuneInApiService {
     }
 
     final encodedQuery = Uri.encodeComponent(query);
-    final url = Uri.parse('https://opml.radiotime.com/search.ashx?query=$encodedQuery');
+    final url = Uri.parse(
+      'https://opml.radiotime.com/search.ashx?query=$encodedQuery',
+    );
     final client = httpClient ?? http.Client();
 
     try {
       final response = await client
-          .get(
-            url,
-            headers: {'Accept': 'text/xml'},
-          )
+          .get(url, headers: {'Accept': 'text/xml'})
           .timeout(timeout);
 
       if (response.statusCode != 200) {
@@ -70,15 +69,14 @@ class TuneInApiService {
       throw ArgumentError('Station ID cannot be empty');
     }
 
-    final url = Uri.parse('https://opml.radiotime.com/describe.ashx?id=$stationId');
+    final url = Uri.parse(
+      'https://opml.radiotime.com/describe.ashx?id=$stationId',
+    );
     final client = httpClient ?? http.Client();
 
     try {
       final response = await client
-          .get(
-            url,
-            headers: {'Accept': 'text/xml'},
-          )
+          .get(url, headers: {'Accept': 'text/xml'})
           .timeout(timeout);
 
       if (response.statusCode != 200) {

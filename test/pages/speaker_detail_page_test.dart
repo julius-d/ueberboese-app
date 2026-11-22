@@ -62,8 +62,9 @@ void main() {
       expect(find.byIcon(Icons.more_vert), findsOneWidget);
     });
 
-    testWidgets('opens menu when three-dot button is tapped',
-        (WidgetTester tester) async {
+    testWidgets('opens menu when three-dot button is tapped', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -97,8 +98,9 @@ void main() {
       expect(find.byIcon(Icons.delete), findsOneWidget);
     });
 
-    testWidgets('shows delete confirmation dialog when delete is tapped',
-        (WidgetTester tester) async {
+    testWidgets('shows delete confirmation dialog when delete is tapped', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -128,8 +130,9 @@ void main() {
       expect(find.text('Delete'), findsOneWidget);
     });
 
-    testWidgets('closes dialog when cancel is tapped',
-        (WidgetTester tester) async {
+    testWidgets('closes dialog when cancel is tapped', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -156,8 +159,9 @@ void main() {
       expect(find.text('Delete Speaker'), findsNothing);
     });
 
-    testWidgets('deletes speaker and navigates back when confirmed',
-        (WidgetTester tester) async {
+    testWidgets('deletes speaker and navigates back when confirmed', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
       appState.addSpeaker(testSpeaker);
@@ -204,8 +208,9 @@ void main() {
       expect(find.byType(SpeakerDetailPage), findsNothing);
     });
 
-    testWidgets('keeps speaker when cancel is tapped',
-        (WidgetTester tester) async {
+    testWidgets('keeps speaker when cancel is tapped', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
       appState.addSpeaker(testSpeaker);
@@ -233,7 +238,9 @@ void main() {
       expect(appState.speakers.length, 1);
     });
 
-    testWidgets('displays speaker header when nothing is playing', (WidgetTester tester) async {
+    testWidgets('displays speaker header when nothing is playing', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -271,7 +278,9 @@ void main() {
       expect(find.byIcon(Icons.volume_up), findsOneWidget);
     });
 
-    testWidgets('displays Multi-Room Zone section', (WidgetTester tester) async {
+    testWidgets('displays Multi-Room Zone section', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -288,7 +297,9 @@ void main() {
       expect(find.byIcon(Icons.speaker_group), findsOneWidget);
     });
 
-    testWidgets('displays zone member list with basic info', (WidgetTester tester) async {
+    testWidgets('displays zone member list with basic info', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -308,7 +319,9 @@ void main() {
       expect(find.text('Multi-Room Zone'), findsOneWidget);
     });
 
-    testWidgets('displays volume controls for zone members when zone is loaded', (WidgetTester tester) async {
+    testWidgets('displays volume controls for zone members when zone is loaded', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -344,7 +357,9 @@ void main() {
       // which requires mocking the API service. This test verifies the UI structure exists.
     });
 
-    testWidgets('volume section includes volume controls', (WidgetTester tester) async {
+    testWidgets('volume section includes volume controls', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -366,7 +381,9 @@ void main() {
       // Without API mocking, this test verifies the Volume section structure exists.
     });
 
-    testWidgets('volume section includes volume level display between buttons', (WidgetTester tester) async {
+    testWidgets('volume section includes volume level display between buttons', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -389,7 +406,9 @@ void main() {
       expect(find.byType(SpeakerDetailPage), findsOneWidget);
     });
 
-    testWidgets('displays CircularProgressIndicator while loading volumes', (WidgetTester tester) async {
+    testWidgets('displays CircularProgressIndicator while loading volumes', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -406,7 +425,9 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsAtLeast(1));
     });
 
-    testWidgets('zone members section structure exists', (WidgetTester tester) async {
+    testWidgets('zone members section structure exists', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -430,7 +451,9 @@ void main() {
       // This test verifies the basic zone section structure exists.
     });
 
-    testWidgets('IP address and type are selectable', (WidgetTester tester) async {
+    testWidgets('IP address and type are selectable', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -452,28 +475,31 @@ void main() {
       expect(find.text('SoundTouch 10 • 192.168.1.100'), findsOneWidget);
     });
 
-    testWidgets('does not show Open in Spotify button when nowPlaying has no source',
-        (WidgetTester tester) async {
-      final appState = MyAppState();
-      await appState.initialize();
+    testWidgets(
+      'does not show Open in Spotify button when nowPlaying has no source',
+      (WidgetTester tester) async {
+        final appState = MyAppState();
+        await appState.initialize();
 
-      await tester.pumpWidget(
-        ChangeNotifierProvider.value(
-          value: appState,
-          child: const MaterialApp(
-            home: SpeakerDetailPage(speaker: testSpeaker),
+        await tester.pumpWidget(
+          ChangeNotifierProvider.value(
+            value: appState,
+            child: const MaterialApp(
+              home: SpeakerDetailPage(speaker: testSpeaker),
+            ),
           ),
-        ),
-      );
+        );
 
-      await tester.pumpAndSettle();
+        await tester.pumpAndSettle();
 
-      // The Open in Spotify button should not be visible
-      expect(find.text('Open in Spotify'), findsNothing);
-    });
+        // The Open in Spotify button should not be visible
+        expect(find.text('Open in Spotify'), findsNothing);
+      },
+    );
 
-    testWidgets('does not show Open in Spotify button when source is not SPOTIFY',
-        (WidgetTester tester) async {
+    testWidgets('does not show Open in Spotify button when source is not SPOTIFY', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -504,27 +530,30 @@ void main() {
       deviceId: 'device-123',
     );
 
-    testWidgets('does not show warning banner initially before info is loaded',
-        (WidgetTester tester) async {
-      final appState = MyAppState();
-      await appState.initialize();
+    testWidgets(
+      'does not show warning banner initially before info is loaded',
+      (WidgetTester tester) async {
+        final appState = MyAppState();
+        await appState.initialize();
 
-      await tester.pumpWidget(
-        ChangeNotifierProvider.value(
-          value: appState,
-          child: const MaterialApp(
-            home: SpeakerDetailPage(speaker: testSpeaker),
+        await tester.pumpWidget(
+          ChangeNotifierProvider.value(
+            value: appState,
+            child: const MaterialApp(
+              home: SpeakerDetailPage(speaker: testSpeaker),
+            ),
           ),
-        ),
-      );
+        );
 
-      // Before any data is loaded, warning should not be displayed
-      expect(find.text('Management URL Mismatch'), findsNothing);
-      expect(find.byIcon(Icons.warning), findsNothing);
-    });
+        // Before any data is loaded, warning should not be displayed
+        expect(find.text('Management URL Mismatch'), findsNothing);
+        expect(find.byIcon(Icons.warning), findsNothing);
+      },
+    );
 
-    testWidgets('warning banner structure includes all required elements',
-        (WidgetTester tester) async {
+    testWidgets('warning banner structure includes all required elements', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -546,8 +575,9 @@ void main() {
       expect(find.text('🔊'), findsAtLeast(1));
     });
 
-    testWidgets('page layout includes space for warning banner at top',
-        (WidgetTester tester) async {
+    testWidgets('page layout includes space for warning banner at top', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -567,18 +597,21 @@ void main() {
       expect(find.byType(Expanded), findsAtLeast(1));
     });
 
-    testWidgets('app config is accessible from speaker detail page',
-        (WidgetTester tester) async {
+    testWidgets('app config is accessible from speaker detail page', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
       // Set a custom config
-      appState.updateConfig(const AppConfig(
-        apiUrl: 'https://test.example.com',
-        accountId: 'test-account',
-        mgmtUsername: 'admin',
-        mgmtPassword: 'password',
-      ));
+      appState.updateConfig(
+        const AppConfig(
+          apiUrl: 'https://test.example.com',
+          accountId: 'test-account',
+          mgmtUsername: 'admin',
+          mgmtPassword: 'password',
+        ),
+      );
 
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
@@ -596,8 +629,9 @@ void main() {
       expect(find.text('Test Speaker'), findsAtLeast(1));
     });
 
-    testWidgets('warning banner does not appear without mismatch data',
-        (WidgetTester tester) async {
+    testWidgets('warning banner does not appear without mismatch data', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -617,18 +651,21 @@ void main() {
       expect(find.byIcon(Icons.warning), findsNothing);
     });
 
-    testWidgets('page renders correctly with empty config URL',
-        (WidgetTester tester) async {
+    testWidgets('page renders correctly with empty config URL', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
       // Ensure config has empty URL
-      appState.updateConfig(const AppConfig(
-        apiUrl: '',
-        accountId: 'test',
-        mgmtUsername: 'admin',
-        mgmtPassword: 'pass',
-      ));
+      appState.updateConfig(
+        const AppConfig(
+          apiUrl: '',
+          accountId: 'test',
+          mgmtUsername: 'admin',
+          mgmtPassword: 'pass',
+        ),
+      );
 
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
@@ -648,8 +685,9 @@ void main() {
       expect(find.text('Management URL Mismatch'), findsNothing);
     });
 
-    testWidgets('speaker info loading does not crash the page',
-        (WidgetTester tester) async {
+    testWidgets('speaker info loading does not crash the page', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -674,56 +712,67 @@ void main() {
       expect(find.text('Multi-Room Zone'), findsOneWidget);
     });
 
-    testWidgets('shows Now Playing Card with TV display when TV source is active',
-        (WidgetTester tester) async {
-      final appState = MyAppState();
-      await appState.initialize();
+    testWidgets(
+      'shows Now Playing Card with TV display when TV source is active',
+      (WidgetTester tester) async {
+        final appState = MyAppState();
+        await appState.initialize();
 
-      final mockClient = MockClient();
-      final apiService = SpeakerApiService(httpClient: mockClient);
+        final mockClient = MockClient();
+        final apiService = SpeakerApiService(httpClient: mockClient);
 
-      // Mock getNowPlaying to return TV source
-      when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response('''<?xml version="1.0" encoding="UTF-8" ?>
+        // Mock getNowPlaying to return TV source
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(
+            '''<?xml version="1.0" encoding="UTF-8" ?>
 <nowPlaying deviceID="C4F312DD8A8F" source="PRODUCT" sourceAccount="TV">
   <ContentItem source="PRODUCT" sourceAccount="TV" isPresetable="false"/>
   <art artImageStatus="SHOW_DEFAULT_IMAGE"/>
   <playStatus>PLAY_STATE</playStatus>
-</nowPlaying>''', 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
-      );
+</nowPlaying>''',
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
+        );
 
-      // Populate cache with TV source now playing data
-      const tvNowPlaying = NowPlaying(
-        source: 'PRODUCT',
-        sourceAccount: 'TV',
-        playStatus: 'PLAY_STATE',
-      );
-      appState.updateNowPlayingForSpeaker(testSpeaker.ipAddress, tvNowPlaying, true);
+        // Populate cache with TV source now playing data
+        const tvNowPlaying = NowPlaying(
+          source: 'PRODUCT',
+          sourceAccount: 'TV',
+          playStatus: 'PLAY_STATE',
+        );
+        appState.updateNowPlayingForSpeaker(
+          testSpeaker.ipAddress,
+          tvNowPlaying,
+          true,
+        );
 
-      await tester.pumpWidget(
-        ChangeNotifierProvider.value(
-          value: appState,
-          child: MaterialApp(
-            home: SpeakerDetailPage(
-              speaker: testSpeaker,
-              apiService: apiService,
+        await tester.pumpWidget(
+          ChangeNotifierProvider.value(
+            value: appState,
+            child: MaterialApp(
+              home: SpeakerDetailPage(
+                speaker: testSpeaker,
+                apiService: apiService,
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      await tester.pumpAndSettle();
+        await tester.pumpAndSettle();
 
-      // Verify the hero layout is shown with TV content (no "Now Playing" header in new design)
-      expect(find.byIcon(Icons.tv), findsOneWidget);
-      expect(find.text('Playing TV sound'), findsOneWidget);
-      // Verify pause button is not shown
-      expect(find.text('Pause'), findsNothing);
-      expect(find.text('Play'), findsNothing);
-    });
+        // Verify the hero layout is shown with TV content (no "Now Playing" header in new design)
+        expect(find.byIcon(Icons.tv), findsOneWidget);
+        expect(find.text('Playing TV sound'), findsOneWidget);
+        // Verify pause button is not shown
+        expect(find.text('Pause'), findsNothing);
+        expect(find.text('Play'), findsNothing);
+      },
+    );
 
-    testWidgets('hides Now Playing Card when nothing is playing',
-        (WidgetTester tester) async {
+    testWidgets('hides Now Playing Card when nothing is playing', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -732,10 +781,14 @@ void main() {
 
       // Mock getNowPlaying to return empty/null state
       when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response('''<?xml version="1.0" encoding="UTF-8" ?>
+        (_) async => http.Response(
+          '''<?xml version="1.0" encoding="UTF-8" ?>
 <nowPlaying deviceID="C4F312DD8A8F">
   <ContentItem source="" isPresetable="false"/>
-</nowPlaying>''', 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+</nowPlaying>''',
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
       await tester.pumpWidget(
@@ -756,8 +809,9 @@ void main() {
       expect(find.text('Now Playing'), findsNothing);
     });
 
-    testWidgets('shows Now Playing Card when music is playing',
-        (WidgetTester tester) async {
+    testWidgets('shows Now Playing Card when music is playing', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -766,7 +820,8 @@ void main() {
 
       // Mock getNowPlaying to return Spotify playback
       when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response('''<?xml version="1.0" encoding="UTF-8" ?>
+        (_) async => http.Response(
+          '''<?xml version="1.0" encoding="UTF-8" ?>
 <nowPlaying deviceID="C4F312DD8A8F">
   <ContentItem source="SPOTIFY" type="tracklisturl" location="/playback/container/abc123" isPresetable="true">
     <itemName>Test Track</itemName>
@@ -776,7 +831,10 @@ void main() {
   <album>Test Album</album>
   <art>http://example.com/art.jpg</art>
   <playStatus>PLAY_STATE</playStatus>
-</nowPlaying>''', 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+</nowPlaying>''',
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
       // Populate cache with Spotify playback data
@@ -789,7 +847,11 @@ void main() {
         source: 'SPOTIFY',
         location: '/playback/container/abc123',
       );
-      appState.updateNowPlayingForSpeaker(testSpeaker.ipAddress, nowPlaying, true);
+      appState.updateNowPlayingForSpeaker(
+        testSpeaker.ipAddress,
+        nowPlaying,
+        true,
+      );
 
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
@@ -812,8 +874,9 @@ void main() {
       expect(find.text('Pause'), findsOneWidget);
     });
 
-    testWidgets('shows play button when music is paused',
-        (WidgetTester tester) async {
+    testWidgets('shows play button when music is paused', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -822,7 +885,8 @@ void main() {
 
       // Mock getNowPlaying to return paused Spotify playback
       when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response('''<?xml version="1.0" encoding="UTF-8" ?>
+        (_) async => http.Response(
+          '''<?xml version="1.0" encoding="UTF-8" ?>
 <nowPlaying deviceID="C4F312DD8A8F">
   <ContentItem source="SPOTIFY" type="tracklisturl" location="/playback/container/abc123" isPresetable="true">
     <itemName>Test Track</itemName>
@@ -832,7 +896,10 @@ void main() {
   <album>Test Album</album>
   <art>http://example.com/art.jpg</art>
   <playStatus>PAUSE_STATE</playStatus>
-</nowPlaying>''', 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+</nowPlaying>''',
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
       // Populate cache with paused Spotify playback data
@@ -845,7 +912,11 @@ void main() {
         source: 'SPOTIFY',
         location: '/playback/container/abc123',
       );
-      appState.updateNowPlayingForSpeaker(testSpeaker.ipAddress, nowPlaying, true);
+      appState.updateNowPlayingForSpeaker(
+        testSpeaker.ipAddress,
+        nowPlaying,
+        true,
+      );
 
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
@@ -869,8 +940,9 @@ void main() {
       expect(find.text('Pause'), findsNothing);
     });
 
-    testWidgets('shows play/pause button for TUNEIN source',
-        (WidgetTester tester) async {
+    testWidgets('shows play/pause button for TUNEIN source', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -879,14 +951,18 @@ void main() {
 
       // Mock getNowPlaying to return TUNEIN playback
       when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response('''<?xml version="1.0" encoding="UTF-8" ?>
+        (_) async => http.Response(
+          '''<?xml version="1.0" encoding="UTF-8" ?>
 <nowPlaying deviceID="C4F312DD8A8F">
   <ContentItem source="TUNEIN" location="s1234" isPresetable="true">
     <itemName>Test Radio Station</itemName>
   </ContentItem>
   <track>Test Radio Station</track>
   <playStatus>PLAY_STATE</playStatus>
-</nowPlaying>''', 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+</nowPlaying>''',
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
       // Populate cache with TUNEIN playback data
@@ -896,7 +972,11 @@ void main() {
         source: 'TUNEIN',
         location: 's1234',
       );
-      appState.updateNowPlayingForSpeaker(testSpeaker.ipAddress, nowPlaying, true);
+      appState.updateNowPlayingForSpeaker(
+        testSpeaker.ipAddress,
+        nowPlaying,
+        true,
+      );
 
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
@@ -920,8 +1000,9 @@ void main() {
       expect(find.text('Open in Spotify'), findsNothing);
     });
 
-    testWidgets('shows play button for TUNEIN when stopped',
-        (WidgetTester tester) async {
+    testWidgets('shows play button for TUNEIN when stopped', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -930,7 +1011,8 @@ void main() {
 
       // Mock getNowPlaying to return stopped TUNEIN playback
       when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response('''<?xml version="1.0" encoding="UTF-8" ?>
+        (_) async => http.Response(
+          '''<?xml version="1.0" encoding="UTF-8" ?>
 <nowPlaying deviceID="587A628A4073" source="TUNEIN" sourceAccount="">
   <ContentItem source="TUNEIN" type="stationurl" location="/v1/playback/station/s80044" sourceAccount="" isPresetable="true">
     <itemName>Radio TEDDY</itemName>
@@ -943,7 +1025,10 @@ void main() {
   <art artImageStatus="IMAGE_PRESENT">http://cdn-radiotime-logos.tunein.com/s80044g.png</art>
   <playStatus>STOP_STATE</playStatus>
   <streamType>RADIO_STREAMING</streamType>
-</nowPlaying>''', 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+</nowPlaying>''',
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
       // Populate cache with stopped TUNEIN playback data
@@ -956,7 +1041,11 @@ void main() {
         source: 'TUNEIN',
         location: '/v1/playback/station/s80044',
       );
-      appState.updateNowPlayingForSpeaker(testSpeaker.ipAddress, nowPlaying, true);
+      appState.updateNowPlayingForSpeaker(
+        testSpeaker.ipAddress,
+        nowPlaying,
+        true,
+      );
 
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
@@ -979,8 +1068,9 @@ void main() {
       expect(find.text('Pause'), findsNothing);
     });
 
-    testWidgets('includes safe space at bottom for Android gesture navigation',
-        (WidgetTester tester) async {
+    testWidgets('includes safe space at bottom for Android gesture navigation', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -1010,12 +1100,16 @@ void main() {
       final hasSafeSpace = tester
           .widgetList<SizedBox>(sizedBoxes)
           .any((box) => box.height == 80);
-      expect(hasSafeSpace, isTrue,
-          reason: 'Should have a SizedBox with height 80 for safe space');
+      expect(
+        hasSafeSpace,
+        isTrue,
+        reason: 'Should have a SizedBox with height 80 for safe space',
+      );
     });
 
-    testWidgets('album art with Hero tag is present when now playing has art',
-        (WidgetTester tester) async {
+    testWidgets('album art with Hero tag is present when now playing has art', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -1035,8 +1129,9 @@ void main() {
       expect(find.byType(SpeakerDetailPage), findsOneWidget);
     });
 
-    testWidgets('album art is wrapped in GestureDetector when present',
-        (WidgetTester tester) async {
+    testWidgets('album art is wrapped in GestureDetector when present', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -1067,7 +1162,9 @@ void main() {
       deviceId: 'device-123',
     );
 
-    testWidgets('page initializes without errors with WebSocket', (WidgetTester tester) async {
+    testWidgets('page initializes without errors with WebSocket', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -1085,7 +1182,9 @@ void main() {
       expect(find.text('Test Speaker'), findsAtLeast(1));
     });
 
-    testWidgets('page disposes properly with WebSocket', (WidgetTester tester) async {
+    testWidgets('page disposes properly with WebSocket', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -1127,7 +1226,9 @@ void main() {
       expect(find.byType(SpeakerDetailPage), findsNothing);
     });
 
-    testWidgets('zone subscription is created and cancelled', (WidgetTester tester) async {
+    testWidgets('zone subscription is created and cancelled', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -1201,7 +1302,9 @@ void main() {
       expect(find.byIcon(Icons.star), findsAtLeast(1));
     });
 
-    testWidgets('shows loading indicator while fetching presets', (WidgetTester tester) async {
+    testWidgets('shows loading indicator while fetching presets', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -1218,7 +1321,9 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsAtLeast(1));
     });
 
-    testWidgets('displays 6 preset slots in 2x3 grid', (WidgetTester tester) async {
+    testWidgets('displays 6 preset slots in 2x3 grid', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -1227,8 +1332,12 @@ void main() {
 
       // Mock getPresets to return empty preset list
       when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response('''<?xml version="1.0" encoding="UTF-8" ?>
-<presets />''', 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        (_) async => http.Response(
+          '''<?xml version="1.0" encoding="UTF-8" ?>
+<presets />''',
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
       await tester.pumpWidget(
@@ -1249,7 +1358,9 @@ void main() {
       expect(find.text('Presets'), findsOneWidget);
     });
 
-    testWidgets('displays gear icon in presets card', (WidgetTester tester) async {
+    testWidgets('displays gear icon in presets card', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -1258,8 +1369,12 @@ void main() {
 
       // Mock getPresets to return empty preset list
       when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response('''<?xml version="1.0" encoding="UTF-8" ?>
-<presets />''', 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+        (_) async => http.Response(
+          '''<?xml version="1.0" encoding="UTF-8" ?>
+<presets />''',
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
       await tester.pumpWidget(
@@ -1297,7 +1412,8 @@ void main() {
       deviceId: 'device-123',
     );
 
-    String infoXml({String? margeUrl, String? accountId}) => '''<?xml version="1.0" encoding="UTF-8" ?>
+    String infoXml({String? margeUrl, String? accountId}) =>
+        '''<?xml version="1.0" encoding="UTF-8" ?>
 <info deviceID="device-123">
   <name>Test Speaker</name>
   <type>SoundTouch 10</type>
@@ -1305,16 +1421,19 @@ void main() {
   ${accountId != null ? '<margeAccountUUID>$accountId</margeAccountUUID>' : ''}
 </info>''';
 
-    testWidgets('shows URL mismatch banner when URLs differ',
-        (WidgetTester tester) async {
+    testWidgets('shows URL mismatch banner when URLs differ', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
-      appState.updateConfig(const AppConfig(
-        apiUrl: 'http://settings.example.com',
-        accountId: '',
-        mgmtUsername: '',
-        mgmtPassword: '',
-      ));
+      appState.updateConfig(
+        const AppConfig(
+          apiUrl: 'http://settings.example.com',
+          accountId: '',
+          mgmtUsername: '',
+          mgmtPassword: '',
+        ),
+      );
 
       final mockClient = MockClient();
       final apiService = SpeakerApiService(httpClient: mockClient);
@@ -1347,100 +1466,110 @@ void main() {
       expect(find.text('Doctor'), findsOneWidget);
     });
 
-    testWidgets('shows no-account banner when margeUrl set but accountId empty',
-        (WidgetTester tester) async {
-      final appState = MyAppState();
-      await appState.initialize();
-      appState.updateConfig(const AppConfig(
-        apiUrl: 'http://same.example.com',
-        accountId: '',
-        mgmtUsername: '',
-        mgmtPassword: '',
-      ));
+    testWidgets(
+      'shows no-account banner when margeUrl set but accountId empty',
+      (WidgetTester tester) async {
+        final appState = MyAppState();
+        await appState.initialize();
+        appState.updateConfig(
+          const AppConfig(
+            apiUrl: 'http://same.example.com',
+            accountId: '',
+            mgmtUsername: '',
+            mgmtPassword: '',
+          ),
+        );
 
-      final mockClient = MockClient();
-      final apiService = SpeakerApiService(httpClient: mockClient);
+        final mockClient = MockClient();
+        final apiService = SpeakerApiService(httpClient: mockClient);
 
-      when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response(
-          infoXml(margeUrl: 'http://same.example.com'),
-          200,
-          headers: {'content-type': 'text/xml; charset=utf-8'},
-        ),
-      );
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(
+            infoXml(margeUrl: 'http://same.example.com'),
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
+        );
 
-      await tester.pumpWidget(
-        ChangeNotifierProvider.value(
-          value: appState,
-          child: MaterialApp(
-            home: SpeakerDetailPage(
-              speaker: testSpeaker,
-              apiService: apiService,
+        await tester.pumpWidget(
+          ChangeNotifierProvider.value(
+            value: appState,
+            child: MaterialApp(
+              home: SpeakerDetailPage(
+                speaker: testSpeaker,
+                apiService: apiService,
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      await tester.pumpAndSettle();
+        await tester.pumpAndSettle();
 
-      expect(find.byType(SpeakerWarningBanner), findsOneWidget);
-      expect(find.text('No Marge Account Id set'), findsOneWidget);
-      expect(find.text('Management URL Mismatch'), findsNothing);
-      expect(find.text('Doctor'), findsOneWidget);
-    });
+        expect(find.byType(SpeakerWarningBanner), findsOneWidget);
+        expect(find.text('No Marge Account Id set'), findsOneWidget);
+        expect(find.text('Management URL Mismatch'), findsNothing);
+        expect(find.text('Doctor'), findsOneWidget);
+      },
+    );
 
     testWidgets(
-        'shows only URL mismatch banner when both mismatch and empty accountId',
-        (WidgetTester tester) async {
-      final appState = MyAppState();
-      await appState.initialize();
-      appState.updateConfig(const AppConfig(
-        apiUrl: 'http://settings.example.com',
-        accountId: '',
-        mgmtUsername: '',
-        mgmtPassword: '',
-      ));
+      'shows only URL mismatch banner when both mismatch and empty accountId',
+      (WidgetTester tester) async {
+        final appState = MyAppState();
+        await appState.initialize();
+        appState.updateConfig(
+          const AppConfig(
+            apiUrl: 'http://settings.example.com',
+            accountId: '',
+            mgmtUsername: '',
+            mgmtPassword: '',
+          ),
+        );
 
-      final mockClient = MockClient();
-      final apiService = SpeakerApiService(httpClient: mockClient);
+        final mockClient = MockClient();
+        final apiService = SpeakerApiService(httpClient: mockClient);
 
-      when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response(
-          infoXml(margeUrl: 'http://speaker.example.com'),
-          200,
-          headers: {'content-type': 'text/xml; charset=utf-8'},
-        ),
-      );
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(
+            infoXml(margeUrl: 'http://speaker.example.com'),
+            200,
+            headers: {'content-type': 'text/xml; charset=utf-8'},
+          ),
+        );
 
-      await tester.pumpWidget(
-        ChangeNotifierProvider.value(
-          value: appState,
-          child: MaterialApp(
-            home: SpeakerDetailPage(
-              speaker: testSpeaker,
-              apiService: apiService,
+        await tester.pumpWidget(
+          ChangeNotifierProvider.value(
+            value: appState,
+            child: MaterialApp(
+              home: SpeakerDetailPage(
+                speaker: testSpeaker,
+                apiService: apiService,
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      await tester.pumpAndSettle();
+        await tester.pumpAndSettle();
 
-      expect(find.byType(SpeakerWarningBanner), findsOneWidget);
-      expect(find.text('Management URL Mismatch'), findsOneWidget);
-      expect(find.text('No Marge Account Id set'), findsNothing);
-    });
+        expect(find.byType(SpeakerWarningBanner), findsOneWidget);
+        expect(find.text('Management URL Mismatch'), findsOneWidget);
+        expect(find.text('No Marge Account Id set'), findsNothing);
+      },
+    );
 
-    testWidgets('shows no banner when URLs match and accountId is set',
-        (WidgetTester tester) async {
+    testWidgets('shows no banner when URLs match and accountId is set', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
-      appState.updateConfig(const AppConfig(
-        apiUrl: 'http://same.example.com',
-        accountId: '',
-        mgmtUsername: '',
-        mgmtPassword: '',
-      ));
+      appState.updateConfig(
+        const AppConfig(
+          apiUrl: 'http://same.example.com',
+          accountId: '',
+          mgmtUsername: '',
+          mgmtPassword: '',
+        ),
+      );
 
       final mockClient = MockClient();
       final apiService = SpeakerApiService(httpClient: mockClient);
@@ -1470,8 +1599,9 @@ void main() {
       expect(find.byType(SpeakerWarningBanner), findsNothing);
     });
 
-    testWidgets('shows no banner when margeUrl is not set',
-        (WidgetTester tester) async {
+    testWidgets('shows no banner when margeUrl is not set', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -1514,7 +1644,9 @@ void main() {
       deviceId: 'device-123',
     );
 
-    testWidgets('displays Slider widget for volume control', (WidgetTester tester) async {
+    testWidgets('displays Slider widget for volume control', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -1523,12 +1655,16 @@ void main() {
 
       // Mock getVolume to return volume data
       when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response('''<?xml version="1.0" encoding="UTF-8" ?>
+        (_) async => http.Response(
+          '''<?xml version="1.0" encoding="UTF-8" ?>
 <volume deviceID="device-123">
   <targetvolume>50</targetvolume>
   <actualvolume>50</actualvolume>
   <muteenabled>false</muteenabled>
-</volume>''', 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+</volume>''',
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
       await tester.pumpWidget(
@@ -1549,7 +1685,9 @@ void main() {
       expect(find.byType(Slider), findsOneWidget);
     });
 
-    testWidgets('slider is disabled when volume is loading', (WidgetTester tester) async {
+    testWidgets('slider is disabled when volume is loading', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -1568,7 +1706,9 @@ void main() {
       expect(find.byType(SpeakerDetailPage), findsOneWidget);
     });
 
-    testWidgets('volume up and down buttons still work with slider', (WidgetTester tester) async {
+    testWidgets('volume up and down buttons still work with slider', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -1577,12 +1717,16 @@ void main() {
 
       // Mock getVolume to return volume data
       when(mockClient.get(any)).thenAnswer(
-        (_) async => http.Response('''<?xml version="1.0" encoding="UTF-8" ?>
+        (_) async => http.Response(
+          '''<?xml version="1.0" encoding="UTF-8" ?>
 <volume deviceID="device-123">
   <targetvolume>50</targetvolume>
   <actualvolume>50</actualvolume>
   <muteenabled>false</muteenabled>
-</volume>''', 200, headers: {'content-type': 'text/xml; charset=utf-8'}),
+</volume>''',
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
       );
 
       await tester.pumpWidget(
@@ -1629,28 +1773,40 @@ void main() {
 
     http.Response responseForUrl(Uri url) {
       if (url.path == '/sources') {
-        return http.Response(sourcesXml, 200,
-            headers: {'content-type': 'text/xml; charset=utf-8'});
+        return http.Response(
+          sourcesXml,
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        );
       }
-      return http.Response('', 200,
-          headers: {'content-type': 'text/xml; charset=utf-8'});
+      return http.Response(
+        '',
+        200,
+        headers: {'content-type': 'text/xml; charset=utf-8'},
+      );
     }
 
-    testWidgets('shows source chips after loading', (WidgetTester tester) async {
+    testWidgets('shows source chips after loading', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
       final mockClient = MockClient();
       final apiService = SpeakerApiService(httpClient: mockClient);
 
-      when(mockClient.get(any)).thenAnswer((inv) async =>
-          responseForUrl(inv.positionalArguments[0] as Uri));
+      when(mockClient.get(any)).thenAnswer(
+        (inv) async => responseForUrl(inv.positionalArguments[0] as Uri),
+      );
 
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
           child: MaterialApp(
-            home: SpeakerDetailPage(speaker: testSpeaker, apiService: apiService),
+            home: SpeakerDetailPage(
+              speaker: testSpeaker,
+              apiService: apiService,
+            ),
           ),
         ),
       );
@@ -1666,8 +1822,9 @@ void main() {
       expect(find.text('NOTIFICATION'), findsNothing);
     });
 
-    testWidgets('shows loading indicator while sources are loading',
-        (WidgetTester tester) async {
+    testWidgets('shows loading indicator while sources are loading', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
@@ -1687,7 +1844,10 @@ void main() {
         ChangeNotifierProvider.value(
           value: appState,
           child: MaterialApp(
-            home: SpeakerDetailPage(speaker: testSpeaker, apiService: apiService),
+            home: SpeakerDetailPage(
+              speaker: testSpeaker,
+              apiService: apiService,
+            ),
           ),
         ),
       );
@@ -1700,29 +1860,38 @@ void main() {
       await tester.pumpAndSettle(const Duration(seconds: 10));
     });
 
-    testWidgets('shows error and retry on source load failure',
-        (WidgetTester tester) async {
+    testWidgets('shows error and retry on source load failure', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initialize();
 
       final mockClient = MockClient();
       final apiService = SpeakerApiService(httpClient: mockClient);
 
-      when(mockClient.get(argThat(
-        predicate<Uri>((u) => u.path == '/sources'),
-      ))).thenAnswer((_) async => http.Response('', 500));
+      when(
+        mockClient.get(argThat(predicate<Uri>((u) => u.path == '/sources'))),
+      ).thenAnswer((_) async => http.Response('', 500));
 
       // Other GET calls succeed with empty/minimal responses
-      when(mockClient.get(argThat(
-        predicate<Uri>((u) => u.path != '/sources'),
-      ))).thenAnswer((_) async => http.Response('', 200,
-          headers: {'content-type': 'text/xml; charset=utf-8'}));
+      when(
+        mockClient.get(argThat(predicate<Uri>((u) => u.path != '/sources'))),
+      ).thenAnswer(
+        (_) async => http.Response(
+          '',
+          200,
+          headers: {'content-type': 'text/xml; charset=utf-8'},
+        ),
+      );
 
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
           child: MaterialApp(
-            home: SpeakerDetailPage(speaker: testSpeaker, apiService: apiService),
+            home: SpeakerDetailPage(
+              speaker: testSpeaker,
+              apiService: apiService,
+            ),
           ),
         ),
       );
@@ -1731,7 +1900,5 @@ void main() {
 
       expect(find.text('Retry'), findsAtLeast(1));
     });
-
   });
-
 }

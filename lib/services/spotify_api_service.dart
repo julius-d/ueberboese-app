@@ -37,11 +37,7 @@ class SpotifyApiService {
           'Authorization': _createAuthHeader(),
       };
       final response = await client
-          .post(
-            url,
-            headers: headers,
-            body: body,
-          )
+          .post(url, headers: headers, body: body)
           .timeout(timeout);
 
       if (response.statusCode != 200) {
@@ -109,9 +105,7 @@ class SpotifyApiService {
         if (username != null && password != null)
           'Authorization': _createAuthHeader(),
       };
-      final response = await client
-          .get(url, headers: headers)
-          .timeout(timeout);
+      final response = await client.get(url, headers: headers).timeout(timeout);
 
       if (response.statusCode != 200) {
         throw Exception(
@@ -141,7 +135,10 @@ class SpotifyApiService {
     }
   }
 
-  Future<SpotifyEntity> getSpotifyEntity(String apiUrl, String spotifyUri) async {
+  Future<SpotifyEntity> getSpotifyEntity(
+    String apiUrl,
+    String spotifyUri,
+  ) async {
     final url = Uri.parse('$apiUrl/mgmt/spotify/entity');
     final client = httpClient ?? http.Client();
 

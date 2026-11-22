@@ -33,9 +33,7 @@ void main() {
     Widget createWidgetWithProvider(Widget child) {
       return ChangeNotifierProvider<MyAppState>.value(
         value: appState,
-        child: MaterialApp(
-          home: child,
-        ),
+        child: MaterialApp(home: child),
       );
     }
 
@@ -52,8 +50,9 @@ void main() {
 
       appState.setTestPresets(testSpeakerIp, [testPreset]);
 
-      when(mockSpotifyApiService.listSpotifyAccounts(any))
-          .thenAnswer((_) async => []);
+      when(
+        mockSpotifyApiService.listSpotifyAccounts(any),
+      ).thenAnswer((_) async => []);
 
       await tester.pumpWidget(
         createWidgetWithProvider(
@@ -83,8 +82,9 @@ void main() {
 
       appState.setTestPresets(testSpeakerIp, [testPreset]);
 
-      when(mockSpotifyApiService.listSpotifyAccounts(any))
-          .thenAnswer((_) async => []);
+      when(
+        mockSpotifyApiService.listSpotifyAccounts(any),
+      ).thenAnswer((_) async => []);
 
       await tester.pumpWidget(
         createWidgetWithProvider(
@@ -113,8 +113,9 @@ void main() {
 
       appState.setTestPresets(testSpeakerIp, [testPreset]);
 
-      when(mockSpotifyApiService.listSpotifyAccounts(any))
-          .thenAnswer((_) async => []);
+      when(
+        mockSpotifyApiService.listSpotifyAccounts(any),
+      ).thenAnswer((_) async => []);
 
       await tester.pumpWidget(
         createWidgetWithProvider(
@@ -143,8 +144,9 @@ void main() {
 
       appState.setTestPresets(testSpeakerIp, [testPreset]);
 
-      when(mockSpotifyApiService.listSpotifyAccounts(any))
-          .thenAnswer((_) async => []);
+      when(
+        mockSpotifyApiService.listSpotifyAccounts(any),
+      ).thenAnswer((_) async => []);
 
       await tester.pumpWidget(
         createWidgetWithProvider(
@@ -161,7 +163,9 @@ void main() {
       expect(find.text('spotify:playlist:test'), findsOneWidget);
     });
 
-    testWidgets('displays Spotify account when available', (WidgetTester tester) async {
+    testWidgets('displays Spotify account when available', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Playlist',
@@ -182,8 +186,9 @@ void main() {
         ),
       ];
 
-      when(mockSpotifyApiService.listSpotifyAccounts(any))
-          .thenAnswer((_) async => accounts);
+      when(
+        mockSpotifyApiService.listSpotifyAccounts(any),
+      ).thenAnswer((_) async => accounts);
 
       await tester.pumpWidget(
         createWidgetWithProvider(
@@ -201,7 +206,9 @@ void main() {
       expect(find.text('John Doe'), findsOneWidget);
     });
 
-    testWidgets('displays sourceAccount ID when fetch fails', (WidgetTester tester) async {
+    testWidgets('displays sourceAccount ID when fetch fails', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Playlist',
@@ -214,8 +221,9 @@ void main() {
 
       appState.setTestPresets(testSpeakerIp, [testPreset]);
 
-      when(mockSpotifyApiService.listSpotifyAccounts(any))
-          .thenThrow(Exception('Failed to fetch accounts'));
+      when(
+        mockSpotifyApiService.listSpotifyAccounts(any),
+      ).thenThrow(Exception('Failed to fetch accounts'));
 
       await tester.pumpWidget(
         createWidgetWithProvider(
@@ -233,36 +241,40 @@ void main() {
       expect(find.text('user123'), findsOneWidget);
     });
 
-    testWidgets('does not display Spotify account field when sourceAccount is null', (WidgetTester tester) async {
-      const testPreset = Preset(
-        id: '1',
-        itemName: 'Test Playlist',
-        source: 'SPOTIFY',
-        location: '/playback/container/c3BvdGlmeTpwbGF5bGlzdDp0ZXN0',
-        type: 'playlist',
-        isPresetable: true,
-        sourceAccount: null,
-      );
+    testWidgets(
+      'does not display Spotify account field when sourceAccount is null',
+      (WidgetTester tester) async {
+        const testPreset = Preset(
+          id: '1',
+          itemName: 'Test Playlist',
+          source: 'SPOTIFY',
+          location: '/playback/container/c3BvdGlmeTpwbGF5bGlzdDp0ZXN0',
+          type: 'playlist',
+          isPresetable: true,
+          sourceAccount: null,
+        );
 
-      appState.setTestPresets(testSpeakerIp, [testPreset]);
+        appState.setTestPresets(testSpeakerIp, [testPreset]);
 
-      when(mockSpotifyApiService.listSpotifyAccounts(any))
-          .thenAnswer((_) async => []);
+        when(
+          mockSpotifyApiService.listSpotifyAccounts(any),
+        ).thenAnswer((_) async => []);
 
-      await tester.pumpWidget(
-        createWidgetWithProvider(
-          SpotifyPresetDetailPage(
-            presetId: '1',
-            speakerIp: testSpeakerIp,
-            spotifyApiService: mockSpotifyApiService,
+        await tester.pumpWidget(
+          createWidgetWithProvider(
+            SpotifyPresetDetailPage(
+              presetId: '1',
+              speakerIp: testSpeakerIp,
+              spotifyApiService: mockSpotifyApiService,
+            ),
           ),
-        ),
-      );
+        );
 
-      await tester.pumpAndSettle();
+        await tester.pumpAndSettle();
 
-      expect(find.text('Spotify Account'), findsNothing);
-    });
+        expect(find.text('Spotify Account'), findsNothing);
+      },
+    );
 
     testWidgets('displays Open in Spotify button', (WidgetTester tester) async {
       const testPreset = Preset(
@@ -276,8 +288,9 @@ void main() {
 
       appState.setTestPresets(testSpeakerIp, [testPreset]);
 
-      when(mockSpotifyApiService.listSpotifyAccounts(any))
-          .thenAnswer((_) async => []);
+      when(
+        mockSpotifyApiService.listSpotifyAccounts(any),
+      ).thenAnswer((_) async => []);
 
       await tester.pumpWidget(
         createWidgetWithProvider(
@@ -294,7 +307,9 @@ void main() {
       expect(find.byIcon(Icons.open_in_new), findsOneWidget);
     });
 
-    testWidgets('displays error when URI decoding fails', (WidgetTester tester) async {
+    testWidgets('displays error when URI decoding fails', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Playlist',
@@ -306,8 +321,9 @@ void main() {
 
       appState.setTestPresets(testSpeakerIp, [testPreset]);
 
-      when(mockSpotifyApiService.listSpotifyAccounts(any))
-          .thenAnswer((_) async => []);
+      when(
+        mockSpotifyApiService.listSpotifyAccounts(any),
+      ).thenAnswer((_) async => []);
 
       await tester.pumpWidget(
         createWidgetWithProvider(
@@ -324,7 +340,9 @@ void main() {
       expect(find.byIcon(Icons.error_outline), findsOneWidget);
     });
 
-    testWidgets('displays FAB with play and edit icons', (WidgetTester tester) async {
+    testWidgets('displays FAB with play and edit icons', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Playlist',
@@ -336,8 +354,9 @@ void main() {
 
       appState.setTestPresets(testSpeakerIp, [testPreset]);
 
-      when(mockSpotifyApiService.listSpotifyAccounts(any))
-          .thenAnswer((_) async => []);
+      when(
+        mockSpotifyApiService.listSpotifyAccounts(any),
+      ).thenAnswer((_) async => []);
 
       await tester.pumpWidget(
         createWidgetWithProvider(
@@ -358,7 +377,9 @@ void main() {
       expect(find.byIcon(Icons.edit), findsOneWidget);
     });
 
-    testWidgets('sub-FABs are accessible and can be tapped', (WidgetTester tester) async {
+    testWidgets('sub-FABs are accessible and can be tapped', (
+      WidgetTester tester,
+    ) async {
       const testPreset = Preset(
         id: '1',
         itemName: 'Test Playlist',
@@ -370,8 +391,9 @@ void main() {
 
       appState.setTestPresets(testSpeakerIp, [testPreset]);
 
-      when(mockSpotifyApiService.listSpotifyAccounts(any))
-          .thenAnswer((_) async => []);
+      when(
+        mockSpotifyApiService.listSpotifyAccounts(any),
+      ).thenAnswer((_) async => []);
 
       await tester.pumpWidget(
         createWidgetWithProvider(
@@ -391,8 +413,14 @@ void main() {
       // Verify sub-menu is open with all options
       expect(find.text('Spotify'), findsOneWidget);
       expect(find.text('TuneIn'), findsOneWidget);
-      expect(find.widgetWithIcon(FloatingActionButton, Icons.audiotrack), findsOneWidget);
-      expect(find.widgetWithIcon(FloatingActionButton, Icons.podcasts), findsOneWidget);
+      expect(
+        find.widgetWithIcon(FloatingActionButton, Icons.audiotrack),
+        findsOneWidget,
+      );
+      expect(
+        find.widgetWithIcon(FloatingActionButton, Icons.podcasts),
+        findsOneWidget,
+      );
     });
 
     testWidgets('has delete option in menu', (WidgetTester tester) async {
@@ -407,8 +435,9 @@ void main() {
 
       appState.setTestPresets(testSpeakerIp, [testPreset]);
 
-      when(mockSpotifyApiService.listSpotifyAccounts(any))
-          .thenAnswer((_) async => []);
+      when(
+        mockSpotifyApiService.listSpotifyAccounts(any),
+      ).thenAnswer((_) async => []);
 
       await tester.pumpWidget(
         createWidgetWithProvider(

@@ -58,25 +58,29 @@ class SpeakerDiscoveryService {
       rethrow;
     }
 
-    sub = socket.listen((event) {
-      if (event != RawSocketEvent.read || controller.isClosed) return;
-      final datagram = socket.receive();
-      if (datagram == null) return;
-      final str = String.fromCharCodes(datagram.data);
-      final parsed = parseResponse(str, datagram.address.address);
-      if (parsed != null && seenIps.add(parsed.ip)) {
-        controller.add(parsed);
-      }
-    }, onError: (Object e) {
-      cleanup();
-      if (!controller.isClosed) {
-        controller.addError(e);
-        controller.close();
-      }
-    }, onDone: () {
-      cleanup();
-      if (!controller.isClosed) controller.close();
-    });
+    sub = socket.listen(
+      (event) {
+        if (event != RawSocketEvent.read || controller.isClosed) return;
+        final datagram = socket.receive();
+        if (datagram == null) return;
+        final str = String.fromCharCodes(datagram.data);
+        final parsed = parseResponse(str, datagram.address.address);
+        if (parsed != null && seenIps.add(parsed.ip)) {
+          controller.add(parsed);
+        }
+      },
+      onError: (Object e) {
+        cleanup();
+        if (!controller.isClosed) {
+          controller.addError(e);
+          controller.close();
+        }
+      },
+      onDone: () {
+        cleanup();
+        if (!controller.isClosed) controller.close();
+      },
+    );
 
     timer = Timer(timeout, () {
       cleanup();

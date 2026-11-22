@@ -29,9 +29,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: const MaterialApp(
-            home: SettingsPage(),
-          ),
+          child: const MaterialApp(home: SettingsPage()),
         ),
       );
     }
@@ -47,14 +45,17 @@ void main() {
       expect(find.text('Appearance'), findsOneWidget);
     });
 
-    testWidgets('API card shows URL, account ID and username',
-        (WidgetTester tester) async {
-      appState.updateConfig(const AppConfig(
-        apiUrl: 'https://api.example.com',
-        accountId: 'myaccount',
-        mgmtUsername: 'myadmin',
-        mgmtPassword: 's3cr3t',
-      ));
+    testWidgets('API card shows URL, account ID and username', (
+      WidgetTester tester,
+    ) async {
+      appState.updateConfig(
+        const AppConfig(
+          apiUrl: 'https://api.example.com',
+          accountId: 'myaccount',
+          mgmtUsername: 'myadmin',
+          mgmtPassword: 's3cr3t',
+        ),
+      );
 
       await pumpSettingsPage(tester);
 
@@ -63,14 +64,17 @@ void main() {
       expect(find.text('myadmin'), findsOneWidget);
     });
 
-    testWidgets('API card shows masked password, not plaintext',
-        (WidgetTester tester) async {
-      appState.updateConfig(const AppConfig(
-        apiUrl: 'https://api.example.com',
-        accountId: 'myaccount',
-        mgmtUsername: 'myadmin',
-        mgmtPassword: 'supersecret',
-      ));
+    testWidgets('API card shows masked password, not plaintext', (
+      WidgetTester tester,
+    ) async {
+      appState.updateConfig(
+        const AppConfig(
+          apiUrl: 'https://api.example.com',
+          accountId: 'myaccount',
+          mgmtUsername: 'myadmin',
+          mgmtPassword: 'supersecret',
+        ),
+      );
 
       await pumpSettingsPage(tester);
 
@@ -79,19 +83,23 @@ void main() {
       expect(find.text('•' * 11), findsOneWidget);
     });
 
-    testWidgets('shows (not set) when API URL is empty',
-        (WidgetTester tester) async {
+    testWidgets('shows (not set) when API URL is empty', (
+      WidgetTester tester,
+    ) async {
       await pumpSettingsPage(tester);
       expect(find.text('(not set)'), findsOneWidget);
     });
 
-    testWidgets('edit pencil navigates to UeberboesApiSetupPage',
-        (WidgetTester tester) async {
-      appState.updateConfig(const AppConfig(
-        accountId: 'user',
-        mgmtUsername: 'admin',
-        mgmtPassword: 'pass',
-      ));
+    testWidgets('edit pencil navigates to UeberboesApiSetupPage', (
+      WidgetTester tester,
+    ) async {
+      appState.updateConfig(
+        const AppConfig(
+          accountId: 'user',
+          mgmtUsername: 'admin',
+          mgmtPassword: 'pass',
+        ),
+      );
 
       await pumpSettingsPage(tester);
 
@@ -101,8 +109,9 @@ void main() {
       expect(find.byType(UeberboesApiSetupPage), findsOneWidget);
     });
 
-    testWidgets('album art toggle is on by default',
-        (WidgetTester tester) async {
+    testWidgets('album art toggle is on by default', (
+      WidgetTester tester,
+    ) async {
       await pumpSettingsPage(tester);
 
       final switchTile = tester.widget<SwitchListTile>(
@@ -111,8 +120,9 @@ void main() {
       expect(switchTile.value, isTrue);
     });
 
-    testWidgets('album art toggle reflects config state',
-        (WidgetTester tester) async {
+    testWidgets('album art toggle reflects config state', (
+      WidgetTester tester,
+    ) async {
       appState.updateConfig(
         appState.config.copyWith(showAlbumArtInList: false),
       );
@@ -125,8 +135,9 @@ void main() {
       expect(switchTile.value, isFalse);
     });
 
-    testWidgets('toggling album art updates config',
-        (WidgetTester tester) async {
+    testWidgets('toggling album art updates config', (
+      WidgetTester tester,
+    ) async {
       await pumpSettingsPage(tester);
 
       expect(appState.config.showAlbumArtInList, isTrue);
@@ -142,8 +153,9 @@ void main() {
       expect(appState.config.showAlbumArtInList, isTrue);
     });
 
-    testWidgets('About card displays app name, license and title',
-        (WidgetTester tester) async {
+    testWidgets('About card displays app name, license and title', (
+      WidgetTester tester,
+    ) async {
       await pumpSettingsPage(tester);
       await tester.pumpAndSettle();
 
@@ -151,16 +163,18 @@ void main() {
       expect(find.text('MIT License'), findsOneWidget);
     });
 
-    testWidgets('About card shows version from PackageInfo',
-        (WidgetTester tester) async {
+    testWidgets('About card shows version from PackageInfo', (
+      WidgetTester tester,
+    ) async {
       await pumpSettingsPage(tester);
       await tester.pumpAndSettle();
 
       expect(find.text('v1.2.3'), findsOneWidget);
     });
 
-    testWidgets('About card shows ActionChips for F-Droid and GitHub',
-        (WidgetTester tester) async {
+    testWidgets('About card shows ActionChips for F-Droid and GitHub', (
+      WidgetTester tester,
+    ) async {
       await pumpSettingsPage(tester);
       await tester.pumpAndSettle();
 
@@ -169,8 +183,9 @@ void main() {
       expect(find.text('API on GitHub'), findsOneWidget);
     });
 
-    testWidgets('About card link chips are tappable (ActionChip present)',
-        (WidgetTester tester) async {
+    testWidgets('About card link chips are tappable (ActionChip present)', (
+      WidgetTester tester,
+    ) async {
       await pumpSettingsPage(tester);
       await tester.pumpAndSettle();
 

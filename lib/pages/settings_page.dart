@@ -12,9 +12,7 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-      ),
+      appBar: AppBar(title: const Text('Settings')),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 600),
@@ -54,8 +52,9 @@ class _ApiSetupCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       'Überböse API Setup',
-                      style: theme.textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.bold),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   IconButton(
@@ -117,13 +116,12 @@ class _InfoRow extends StatelessWidget {
             width: 100,
             child: Text(
               label,
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
-          Expanded(
-            child: Text(value, style: theme.textTheme.bodyMedium),
-          ),
+          Expanded(child: Text(value, style: theme.textTheme.bodyMedium)),
         ],
       ),
     );
@@ -148,8 +146,9 @@ class _AppearanceCard extends StatelessWidget {
               padding: const EdgeInsets.only(top: 8, bottom: 4),
               child: Text(
                 'Appearance',
-                style: theme.textTheme.titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             SwitchListTile(
@@ -200,8 +199,9 @@ class _AboutCardState extends State<_AboutCard> {
             // App name
             Text(
               'Überböse App',
-              style: theme.textTheme.titleLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 6),
             // Version + license badges
@@ -258,11 +258,7 @@ class _AboutCardState extends State<_AboutCard> {
 }
 
 class _LinkChip extends StatelessWidget {
-  const _LinkChip({
-    required this.label,
-    required this.icon,
-    required this.url,
-  });
+  const _LinkChip({required this.label, required this.icon, required this.url});
 
   final String label;
   final Widget icon;
@@ -273,10 +269,8 @@ class _LinkChip extends StatelessWidget {
     return ActionChip(
       avatar: icon,
       label: Text(label),
-      onPressed: () => launchUrl(
-        Uri.parse(url),
-        mode: LaunchMode.externalApplication,
-      ),
+      onPressed: () =>
+          launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication),
     );
   }
 }

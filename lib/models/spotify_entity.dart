@@ -2,10 +2,7 @@ class SpotifyEntity {
   final String name;
   final String? imageUrl;
 
-  const SpotifyEntity({
-    required this.name,
-    this.imageUrl,
-  });
+  const SpotifyEntity({required this.name, this.imageUrl});
 
   factory SpotifyEntity.fromJson(Map<String, dynamic> json) {
     return SpotifyEntity(
@@ -14,10 +11,7 @@ class SpotifyEntity {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        'name': name,
-        'imageUrl': imageUrl,
-      };
+  Map<String, dynamic> toJson() => {'name': name, 'imageUrl': imageUrl};
 
   @override
   bool operator ==(Object other) =>

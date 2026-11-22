@@ -12,7 +12,11 @@ class DiscoverSpeakersPage extends StatefulWidget {
   final SpeakerDiscoveryService? discoveryService;
   final SpeakerApiService? apiService;
 
-  const DiscoverSpeakersPage({super.key, this.discoveryService, this.apiService});
+  const DiscoverSpeakersPage({
+    super.key,
+    this.discoveryService,
+    this.apiService,
+  });
 
   @override
   State<DiscoverSpeakersPage> createState() => _DiscoverSpeakersPageState();
@@ -36,7 +40,11 @@ class _DiscoverSpeakersPageState extends State<DiscoverSpeakersPage> {
     _discoveryService = widget.discoveryService ?? SpeakerDiscoveryService();
     _apiService = widget.apiService ?? SpeakerApiService();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _existingIps = context.read<MyAppState>().speakers.map((s) => s.ipAddress).toSet();
+      _existingIps = context
+          .read<MyAppState>()
+          .speakers
+          .map((s) => s.ipAddress)
+          .toSet();
       _startDiscovery();
     });
   }
@@ -97,7 +105,8 @@ class _DiscoverSpeakersPageState extends State<DiscoverSpeakersPage> {
     int failedCount = 0;
 
     for (final ip in _selected) {
-      final emoji = _emojiAssignments[ip] ?? EmojiSelector.availableEmojis.first;
+      final emoji =
+          _emojiAssignments[ip] ?? EmojiSelector.availableEmojis.first;
       try {
         final speaker = await _apiService.createSpeakerFromIp(ip, emoji);
         if (!mounted) return;
@@ -111,11 +120,17 @@ class _DiscoverSpeakersPageState extends State<DiscoverSpeakersPage> {
     if (!mounted) return;
 
     final parts = <String>[];
-    if (addedCount > 0) parts.add('Added $addedCount ${addedCount == 1 ? 'speaker' : 'speakers'}');
+    if (addedCount > 0)
+      parts.add(
+        'Added $addedCount ${addedCount == 1 ? 'speaker' : 'speakers'}',
+      );
     if (failedCount > 0) parts.add('$failedCount failed');
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(parts.join(', ')), duration: const Duration(seconds: 3)),
+      SnackBar(
+        content: Text(parts.join(', ')),
+        duration: const Duration(seconds: 3),
+      ),
     );
     Navigator.pop(context);
   }
@@ -148,11 +163,14 @@ class _DiscoverSpeakersPageState extends State<DiscoverSpeakersPage> {
           final isExisting = _existingIps.contains(possible.ip);
           final existingSpeaker = isExisting
               ? context.read<MyAppState>().speakers.cast<Speaker?>().firstWhere(
-                    (s) => s?.ipAddress == possible.ip,
-                    orElse: () => null,
-                  )
+                  (s) => s?.ipAddress == possible.ip,
+                  orElse: () => null,
+                )
               : null;
-          final emoji = existingSpeaker?.emoji ?? _emojiAssignments[possible.ip] ?? EmojiSelector.availableEmojis.first;
+          final emoji =
+              existingSpeaker?.emoji ??
+              _emojiAssignments[possible.ip] ??
+              EmojiSelector.availableEmojis.first;
           final isSelected = _selected.contains(possible.ip);
           final displayName = possible.info?.name ?? possible.ip;
 
@@ -170,13 +188,17 @@ class _DiscoverSpeakersPageState extends State<DiscoverSpeakersPage> {
                     });
                   },
             secondary: GestureDetector(
-              onTap: isExisting ? null : () => _showEmojiPicker(possible.ip, emoji),
+              onTap: isExisting
+                  ? null
+                  : () => _showEmojiPicker(possible.ip, emoji),
               child: Text(emoji, style: const TextStyle(fontSize: 28)),
             ),
             title: Text(
               displayName,
               style: isExisting
-                  ? TextStyle(color: theme.colorScheme.onSurface.withValues(alpha: 0.4))
+                  ? TextStyle(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                    )
                   : null,
             ),
             subtitle: Row(
@@ -185,7 +207,10 @@ class _DiscoverSpeakersPageState extends State<DiscoverSpeakersPage> {
                 if (isExisting) ...[
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: theme.colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(4),
@@ -228,7 +253,9 @@ class _DiscoverSpeakersPageState extends State<DiscoverSpeakersPage> {
           ? FloatingActionButton.extended(
               onPressed: _addSelected,
               icon: const Icon(Icons.add),
-              label: Text('Add ${_selected.length} ${_selected.length == 1 ? 'Speaker' : 'Speakers'}'),
+              label: Text(
+                'Add ${_selected.length} ${_selected.length == 1 ? 'Speaker' : 'Speakers'}',
+              ),
             )
           : null,
     );

@@ -32,9 +32,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: const MaterialApp(
-            home: Scaffold(body: SpeakerListPage()),
-          ),
+          child: const MaterialApp(home: Scaffold(body: SpeakerListPage())),
         ),
       );
 
@@ -48,37 +46,41 @@ void main() {
       await appState.initializeSpeakers();
 
       // Add multiple test speakers
-      appState.addSpeaker(const Speaker(
-        id: '1',
-        name: 'Speaker 1',
-        emoji: '🔊',
-        ipAddress: '192.168.1.101',
-        type: 'SoundTouch 10',
-        deviceId: 'device-101',
-      ));
-      appState.addSpeaker(const Speaker(
-        id: '2',
-        name: 'Speaker 2',
-        emoji: '🎵',
-        ipAddress: '192.168.1.102',
-        type: 'SoundTouch 20',
-        deviceId: 'device-102',
-      ));
-      appState.addSpeaker(const Speaker(
-        id: '3',
-        name: 'Speaker 3',
-        emoji: '🎶',
-        ipAddress: '192.168.1.103',
-        type: 'SoundTouch 30',
-        deviceId: 'device-103',
-      ));
+      appState.addSpeaker(
+        const Speaker(
+          id: '1',
+          name: 'Speaker 1',
+          emoji: '🔊',
+          ipAddress: '192.168.1.101',
+          type: 'SoundTouch 10',
+          deviceId: 'device-101',
+        ),
+      );
+      appState.addSpeaker(
+        const Speaker(
+          id: '2',
+          name: 'Speaker 2',
+          emoji: '🎵',
+          ipAddress: '192.168.1.102',
+          type: 'SoundTouch 20',
+          deviceId: 'device-102',
+        ),
+      );
+      appState.addSpeaker(
+        const Speaker(
+          id: '3',
+          name: 'Speaker 3',
+          emoji: '🎶',
+          ipAddress: '192.168.1.103',
+          type: 'SoundTouch 30',
+          deviceId: 'device-103',
+        ),
+      );
 
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: const MaterialApp(
-            home: Scaffold(body: SpeakerListPage()),
-          ),
+          child: const MaterialApp(home: Scaffold(body: SpeakerListPage())),
         ),
       );
 
@@ -92,21 +94,21 @@ void main() {
       await appState.initializeSpeakers();
 
       // Add a test speaker
-      appState.addSpeaker(const Speaker(
-        id: '1',
-        name: 'Test Speaker',
-        emoji: '🔊',
-        ipAddress: '192.168.1.100',
-        type: 'SoundTouch 10',
-        deviceId: 'device-123',
-      ));
+      appState.addSpeaker(
+        const Speaker(
+          id: '1',
+          name: 'Test Speaker',
+          emoji: '🔊',
+          ipAddress: '192.168.1.100',
+          type: 'SoundTouch 10',
+          deviceId: 'device-123',
+        ),
+      );
 
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: const MaterialApp(
-            home: Scaffold(body: SpeakerListPage()),
-          ),
+          child: const MaterialApp(home: Scaffold(body: SpeakerListPage())),
         ),
       );
 
@@ -120,33 +122,32 @@ void main() {
       expect(find.text('🔊'), findsAtLeast(1));
     });
 
-    testWidgets('displays speaker emoji with correct size',
-        (WidgetTester tester) async {
+    testWidgets('displays speaker emoji with correct size', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initializeSpeakers();
 
       // Add a test speaker
-      appState.addSpeaker(const Speaker(
-        id: '1',
-        name: 'Test Speaker',
-        emoji: '🔊',
-        ipAddress: '192.168.1.100',
-        type: 'SoundTouch 10',
-        deviceId: 'device-123',
-      ));
+      appState.addSpeaker(
+        const Speaker(
+          id: '1',
+          name: 'Test Speaker',
+          emoji: '🔊',
+          ipAddress: '192.168.1.100',
+          type: 'SoundTouch 10',
+          deviceId: 'device-123',
+        ),
+      );
 
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: const MaterialApp(
-            home: Scaffold(body: SpeakerListPage()),
-          ),
+          child: const MaterialApp(home: Scaffold(body: SpeakerListPage())),
         ),
       );
 
-      final emojiText = tester.widget<Text>(
-        find.text('🔊').first,
-      );
+      final emojiText = tester.widget<Text>(find.text('🔊').first);
 
       // Using theme typography now (headlineMedium) instead of explicit fontSize
       expect(emojiText.style?.fontSize, 28);
@@ -159,9 +160,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: const MaterialApp(
-            home: Scaffold(body: SpeakerListPage()),
-          ),
+          child: const MaterialApp(home: Scaffold(body: SpeakerListPage())),
         ),
       );
 
@@ -169,17 +168,16 @@ void main() {
       expect(find.byIcon(Icons.add), findsOneWidget);
     });
 
-    testWidgets('FAB expands to show speed dial options on tap',
-        (WidgetTester tester) async {
+    testWidgets('FAB expands to show speed dial options on tap', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initializeSpeakers();
 
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: const MaterialApp(
-            home: Scaffold(body: SpeakerListPage()),
-          ),
+          child: const MaterialApp(home: Scaffold(body: SpeakerListPage())),
         ),
       );
 
@@ -196,17 +194,16 @@ void main() {
       expect(find.byIcon(Icons.router), findsOneWidget);
     });
 
-    testWidgets('backdrop closes speed dial when tapped',
-        (WidgetTester tester) async {
+    testWidgets('backdrop closes speed dial when tapped', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initializeSpeakers();
 
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: const MaterialApp(
-            home: Scaffold(body: SpeakerListPage()),
-          ),
+          child: const MaterialApp(home: Scaffold(body: SpeakerListPage())),
         ),
       );
 
@@ -226,17 +223,16 @@ void main() {
       expect(find.byIcon(Icons.close), findsNothing);
     });
 
-    testWidgets('Add by IP option navigates to AddSpeakerPage',
-        (WidgetTester tester) async {
+    testWidgets('Add by IP option navigates to AddSpeakerPage', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initializeSpeakers();
 
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: const MaterialApp(
-            home: Scaffold(body: SpeakerListPage()),
-          ),
+          child: const MaterialApp(home: Scaffold(body: SpeakerListPage())),
         ),
       );
 
@@ -252,56 +248,59 @@ void main() {
       expect(find.text('Add Speaker'), findsOneWidget);
     });
 
-    testWidgets('displays disconnected chip when speaker status is not loaded',
-        (WidgetTester tester) async {
+    testWidgets(
+      'displays disconnected chip when speaker status is not loaded',
+      (WidgetTester tester) async {
+        final appState = MyAppState();
+        await appState.initializeSpeakers();
+
+        appState.addSpeaker(
+          const Speaker(
+            id: '1',
+            name: 'Test Speaker',
+            emoji: '🔊',
+            ipAddress: '192.168.1.100',
+            type: 'SoundTouch 10',
+            deviceId: 'device-123',
+          ),
+        );
+
+        await tester.pumpWidget(
+          ChangeNotifierProvider.value(
+            value: appState,
+            child: const MaterialApp(home: Scaffold(body: SpeakerListPage())),
+          ),
+        );
+
+        // Wait for initial render
+        await tester.pump();
+
+        // Initially, speakers should show disconnected chip with wifi_off icon
+        expect(find.byIcon(Icons.wifi_off), findsOneWidget);
+      },
+    );
+
+    testWidgets('displays disconnected icon for disconnected speakers', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initializeSpeakers();
 
-      appState.addSpeaker(const Speaker(
-        id: '1',
-        name: 'Test Speaker',
-        emoji: '🔊',
-        ipAddress: '192.168.1.100',
-        type: 'SoundTouch 10',
-        deviceId: 'device-123',
-      ));
-
-      await tester.pumpWidget(
-        ChangeNotifierProvider.value(
-          value: appState,
-          child: const MaterialApp(
-            home: Scaffold(body: SpeakerListPage()),
-          ),
+      appState.addSpeaker(
+        const Speaker(
+          id: '1',
+          name: 'Test Speaker',
+          emoji: '🔊',
+          ipAddress: '192.168.1.100',
+          type: 'SoundTouch 10',
+          deviceId: 'device-123',
         ),
       );
 
-      // Wait for initial render
-      await tester.pump();
-
-      // Initially, speakers should show disconnected chip with wifi_off icon
-      expect(find.byIcon(Icons.wifi_off), findsOneWidget);
-    });
-
-    testWidgets('displays disconnected icon for disconnected speakers',
-        (WidgetTester tester) async {
-      final appState = MyAppState();
-      await appState.initializeSpeakers();
-
-      appState.addSpeaker(const Speaker(
-        id: '1',
-        name: 'Test Speaker',
-        emoji: '🔊',
-        ipAddress: '192.168.1.100',
-        type: 'SoundTouch 10',
-        deviceId: 'device-123',
-      ));
-
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: const MaterialApp(
-            home: Scaffold(body: SpeakerListPage()),
-          ),
+          child: const MaterialApp(home: Scaffold(body: SpeakerListPage())),
         ),
       );
 
@@ -314,64 +313,65 @@ void main() {
       expect(find.byIcon(Icons.wifi_off), findsOneWidget);
     });
 
-    testWidgets('applies error container background to disconnected speaker cards',
-        (WidgetTester tester) async {
+    testWidgets(
+      'applies error container background to disconnected speaker cards',
+      (WidgetTester tester) async {
+        final appState = MyAppState();
+        await appState.initializeSpeakers();
+
+        appState.addSpeaker(
+          const Speaker(
+            id: '1',
+            name: 'Test Speaker',
+            emoji: '🔊',
+            ipAddress: '192.168.1.100',
+            type: 'SoundTouch 10',
+            deviceId: 'device-123',
+          ),
+        );
+
+        await tester.pumpWidget(
+          ChangeNotifierProvider.value(
+            value: appState,
+            child: const MaterialApp(home: Scaffold(body: SpeakerListPage())),
+          ),
+        );
+
+        await tester.pump();
+
+        // Find the Card that should have errorContainer background
+        final cardFinder = find.ancestor(
+          of: find.text('Test Speaker'),
+          matching: find.byType(Card),
+        );
+
+        expect(cardFinder, findsOneWidget);
+
+        // Verify the card has a color set (errorContainer for disconnected state)
+        final card = tester.widget<Card>(cardFinder);
+        expect(card.color, isNotNull);
+      },
+    );
+
+    testWidgets('card uses Stack for layering', (WidgetTester tester) async {
       final appState = MyAppState();
       await appState.initializeSpeakers();
 
-      appState.addSpeaker(const Speaker(
-        id: '1',
-        name: 'Test Speaker',
-        emoji: '🔊',
-        ipAddress: '192.168.1.100',
-        type: 'SoundTouch 10',
-        deviceId: 'device-123',
-      ));
-
-      await tester.pumpWidget(
-        ChangeNotifierProvider.value(
-          value: appState,
-          child: const MaterialApp(
-            home: Scaffold(body: SpeakerListPage()),
-          ),
+      appState.addSpeaker(
+        const Speaker(
+          id: '1',
+          name: 'Test Speaker',
+          emoji: '🔊',
+          ipAddress: '192.168.1.100',
+          type: 'SoundTouch 10',
+          deviceId: 'device-123',
         ),
       );
 
-      await tester.pump();
-
-      // Find the Card that should have errorContainer background
-      final cardFinder = find.ancestor(
-        of: find.text('Test Speaker'),
-        matching: find.byType(Card),
-      );
-
-      expect(cardFinder, findsOneWidget);
-
-      // Verify the card has a color set (errorContainer for disconnected state)
-      final card = tester.widget<Card>(cardFinder);
-      expect(card.color, isNotNull);
-    });
-
-    testWidgets('card uses Stack for layering',
-        (WidgetTester tester) async {
-      final appState = MyAppState();
-      await appState.initializeSpeakers();
-
-      appState.addSpeaker(const Speaker(
-        id: '1',
-        name: 'Test Speaker',
-        emoji: '🔊',
-        ipAddress: '192.168.1.100',
-        type: 'SoundTouch 10',
-        deviceId: 'device-123',
-      ));
-
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: const MaterialApp(
-            home: Scaffold(body: SpeakerListPage()),
-          ),
+          child: const MaterialApp(home: Scaffold(body: SpeakerListPage())),
         ),
       );
 
@@ -395,8 +395,9 @@ void main() {
       expect(stackInCard, findsAtLeastNWidgets(1));
     });
 
-    testWidgets('displays Hero widget when speaker is playing with artwork',
-        (WidgetTester tester) async {
+    testWidgets('displays Hero widget when speaker is playing with artwork', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initializeSpeakers();
 
@@ -414,9 +415,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: const MaterialApp(
-            home: Scaffold(body: SpeakerListPage()),
-          ),
+          child: const MaterialApp(home: Scaffold(body: SpeakerListPage())),
         ),
       );
 
@@ -449,28 +448,29 @@ void main() {
       expect(heroWidget.tag, equals('album-art-1'));
     });
 
-    testWidgets('does not display Hero widget when speaker is not playing',
-        (WidgetTester tester) async {
+    testWidgets('does not display Hero widget when speaker is not playing', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initializeSpeakers();
 
-      appState.addSpeaker(const Speaker(
-        id: '1',
-        name: 'Test Speaker',
-        emoji: '🔊',
-        ipAddress: '192.168.1.100',
-        type: 'SoundTouch 10',
-        deviceId: 'device-123',
-      ));
+      appState.addSpeaker(
+        const Speaker(
+          id: '1',
+          name: 'Test Speaker',
+          emoji: '🔊',
+          ipAddress: '192.168.1.100',
+          type: 'SoundTouch 10',
+          deviceId: 'device-123',
+        ),
+      );
 
       // Don't set any now playing state (speaker is not playing)
 
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: const MaterialApp(
-            home: Scaffold(body: SpeakerListPage()),
-          ),
+          child: const MaterialApp(home: Scaffold(body: SpeakerListPage())),
         ),
       );
 
@@ -478,13 +478,15 @@ void main() {
 
       // Verify no Hero widget with album art tag is present when speaker is not playing
       final albumArtHeroFinder = find.byWidgetPredicate(
-        (widget) => widget is Hero && widget.tag.toString().startsWith('album-art-'),
+        (widget) =>
+            widget is Hero && widget.tag.toString().startsWith('album-art-'),
       );
       expect(albumArtHeroFinder, findsNothing);
     });
 
-    testWidgets('Hero tag format matches speaker ID',
-        (WidgetTester tester) async {
+    testWidgets('Hero tag format matches speaker ID', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initializeSpeakers();
 
@@ -512,9 +514,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: const MaterialApp(
-            home: Scaffold(body: SpeakerListPage()),
-          ),
+          child: const MaterialApp(home: Scaffold(body: SpeakerListPage())),
         ),
       );
 
@@ -546,8 +546,9 @@ void main() {
       expect(heroWidget.tag, equals('album-art-speaker-a'));
     });
 
-    testWidgets('displays speaker info Hero widget when no artwork',
-        (WidgetTester tester) async {
+    testWidgets('displays speaker info Hero widget when no artwork', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initializeSpeakers();
 
@@ -565,9 +566,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: const MaterialApp(
-            home: Scaffold(body: SpeakerListPage()),
-          ),
+          child: const MaterialApp(home: Scaffold(body: SpeakerListPage())),
         ),
       );
 
@@ -584,8 +583,9 @@ void main() {
       expect(heroWidget.tag, equals('speaker-info-1'));
     });
 
-    testWidgets('speaker info Hero is not present when artwork is showing',
-        (WidgetTester tester) async {
+    testWidgets('speaker info Hero is not present when artwork is showing', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initializeSpeakers();
 
@@ -602,9 +602,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: const MaterialApp(
-            home: Scaffold(body: SpeakerListPage()),
-          ),
+          child: const MaterialApp(home: Scaffold(body: SpeakerListPage())),
         ),
       );
 
@@ -633,8 +631,9 @@ void main() {
       expect(speakerInfoHeroFinder, findsNothing);
     });
 
-    testWidgets('displays album art Hero even when paused',
-        (WidgetTester tester) async {
+    testWidgets('displays album art Hero even when paused', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initializeSpeakers();
 
@@ -651,9 +650,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: const MaterialApp(
-            home: Scaffold(body: SpeakerListPage()),
-          ),
+          child: const MaterialApp(home: Scaffold(body: SpeakerListPage())),
         ),
       );
 
@@ -687,8 +684,9 @@ void main() {
       expect(speakerInfoHeroFinder, findsNothing);
     });
 
-    testWidgets('hides album art Hero when showAlbumArtInList is false',
-        (WidgetTester tester) async {
+    testWidgets('hides album art Hero when showAlbumArtInList is false', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initializeSpeakers();
       appState.updateConfig(
@@ -708,9 +706,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: const MaterialApp(
-            home: Scaffold(body: SpeakerListPage()),
-          ),
+          child: const MaterialApp(home: Scaffold(body: SpeakerListPage())),
         ),
       );
 
@@ -732,7 +728,8 @@ void main() {
 
       // Album art hero should NOT appear when toggle is off
       final albumArtHeroFinder = find.byWidgetPredicate(
-        (widget) => widget is Hero && widget.tag.toString().startsWith('album-art-'),
+        (widget) =>
+            widget is Hero && widget.tag.toString().startsWith('album-art-'),
       );
       expect(albumArtHeroFinder, findsNothing);
 
@@ -743,13 +740,12 @@ void main() {
       expect(speakerInfoHeroFinder, findsOneWidget);
     });
 
-    testWidgets('shows album art Hero when showAlbumArtInList is true',
-        (WidgetTester tester) async {
+    testWidgets('shows album art Hero when showAlbumArtInList is true', (
+      WidgetTester tester,
+    ) async {
       final appState = MyAppState();
       await appState.initializeSpeakers();
-      appState.updateConfig(
-        appState.config.copyWith(showAlbumArtInList: true),
-      );
+      appState.updateConfig(appState.config.copyWith(showAlbumArtInList: true));
 
       const testSpeaker = Speaker(
         id: '1',
@@ -764,9 +760,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: const MaterialApp(
-            home: Scaffold(body: SpeakerListPage()),
-          ),
+          child: const MaterialApp(home: Scaffold(body: SpeakerListPage())),
         ),
       );
 

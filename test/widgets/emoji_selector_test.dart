@@ -35,8 +35,9 @@ void main() {
       expect(find.text('🍳'), findsOneWidget);
     });
 
-    testWidgets('calls onEmojiSelected when emoji is tapped',
-        (WidgetTester tester) async {
+    testWidgets('calls onEmojiSelected when emoji is tapped', (
+      WidgetTester tester,
+    ) async {
       String selectedEmoji = '🔊';
 
       await tester.pumpWidget(

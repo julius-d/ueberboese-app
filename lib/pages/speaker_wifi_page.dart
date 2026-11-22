@@ -118,7 +118,10 @@ class _SpeakerWifiPageState extends State<SpeakerWifiPage> {
   }
 
   Future<void> _connect(
-      String ssid, String password, String securityType) async {
+    String ssid,
+    String password,
+    String securityType,
+  ) async {
     showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -411,7 +414,8 @@ class _ManualNetworkDialogState extends State<_ManualNetworkDialog> {
                   labelText: 'Password',
                   suffixIcon: IconButton(
                     icon: Icon(
-                        _obscure ? Icons.visibility : Icons.visibility_off),
+                      _obscure ? Icons.visibility : Icons.visibility_off,
+                    ),
                     onPressed: () => setState(() => _obscure = !_obscure),
                   ),
                 ),
@@ -429,13 +433,13 @@ class _ManualNetworkDialogState extends State<_ManualNetworkDialog> {
         TextButton(
           onPressed: _valid
               ? () => Navigator.pop(
-                    context,
-                    _ManualNetwork(
-                      _ssidController.text.trim(),
-                      _isOpen ? '' : _passwordController.text,
-                      _securityType,
-                    ),
-                  )
+                  context,
+                  _ManualNetwork(
+                    _ssidController.text.trim(),
+                    _isOpen ? '' : _passwordController.text,
+                    _securityType,
+                  ),
+                )
               : null,
           child: const Text('Connect'),
         ),

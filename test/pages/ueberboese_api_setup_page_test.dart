@@ -20,9 +20,7 @@ void main() {
       await tester.pumpWidget(
         ChangeNotifierProvider.value(
           value: appState,
-          child: const MaterialApp(
-            home: UeberboesApiSetupPage(),
-          ),
+          child: const MaterialApp(home: UeberboesApiSetupPage()),
         ),
       );
     }
@@ -44,12 +42,14 @@ void main() {
     });
 
     testWidgets('loads current config values', (WidgetTester tester) async {
-      appState.updateConfig(const AppConfig(
-        apiUrl: 'https://test.example.com',
-        accountId: 'testuser',
-        mgmtUsername: 'customadmin',
-        mgmtPassword: 'custompass',
-      ));
+      appState.updateConfig(
+        const AppConfig(
+          apiUrl: 'https://test.example.com',
+          accountId: 'testuser',
+          mgmtUsername: 'customadmin',
+          mgmtPassword: 'custompass',
+        ),
+      );
 
       await pumpPage(tester);
 
@@ -71,8 +71,9 @@ void main() {
       expect(find.text('Please enter an account ID'), findsOneWidget);
     });
 
-    testWidgets('validates non-alphanumeric account ID',
-        (WidgetTester tester) async {
+    testWidgets('validates non-alphanumeric account ID', (
+      WidgetTester tester,
+    ) async {
       await pumpPage(tester);
 
       final accountIdField = find.widgetWithText(TextFormField, 'Account ID');
@@ -87,11 +88,15 @@ void main() {
       );
     });
 
-    testWidgets('accepts valid alphanumeric account ID',
-        (WidgetTester tester) async {
+    testWidgets('accepts valid alphanumeric account ID', (
+      WidgetTester tester,
+    ) async {
       await pumpPage(tester);
 
-      final apiUrlField = find.widgetWithText(TextFormField, 'Überböse API URL');
+      final apiUrlField = find.widgetWithText(
+        TextFormField,
+        'Überböse API URL',
+      );
       await tester.enterText(apiUrlField, 'https://api.example.com');
 
       final accountIdField = find.widgetWithText(TextFormField, 'Account ID');
@@ -107,7 +112,10 @@ void main() {
     testWidgets('validates invalid URL format', (WidgetTester tester) async {
       await pumpPage(tester);
 
-      final apiUrlField = find.widgetWithText(TextFormField, 'Überböse API URL');
+      final apiUrlField = find.widgetWithText(
+        TextFormField,
+        'Überböse API URL',
+      );
       await tester.enterText(apiUrlField, 'not-a-valid-url');
 
       final accountIdField = find.widgetWithText(TextFormField, 'Account ID');
@@ -122,8 +130,9 @@ void main() {
       );
     });
 
-    testWidgets('accepts empty API URL (optional field)',
-        (WidgetTester tester) async {
+    testWidgets('accepts empty API URL (optional field)', (
+      WidgetTester tester,
+    ) async {
       await pumpPage(tester);
 
       final accountIdField = find.widgetWithText(TextFormField, 'Account ID');
@@ -139,7 +148,10 @@ void main() {
     testWidgets('accepts valid HTTPS URL', (WidgetTester tester) async {
       await pumpPage(tester);
 
-      final apiUrlField = find.widgetWithText(TextFormField, 'Überböse API URL');
+      final apiUrlField = find.widgetWithText(
+        TextFormField,
+        'Überböse API URL',
+      );
       await tester.enterText(apiUrlField, 'https://api.example.com');
 
       final accountIdField = find.widgetWithText(TextFormField, 'Account ID');
@@ -154,7 +166,10 @@ void main() {
     testWidgets('accepts valid HTTP URL', (WidgetTester tester) async {
       await pumpPage(tester);
 
-      final apiUrlField = find.widgetWithText(TextFormField, 'Überböse API URL');
+      final apiUrlField = find.widgetWithText(
+        TextFormField,
+        'Überböse API URL',
+      );
       await tester.enterText(apiUrlField, 'http://api.example.com');
 
       final accountIdField = find.widgetWithText(TextFormField, 'Account ID');
@@ -166,11 +181,15 @@ void main() {
       expect(appState.config.apiUrl, 'http://api.example.com');
     });
 
-    testWidgets('shows success message after saving',
-        (WidgetTester tester) async {
+    testWidgets('shows success message after saving', (
+      WidgetTester tester,
+    ) async {
       await pumpPage(tester);
 
-      final apiUrlField = find.widgetWithText(TextFormField, 'Überböse API URL');
+      final apiUrlField = find.widgetWithText(
+        TextFormField,
+        'Überböse API URL',
+      );
       await tester.enterText(apiUrlField, 'https://api.example.com');
 
       final accountIdField = find.widgetWithText(TextFormField, 'Account ID');
@@ -184,15 +203,18 @@ void main() {
       await tester.pumpAndSettle(const Duration(milliseconds: 500));
     });
 
-    testWidgets('validates empty management username',
-        (WidgetTester tester) async {
+    testWidgets('validates empty management username', (
+      WidgetTester tester,
+    ) async {
       await pumpPage(tester);
 
       final accountIdField = find.widgetWithText(TextFormField, 'Account ID');
       await tester.enterText(accountIdField, 'testuser');
 
-      final mgmtUsernameField =
-          find.widgetWithText(TextFormField, 'Management Username');
+      final mgmtUsernameField = find.widgetWithText(
+        TextFormField,
+        'Management Username',
+      );
       await tester.enterText(mgmtUsernameField, '');
 
       await tester.tap(find.text('Save Configuration'));
@@ -201,15 +223,18 @@ void main() {
       expect(find.text('Please enter a management username'), findsOneWidget);
     });
 
-    testWidgets('validates empty management password',
-        (WidgetTester tester) async {
+    testWidgets('validates empty management password', (
+      WidgetTester tester,
+    ) async {
       await pumpPage(tester);
 
       final accountIdField = find.widgetWithText(TextFormField, 'Account ID');
       await tester.enterText(accountIdField, 'testuser');
 
-      final mgmtPasswordField =
-          find.widgetWithText(TextFormField, 'Management Password');
+      final mgmtPasswordField = find.widgetWithText(
+        TextFormField,
+        'Management Password',
+      );
       await tester.enterText(mgmtPasswordField, '');
 
       await tester.tap(find.text('Save Configuration'));
@@ -224,12 +249,16 @@ void main() {
       final accountIdField = find.widgetWithText(TextFormField, 'Account ID');
       await tester.enterText(accountIdField, 'testuser');
 
-      final mgmtUsernameField =
-          find.widgetWithText(TextFormField, 'Management Username');
+      final mgmtUsernameField = find.widgetWithText(
+        TextFormField,
+        'Management Username',
+      );
       await tester.enterText(mgmtUsernameField, 'myadmin');
 
-      final mgmtPasswordField =
-          find.widgetWithText(TextFormField, 'Management Password');
+      final mgmtPasswordField = find.widgetWithText(
+        TextFormField,
+        'Management Password',
+      );
       await tester.enterText(mgmtPasswordField, 'mypassword');
 
       await tester.tap(find.text('Save Configuration'));
@@ -256,16 +285,18 @@ void main() {
       expect(find.byIcon(Icons.visibility), findsOneWidget);
     });
 
-    testWidgets('loads default values for management credentials',
-        (WidgetTester tester) async {
+    testWidgets('loads default values for management credentials', (
+      WidgetTester tester,
+    ) async {
       await pumpPage(tester);
 
       expect(find.text('admin'), findsOneWidget);
       expect(find.text('change_me!'), findsOneWidget);
     });
 
-    testWidgets('preserves showAlbumArtInList when saving',
-        (WidgetTester tester) async {
+    testWidgets('preserves showAlbumArtInList when saving', (
+      WidgetTester tester,
+    ) async {
       appState.updateConfig(
         appState.config.copyWith(showAlbumArtInList: false),
       );

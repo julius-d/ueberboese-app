@@ -18,7 +18,9 @@ class ManagementApiService {
     String password,
   ) async {
     // Remove trailing slash from API URL if present
-    final baseUrl = apiUrl.endsWith('/') ? apiUrl.substring(0, apiUrl.length - 1) : apiUrl;
+    final baseUrl = apiUrl.endsWith('/')
+        ? apiUrl.substring(0, apiUrl.length - 1)
+        : apiUrl;
     final url = Uri.parse('$baseUrl/mgmt/accounts/$accountId/speakers');
     final client = httpClient ?? http.Client();
 
@@ -30,9 +32,7 @@ class ManagementApiService {
     };
 
     try {
-      final response = await client
-          .get(url, headers: headers)
-          .timeout(timeout);
+      final response = await client.get(url, headers: headers).timeout(timeout);
 
       if (response.statusCode == 401 || response.statusCode == 403) {
         throw Exception(
@@ -73,7 +73,8 @@ class ManagementApiService {
       // Extract IP addresses
       final List<String> ipAddresses = [];
       for (final speaker in speakersData) {
-        if (speaker is Map<String, dynamic> && speaker.containsKey('ipAddress')) {
+        if (speaker is Map<String, dynamic> &&
+            speaker.containsKey('ipAddress')) {
           final ipAddress = speaker['ipAddress'];
           if (ipAddress is String && ipAddress.isNotEmpty) {
             ipAddresses.add(ipAddress);
@@ -101,7 +102,9 @@ class ManagementApiService {
     String password,
   ) async {
     // Remove trailing slash from API URL if present
-    final baseUrl = apiUrl.endsWith('/') ? apiUrl.substring(0, apiUrl.length - 1) : apiUrl;
+    final baseUrl = apiUrl.endsWith('/')
+        ? apiUrl.substring(0, apiUrl.length - 1)
+        : apiUrl;
     final url = Uri.parse('$baseUrl/mgmt/devices/$deviceId/events');
     final client = httpClient ?? http.Client();
 
@@ -113,9 +116,7 @@ class ManagementApiService {
     };
 
     try {
-      final response = await client
-          .get(url, headers: headers)
-          .timeout(timeout);
+      final response = await client.get(url, headers: headers).timeout(timeout);
 
       if (response.statusCode == 401 || response.statusCode == 403) {
         throw Exception(
@@ -124,9 +125,7 @@ class ManagementApiService {
       }
 
       if (response.statusCode == 404) {
-        throw Exception(
-          'Device not found. Please check the device ID.',
-        );
+        throw Exception('Device not found. Please check the device ID.');
       }
 
       if (response.statusCode != 200) {

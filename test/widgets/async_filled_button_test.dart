@@ -7,14 +7,16 @@ Widget _wrap(Widget child) => MaterialApp(home: Scaffold(body: child));
 void main() {
   group('AsyncFilledButton', () {
     testWidgets('shows icon and label when not loading', (tester) async {
-      await tester.pumpWidget(_wrap(
-        AsyncFilledButton(
-          onPressed: () {},
-          isLoading: false,
-          icon: const Icon(Icons.restart_alt),
-          label: const Text('Do thing'),
+      await tester.pumpWidget(
+        _wrap(
+          AsyncFilledButton(
+            onPressed: () {},
+            isLoading: false,
+            icon: const Icon(Icons.restart_alt),
+            label: const Text('Do thing'),
+          ),
         ),
-      ));
+      );
 
       expect(find.text('Do thing'), findsOneWidget);
       expect(find.byIcon(Icons.restart_alt), findsOneWidget);
@@ -22,28 +24,32 @@ void main() {
     });
 
     testWidgets('shows spinner and hides icon when loading', (tester) async {
-      await tester.pumpWidget(_wrap(
-        AsyncFilledButton(
-          onPressed: () {},
-          isLoading: true,
-          icon: const Icon(Icons.restart_alt),
-          label: const Text('Do thing'),
+      await tester.pumpWidget(
+        _wrap(
+          AsyncFilledButton(
+            onPressed: () {},
+            isLoading: true,
+            icon: const Icon(Icons.restart_alt),
+            label: const Text('Do thing'),
+          ),
         ),
-      ));
+      );
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
       expect(find.byIcon(Icons.restart_alt), findsNothing);
     });
 
     testWidgets('button is disabled when loading', (tester) async {
-      await tester.pumpWidget(_wrap(
-        AsyncFilledButton(
-          onPressed: () {},
-          isLoading: true,
-          icon: const Icon(Icons.restart_alt),
-          label: const Text('Do thing'),
+      await tester.pumpWidget(
+        _wrap(
+          AsyncFilledButton(
+            onPressed: () {},
+            isLoading: true,
+            icon: const Icon(Icons.restart_alt),
+            label: const Text('Do thing'),
+          ),
         ),
-      ));
+      );
 
       final button = tester.widget<FilledButton>(
         find.byWidgetPredicate((w) => w is FilledButton),
@@ -52,14 +58,16 @@ void main() {
     });
 
     testWidgets('button is enabled when not loading', (tester) async {
-      await tester.pumpWidget(_wrap(
-        AsyncFilledButton(
-          onPressed: () {},
-          isLoading: false,
-          icon: const Icon(Icons.restart_alt),
-          label: const Text('Do thing'),
+      await tester.pumpWidget(
+        _wrap(
+          AsyncFilledButton(
+            onPressed: () {},
+            isLoading: false,
+            icon: const Icon(Icons.restart_alt),
+            label: const Text('Do thing'),
+          ),
         ),
-      ));
+      );
 
       final button = tester.widget<FilledButton>(
         find.byWidgetPredicate((w) => w is FilledButton),
@@ -70,31 +78,36 @@ void main() {
     testWidgets('calls onPressed callback when tapped', (tester) async {
       var tapped = false;
 
-      await tester.pumpWidget(_wrap(
-        AsyncFilledButton(
-          onPressed: () => tapped = true,
-          isLoading: false,
-          icon: const Icon(Icons.restart_alt),
-          label: const Text('Do thing'),
+      await tester.pumpWidget(
+        _wrap(
+          AsyncFilledButton(
+            onPressed: () => tapped = true,
+            isLoading: false,
+            icon: const Icon(Icons.restart_alt),
+            label: const Text('Do thing'),
+          ),
         ),
-      ));
+      );
 
       await tester.tap(find.text('Do thing'));
       expect(tapped, isTrue);
     });
 
-    testWidgets('does not call onPressed when loading and tapped',
-        (tester) async {
+    testWidgets('does not call onPressed when loading and tapped', (
+      tester,
+    ) async {
       var tapped = false;
 
-      await tester.pumpWidget(_wrap(
-        AsyncFilledButton(
-          onPressed: () => tapped = true,
-          isLoading: true,
-          icon: const Icon(Icons.restart_alt),
-          label: const Text('Do thing'),
+      await tester.pumpWidget(
+        _wrap(
+          AsyncFilledButton(
+            onPressed: () => tapped = true,
+            isLoading: true,
+            icon: const Icon(Icons.restart_alt),
+            label: const Text('Do thing'),
+          ),
         ),
-      ));
+      );
 
       await tester.tap(find.text('Do thing'), warnIfMissed: false);
       expect(tapped, isFalse);

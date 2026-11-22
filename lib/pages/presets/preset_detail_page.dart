@@ -36,7 +36,10 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
   Future<Preset?> _getPreset() async {
     final appState = context.read<MyAppState>();
     // First check cache
-    final cachedPreset = appState.getPresetById(widget.speakerIp, widget.presetId);
+    final cachedPreset = appState.getPresetById(
+      widget.speakerIp,
+      widget.presetId,
+    );
     if (cachedPreset != null) {
       return cachedPreset;
     }
@@ -91,10 +94,7 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
     });
 
     try {
-      await _speakerApiService.removePreset(
-        widget.speakerIp,
-        widget.presetId,
-      );
+      await _speakerApiService.removePreset(widget.speakerIp, widget.presetId);
 
       if (!mounted) return;
 
@@ -138,7 +138,6 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -149,185 +148,184 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
-            appBar: AppBar(
-              title: Text('Preset ${widget.presetId}'),
-            ),
-            body: const Center(
-              child: CircularProgressIndicator(),
-            ),
+            appBar: AppBar(title: Text('Preset ${widget.presetId}')),
+            body: const Center(child: CircularProgressIndicator()),
           );
         }
 
         final preset = snapshot.data;
         if (preset == null) {
           return Scaffold(
-            appBar: AppBar(
-              title: Text('Preset ${widget.presetId}'),
-            ),
-            body: const Center(
-              child: Text('Preset not found'),
-            ),
+            appBar: AppBar(title: Text('Preset ${widget.presetId}')),
+            body: const Center(child: Text('Preset not found')),
           );
         }
 
         return Scaffold(
-      appBar: AppBar(
-        title: Text('Preset ${preset.id}'),
-        actions: [
-          if (_isDeleting)
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
-            )
-          else
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert),
-              onSelected: (value) {
-                if (value == 'delete') {
-                  _showDeleteConfirmationDialog();
-                }
-              },
-              itemBuilder: (BuildContext context) => [
-                const PopupMenuItem<String>(
-                  value: 'delete',
-                  child: Row(
-                    children: [
-                      Icon(Icons.delete),
-                      SizedBox(width: 8),
-                      Text('Delete preset'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-        ],
-      ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          SingleChildScrollView(
-            child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (preset.containerArt != null && preset.containerArt!.isNotEmpty)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      preset.containerArt!,
-                      width: 200,
-                      height: 200,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          width: 200,
-                          height: 200,
-                          color: theme.colorScheme.surfaceContainerHighest,
-                          child: Icon(
-                            Icons.music_note,
-                            size: 100,
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        );
-                      },
+          appBar: AppBar(
+            title: Text('Preset ${preset.id}'),
+            actions: [
+              if (_isDeleting)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
                     ),
                   ),
-                ),
-              ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 88.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    preset.itemName,
-                    style: theme.textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  _buildDetailRow(
-                    context,
-                    'Preset Number',
-                    preset.id,
-                    Icons.numbers,
-                  ),
-                  const Divider(),
-                  _buildDetailRow(
-                    context,
-                    'Source',
-                    preset.source,
-                    Icons.source,
-                  ),
-                  const Divider(),
-                  _buildDetailRow(
-                    context,
-                    'Type',
-                    preset.type,
-                    Icons.category,
-                  ),
-                  const Divider(),
-                  _buildDetailRow(
-                    context,
-                    'Location',
-                    preset.location,
-                    Icons.location_on,
-                  ),
-                  if (preset.createdOn != null) ...[
-                    const Divider(),
-                    _buildDetailRow(
-                      context,
-                      'Created On',
-                      _formatTimestamp(preset.createdOn),
-                      Icons.access_time,
+                )
+              else
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert),
+                  onSelected: (value) {
+                    if (value == 'delete') {
+                      _showDeleteConfirmationDialog();
+                    }
+                  },
+                  itemBuilder: (BuildContext context) => [
+                    const PopupMenuItem<String>(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete),
+                          SizedBox(width: 8),
+                          Text('Delete preset'),
+                        ],
+                      ),
                     ),
                   ],
-                  if (preset.updatedOn != null) ...[
-                    const Divider(),
-                    _buildDetailRow(
-                      context,
-                      'Updated On',
-                      _formatTimestamp(preset.updatedOn),
-                      Icons.update,
-                    ),
-                  ],
-                ],
-              ),
-            ),
+                ),
             ],
           ),
-            ),
-          ValueListenableBuilder<bool>(
-            valueListenable: _fabExpandedNotifier,
-            builder: (context, isExpanded, child) {
-              if (!isExpanded) return const SizedBox.shrink();
-              return Positioned.fill(
-                child: GestureDetector(
-                  onTap: () => _fabExpandedNotifier.value = false,
-                  child: Container(
-                    color: theme.colorScheme.scrim.withValues(alpha: 0.4),
-                  ),
+          body: Stack(
+            fit: StackFit.expand,
+            children: [
+              SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (preset.containerArt != null &&
+                        preset.containerArt!.isNotEmpty)
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              preset.containerArt!,
+                              width: 200,
+                              height: 200,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  width: 200,
+                                  height: 200,
+                                  color:
+                                      theme.colorScheme.surfaceContainerHighest,
+                                  child: Icon(
+                                    Icons.music_note,
+                                    size: 100,
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        16.0,
+                        16.0,
+                        16.0,
+                        88.0,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            preset.itemName,
+                            style: theme.textTheme.headlineMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          _buildDetailRow(
+                            context,
+                            'Preset Number',
+                            preset.id,
+                            Icons.numbers,
+                          ),
+                          const Divider(),
+                          _buildDetailRow(
+                            context,
+                            'Source',
+                            preset.source,
+                            Icons.source,
+                          ),
+                          const Divider(),
+                          _buildDetailRow(
+                            context,
+                            'Type',
+                            preset.type,
+                            Icons.category,
+                          ),
+                          const Divider(),
+                          _buildDetailRow(
+                            context,
+                            'Location',
+                            preset.location,
+                            Icons.location_on,
+                          ),
+                          if (preset.createdOn != null) ...[
+                            const Divider(),
+                            _buildDetailRow(
+                              context,
+                              'Created On',
+                              _formatTimestamp(preset.createdOn),
+                              Icons.access_time,
+                            ),
+                          ],
+                          if (preset.updatedOn != null) ...[
+                            const Divider(),
+                            _buildDetailRow(
+                              context,
+                              'Updated On',
+                              _formatTimestamp(preset.updatedOn),
+                              Icons.update,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              );
-            },
+              ),
+              ValueListenableBuilder<bool>(
+                valueListenable: _fabExpandedNotifier,
+                builder: (context, isExpanded, child) {
+                  if (!isExpanded) return const SizedBox.shrink();
+                  return Positioned.fill(
+                    child: GestureDetector(
+                      onTap: () => _fabExpandedNotifier.value = false,
+                      child: Container(
+                        color: theme.colorScheme.scrim.withValues(alpha: 0.4),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
-        ],
-      ),
-      floatingActionButton: PresetActionFabs(
-        preset: preset,
-        speakerIp: widget.speakerIp,
-        isExpandedNotifier: _fabExpandedNotifier,
-        speakerApiService: _speakerApiService,
-      ),
-    );
+          floatingActionButton: PresetActionFabs(
+            preset: preset,
+            speakerIp: widget.speakerIp,
+            isExpandedNotifier: _fabExpandedNotifier,
+            speakerApiService: _speakerApiService,
+          ),
+        );
       },
     );
   }
@@ -345,11 +343,7 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            size: 20,
-            color: theme.colorScheme.primary,
-          ),
+          Icon(icon, size: 20, color: theme.colorScheme.primary),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -363,10 +357,7 @@ class _PresetDetailPageState extends State<PresetDetailPage> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                SelectableText(
-                  value,
-                  style: theme.textTheme.bodyLarge,
-                ),
+                SelectableText(value, style: theme.textTheme.bodyLarge),
               ],
             ),
           ),

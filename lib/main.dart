@@ -23,7 +23,6 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-
   final MyAppState appState;
 
   const MyApp({super.key, required this.appState});
@@ -72,10 +71,7 @@ class _PresetCacheEntry {
   final List<Preset> presets;
   final DateTime timestamp;
 
-  _PresetCacheEntry({
-    required this.presets,
-    required this.timestamp,
-  });
+  _PresetCacheEntry({required this.presets, required this.timestamp});
 
   bool get isStale {
     return DateTime.now().difference(timestamp) > const Duration(seconds: 30);
@@ -104,7 +100,7 @@ class MyAppState extends ChangeNotifier {
   late final SpeakerApiService _speakerApiService;
 
   MyAppState({SpeakerApiService? speakerApiService})
-      : _speakerApiService = speakerApiService ?? SpeakerApiService();
+    : _speakerApiService = speakerApiService ?? SpeakerApiService();
 
   List<Speaker> speakers = [];
   AppConfig config = const AppConfig();
@@ -116,10 +112,7 @@ class MyAppState extends ChangeNotifier {
   final Map<String, _NowPlayingCacheEntry> _nowPlayingCache = {};
 
   Future<void> initialize() async {
-    await Future.wait([
-      initializeSpeakers(),
-      initializeConfig(),
-    ]);
+    await Future.wait([initializeSpeakers(), initializeConfig()]);
     notifyListeners();
   }
 
@@ -250,7 +243,10 @@ class MyAppState extends ChangeNotifier {
 
   /// Update now playing for a speaker (called by polling or WebSocket)
   void updateNowPlayingForSpeaker(
-      String speakerIp, NowPlaying? nowPlaying, bool isConnected) {
+    String speakerIp,
+    NowPlaying? nowPlaying,
+    bool isConnected,
+  ) {
     _nowPlayingCache[speakerIp] = _NowPlayingCacheEntry(
       nowPlaying: nowPlaying,
       isConnected: isConnected,
@@ -267,24 +263,27 @@ class MyAppState extends ChangeNotifier {
 
   /// Poll all speakers' now playing status (called by list page)
   Future<void> pollAllSpeakersNowPlaying() async {
-    await Future.wait(speakers.map((speaker) async {
-      try {
-        final nowPlaying =
-            await _speakerApiService.getNowPlaying(speaker.ipAddress);
+    await Future.wait(
+      speakers.map((speaker) async {
+        try {
+          final nowPlaying = await _speakerApiService.getNowPlaying(
+            speaker.ipAddress,
+          );
 
-        _nowPlayingCache[speaker.ipAddress] = _NowPlayingCacheEntry(
-          nowPlaying: nowPlaying,
-          isConnected: true,
-          timestamp: DateTime.now(),
-        );
-      } catch (e) {
-        _nowPlayingCache[speaker.ipAddress] = _NowPlayingCacheEntry(
-          nowPlaying: null,
-          isConnected: false,
-          timestamp: DateTime.now(),
-        );
-      }
-      notifyListeners();
-    }));
+          _nowPlayingCache[speaker.ipAddress] = _NowPlayingCacheEntry(
+            nowPlaying: nowPlaying,
+            isConnected: true,
+            timestamp: DateTime.now(),
+          );
+        } catch (e) {
+          _nowPlayingCache[speaker.ipAddress] = _NowPlayingCacheEntry(
+            nowPlaying: null,
+            isConnected: false,
+            timestamp: DateTime.now(),
+          );
+        }
+        notifyListeners();
+      }),
+    );
   }
 }

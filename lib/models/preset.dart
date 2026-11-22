@@ -82,30 +82,30 @@ class Preset {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'itemName': itemName,
-        'containerArt': containerArt,
-        'source': source,
-        'location': location,
-        'type': type,
-        'isPresetable': isPresetable,
-        'createdOn': createdOn,
-        'updatedOn': updatedOn,
-        'sourceAccount': sourceAccount,
-      };
+    'id': id,
+    'itemName': itemName,
+    'containerArt': containerArt,
+    'source': source,
+    'location': location,
+    'type': type,
+    'isPresetable': isPresetable,
+    'createdOn': createdOn,
+    'updatedOn': updatedOn,
+    'sourceAccount': sourceAccount,
+  };
 
   factory Preset.fromJson(Map<String, dynamic> json) => Preset(
-        id: json['id'] as String,
-        itemName: json['itemName'] as String,
-        containerArt: json['containerArt'] as String?,
-        source: json['source'] as String,
-        location: json['location'] as String,
-        type: json['type'] as String,
-        isPresetable: json['isPresetable'] as bool,
-        createdOn: json['createdOn'] as int?,
-        updatedOn: json['updatedOn'] as int?,
-        sourceAccount: json['sourceAccount'] as String?,
-      );
+    id: json['id'] as String,
+    itemName: json['itemName'] as String,
+    containerArt: json['containerArt'] as String?,
+    source: json['source'] as String,
+    location: json['location'] as String,
+    type: json['type'] as String,
+    isPresetable: json['isPresetable'] as bool,
+    createdOn: json['createdOn'] as int?,
+    updatedOn: json['updatedOn'] as int?,
+    sourceAccount: json['sourceAccount'] as String?,
+  );
 
   @override
   bool operator ==(Object other) {

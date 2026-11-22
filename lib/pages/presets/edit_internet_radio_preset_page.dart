@@ -21,10 +21,12 @@ class EditInternetRadioPresetPage extends StatefulWidget {
   });
 
   @override
-  State<EditInternetRadioPresetPage> createState() => _EditInternetRadioPresetPageState();
+  State<EditInternetRadioPresetPage> createState() =>
+      _EditInternetRadioPresetPageState();
 }
 
-class _EditInternetRadioPresetPageState extends State<EditInternetRadioPresetPage> {
+class _EditInternetRadioPresetPageState
+    extends State<EditInternetRadioPresetPage> {
   late final SpeakerApiService _speakerApiService;
   late final TuneInApiService _tuneInApiService;
   late TextEditingController _nameController;
@@ -80,7 +82,8 @@ class _EditInternetRadioPresetPageState extends State<EditInternetRadioPresetPag
       });
     } else {
       setState(() {
-        _urlError = 'Please enter a valid URL starting with http:// or https://';
+        _urlError =
+            'Please enter a valid URL starting with http:// or https://';
       });
     }
   }
@@ -183,7 +186,9 @@ class _EditInternetRadioPresetPageState extends State<EditInternetRadioPresetPag
     }
 
     if (!_isValidUrl(url)) {
-      _showErrorDialog('Please enter a valid URL starting with http:// or https://');
+      _showErrorDialog(
+        'Please enter a valid URL starting with http:// or https://',
+      );
       return;
     }
 
@@ -234,9 +239,7 @@ class _EditInternetRadioPresetPageState extends State<EditInternetRadioPresetPag
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Internet Radio Preset'),
-      ),
+      appBar: AppBar(title: const Text('Edit Internet Radio Preset')),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -257,7 +260,8 @@ class _EditInternetRadioPresetPageState extends State<EditInternetRadioPresetPag
                 decoration: InputDecoration(
                   labelText: 'Stream URL *',
                   border: const OutlineInputBorder(),
-                  helperText: 'Required (e.g., https://stream.example.com/radio)',
+                  helperText:
+                      'Required (e.g., https://stream.example.com/radio)',
                   errorText: _urlError,
                 ),
                 keyboardType: TextInputType.url,
@@ -272,7 +276,8 @@ class _EditInternetRadioPresetPageState extends State<EditInternetRadioPresetPag
                       decoration: const InputDecoration(
                         labelText: 'Cover Art URL',
                         border: OutlineInputBorder(),
-                        helperText: 'Optional (e.g., https://example.com/cover.png)',
+                        helperText:
+                            'Optional (e.g., https://example.com/cover.png)',
                       ),
                       keyboardType: TextInputType.url,
                     ),
@@ -281,7 +286,9 @@ class _EditInternetRadioPresetPageState extends State<EditInternetRadioPresetPag
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: IconButton(
-                      onPressed: _nameController.text.trim().isEmpty || _isSearchingImage
+                      onPressed:
+                          _nameController.text.trim().isEmpty ||
+                              _isSearchingImage
                           ? null
                           : _searchStationImage,
                       icon: _isSearchingImage
@@ -326,9 +333,10 @@ class _EditInternetRadioPresetPageState extends State<EditInternetRadioPresetPag
                             height: 120,
                             child: Center(
                               child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes != null
+                                value:
+                                    loadingProgress.expectedTotalBytes != null
                                     ? loadingProgress.cumulativeBytesLoaded /
-                                        loadingProgress.expectedTotalBytes!
+                                          loadingProgress.expectedTotalBytes!
                                     : null,
                               ),
                             ),

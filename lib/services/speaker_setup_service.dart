@@ -8,8 +8,8 @@ import 'package:ueberboese_app/models/wireless_network.dart';
 /// IP address used by the speaker in access-point / setup mode.
 const String kSetupSpeakerIp = '192.0.2.1';
 
-typedef SocketConnect = Future<Socket> Function(String host, int port,
-    {Duration? timeout});
+typedef SocketConnect =
+    Future<Socket> Function(String host, int port, {Duration? timeout});
 
 class SpeakerSetupService {
   final http.Client? httpClient;
@@ -28,16 +28,15 @@ class SpeakerSetupService {
 
   bool _ownClient() => httpClient == null;
 
-  Future<List<WirelessNetwork>> performWirelessSiteSurvey(
-      {String speakerIp = kSetupSpeakerIp}) async {
-    final url =
-        Uri.parse('http://$speakerIp:8090/performWirelessSiteSurvey');
+  Future<List<WirelessNetwork>> performWirelessSiteSurvey({
+    String speakerIp = kSetupSpeakerIp,
+  }) async {
+    final url = Uri.parse('http://$speakerIp:8090/performWirelessSiteSurvey');
     final client = _client();
     try {
       final response = await client.get(url).timeout(timeout);
       if (response.statusCode != 200) {
-        throw Exception(
-            'Site survey failed: HTTP ${response.statusCode}');
+        throw Exception('Site survey failed: HTTP ${response.statusCode}');
       }
       final bodyText = utf8.decode(response.bodyBytes);
       final document = XmlDocument.parse(bodyText);
@@ -48,8 +47,9 @@ class SpeakerSetupService {
             int.tryParse(item.getAttribute('signalStrength') ?? '0') ?? 0;
         final secure = item.getAttribute('secure') == 'true';
         final typeElements = item.findAllElements('type');
-        final securityType =
-            typeElements.isNotEmpty ? typeElements.first.innerText : 'none';
+        final securityType = typeElements.isNotEmpty
+            ? typeElements.first.innerText
+            : 'none';
         return WirelessNetwork(
           ssid: ssid,
           signalStrength: signalStrength,
@@ -69,7 +69,8 @@ class SpeakerSetupService {
   /// Drops hidden (empty) SSIDs, merges duplicates keeping the strongest
   /// signal and sorts the result strongest first.
   static List<WirelessNetwork> _cleanUpNetworks(
-      List<WirelessNetwork> networks) {
+    List<WirelessNetwork> networks,
+  ) {
     final bySsid = <String, WirelessNetwork>{};
     for (final network in networks) {
       if (network.ssid.isEmpty) continue;
@@ -84,8 +85,11 @@ class SpeakerSetupService {
   }
 
   Future<void> addWirelessProfile(
-      String ssid, String password, String securityType,
-      {String speakerIp = kSetupSpeakerIp}) async {
+    String ssid,
+    String password,
+    String securityType, {
+    String speakerIp = kSetupSpeakerIp,
+  }) async {
     final url = Uri.parse('http://$speakerIp:8090/addWirelessProfile');
     final client = _client();
     final body =
@@ -103,7 +107,8 @@ class SpeakerSetupService {
         final responseBody = utf8.decode(response.bodyBytes).trim();
         final detail = responseBody.isNotEmpty ? '\n$responseBody' : '';
         throw Exception(
-            'Add wireless profile failed: HTTP ${response.statusCode}$detail');
+          'Add wireless profile failed: HTTP ${response.statusCode}$detail',
+        );
       }
     } catch (e) {
       if (e is Exception) rethrow;
@@ -115,14 +120,12 @@ class SpeakerSetupService {
 
   /// Connects to [speakerIp] on port 17000, sends envswitch commands line by
   /// line, and returns a log of all sent ("> ") and received ("< ") lines.
-  Future<List<String>> configureEnvswitch(String apiUrl,
-      {String speakerIp = kSetupSpeakerIp}) async {
+  Future<List<String>> configureEnvswitch(
+    String apiUrl, {
+    String speakerIp = kSetupSpeakerIp,
+  }) async {
     final connectFn = socketConnect ?? Socket.connect;
-    final socket = await connectFn(
-      speakerIp,
-      17000,
-      timeout: timeout,
-    );
+    final socket = await connectFn(speakerIp, 17000, timeout: timeout);
     final log = <String>[];
     try {
       final updatesUrl = '$apiUrl/updates/soundtouch';
@@ -144,7 +147,7 @@ class SpeakerSetupService {
       final buffer = StringBuffer();
       // The active completer for the current wait. Using a list so the closure
       // always holds a reference to the same container even as we swap values.
-      final pendingBox = <Completer<String>?>[ null ];
+      final pendingBox = <Completer<String>?>[null];
 
       void tryComplete() {
         final c = pendingBox[0];
@@ -166,12 +169,15 @@ class SpeakerSetupService {
         pendingBox[0] = c;
         // If data already arrived and contains the prompt, complete immediately.
         tryComplete();
-        return c.future.timeout(timeLimit, onTimeout: () {
-          pendingBox[0] = null;
-          final s = buffer.toString();
-          buffer.clear();
-          return s;
-        });
+        return c.future.timeout(
+          timeLimit,
+          onTimeout: () {
+            pendingBox[0] = null;
+            final s = buffer.toString();
+            buffer.clear();
+            return s;
+          },
+        );
       }
 
       // Drain the initial "->" connection prompt before sending commands.
@@ -219,23 +225,22 @@ class SpeakerSetupService {
         }
       }
 
-      socket.cast<List<int>>().transform(utf8.decoder).listen(
-        (data) {
-          responseBuffer.write(data);
-          // Reset idle timer on each new chunk; resolve after a short pause.
-          idleTimer?.cancel();
-          idleTimer = Timer(const Duration(milliseconds: 300), complete);
-        },
-        onDone: complete,
-      );
+      socket.cast<List<int>>().transform(utf8.decoder).listen((data) {
+        responseBuffer.write(data);
+        // Reset idle timer on each new chunk; resolve after a short pause.
+        idleTimer?.cancel();
+        idleTimer = Timer(const Duration(milliseconds: 300), complete);
+      }, onDone: complete);
 
       socket.writeln('getpdo CurrentSystemConfiguration');
       await socket.flush();
 
-      final response = await completer.future
-          .timeout(const Duration(seconds: 5), onTimeout: () {
-        return responseBuffer.toString();
-      });
+      final response = await completer.future.timeout(
+        const Duration(seconds: 5),
+        onTimeout: () {
+          return responseBuffer.toString();
+        },
+      );
       await socket.close();
       return response;
     } catch (e) {
@@ -289,10 +294,14 @@ class SpeakerSetupService {
   }
 
   Future<void> setMargeAccount(
-      String speakerIp, String accountId, String authToken) async {
+    String speakerIp,
+    String accountId,
+    String authToken,
+  ) async {
     final url = Uri.parse('http://$speakerIp:8090/setMargeAccount');
     final client = _client();
-    final body = '<PairDeviceWithAccount>'
+    final body =
+        '<PairDeviceWithAccount>'
         '<accountId>${_escapeXml(accountId)}</accountId>'
         '<userAuthToken>Bearer ${_escapeXml(authToken)}</userAuthToken>'
         '</PairDeviceWithAccount>';
@@ -309,7 +318,8 @@ class SpeakerSetupService {
           .timeout(const Duration(seconds: 60));
       if (response.statusCode != 200) {
         throw Exception(
-            'Set Marge account failed: HTTP ${response.statusCode}');
+          'Set Marge account failed: HTTP ${response.statusCode}',
+        );
       }
     } catch (e) {
       if (e is Exception) rethrow;
@@ -328,8 +338,7 @@ class SpeakerSetupService {
           .post(url, headers: {'Content-Type': 'text/xml'}, body: body)
           .timeout(timeout);
       if (response.statusCode != 200) {
-        throw Exception(
-            'Leave setup mode failed: HTTP ${response.statusCode}');
+        throw Exception('Leave setup mode failed: HTTP ${response.statusCode}');
       }
     } catch (e) {
       if (e is Exception) rethrow;

@@ -37,10 +37,7 @@ class _PresetActionFabsState extends State<PresetActionFabs> {
     setState(() => _isPlaying = true);
 
     try {
-      await _speakerApiService.selectPreset(
-        widget.speakerIp,
-        widget.preset,
-      );
+      await _speakerApiService.selectPreset(widget.speakerIp, widget.preset);
 
       if (!mounted) return;
 

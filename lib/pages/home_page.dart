@@ -10,7 +10,6 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-
 class _HomePageState extends State<HomePage> {
   var selectedIndex = 0;
 
@@ -47,12 +46,7 @@ class _HomePageState extends State<HomePage> {
             // on narrow screens.
             return Column(
               children: [
-                Expanded(
-                  child: SafeArea(
-                    bottom: false,
-                    child: mainArea,
-                  ),
-                ),
+                Expanded(child: SafeArea(bottom: false, child: mainArea)),
                 BottomNavigationBar(
                   type: BottomNavigationBarType.fixed,
                   selectedItemColor: colorScheme.primary,
@@ -77,7 +71,7 @@ class _HomePageState extends State<HomePage> {
                       selectedIndex = value;
                     });
                   },
-                )
+                ),
               ],
             );
           } else {
@@ -108,11 +102,7 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
                 ),
-                Expanded(
-                  child: SafeArea(
-                    child: mainArea,
-                  ),
-                ),
+                Expanded(child: SafeArea(child: mainArea)),
               ],
             );
           }

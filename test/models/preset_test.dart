@@ -176,7 +176,10 @@ void main() {
       expect(preset.itemName, 'Top 50 Global');
       expect(preset.containerArt, 'https://example.com/art.jpg');
       expect(preset.source, 'SPOTIFY');
-      expect(preset.location, '/playback/container/c3BvdGlmeTpwbGF5bGlzdDoxMjM=');
+      expect(
+        preset.location,
+        '/playback/container/c3BvdGlmeTpwbGF5bGlzdDoxMjM=',
+      );
       expect(preset.type, 'tracklisturl');
       expect(preset.isPresetable, true);
       expect(preset.createdOn, 1701220500);
@@ -224,7 +227,10 @@ void main() {
 
       expect(preset.id, '2');
       expect(preset.itemName, 'Empty Art Preset');
-      expect(preset.containerArt, isNull); // Empty string should be converted to null
+      expect(
+        preset.containerArt,
+        isNull,
+      ); // Empty string should be converted to null
       expect(preset.source, 'SPOTIFY');
       expect(preset.location, '/v1/spotify/playlist/789');
       expect(preset.type, 'playlist');

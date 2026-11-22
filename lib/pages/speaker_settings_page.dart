@@ -111,8 +111,9 @@ class _SpeakerSettingsPageState extends State<SpeakerSettingsPage> {
       _bassError = null;
     });
     try {
-      final capabilities =
-          await _apiService.getBassCapabilities(widget.speaker.ipAddress);
+      final capabilities = await _apiService.getBassCapabilities(
+        widget.speaker.ipAddress,
+      );
       final bass = capabilities.bassAvailable
           ? await _apiService.getBass(widget.speaker.ipAddress)
           : null;
@@ -135,8 +136,9 @@ class _SpeakerSettingsPageState extends State<SpeakerSettingsPage> {
       _clockError = null;
     });
     try {
-      final supported =
-          await _apiService.isClockDisplaySupported(widget.speaker.ipAddress);
+      final supported = await _apiService.isClockDisplaySupported(
+        widget.speaker.ipAddress,
+      );
       final config = supported
           ? await _apiService.getClockDisplay(widget.speaker.ipAddress)
           : null;
@@ -170,9 +172,9 @@ class _SpeakerSettingsPageState extends State<SpeakerSettingsPage> {
       });
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to set language: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to set language: $e')));
     }
   }
 
@@ -207,9 +209,9 @@ class _SpeakerSettingsPageState extends State<SpeakerSettingsPage> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _pendingBass = null);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to set bass: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to set bass: $e')));
     }
   }
 
@@ -217,8 +219,9 @@ class _SpeakerSettingsPageState extends State<SpeakerSettingsPage> {
     setState(() => _applyingClock = true);
     try {
       await _apiService.setClockDisplay(widget.speaker.ipAddress, updated);
-      final config =
-          await _apiService.getClockDisplay(widget.speaker.ipAddress);
+      final config = await _apiService.getClockDisplay(
+        widget.speaker.ipAddress,
+      );
       if (!mounted) return;
       setState(() {
         _clockConfig = config;
@@ -242,9 +245,7 @@ class _SpeakerSettingsPageState extends State<SpeakerSettingsPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Settings – ${widget.speaker.name}'),
-      ),
+      appBar: AppBar(title: Text('Settings – ${widget.speaker.name}')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -366,10 +367,7 @@ class _SpeakerSettingsPageState extends State<SpeakerSettingsPage> {
             ),
           ),
           const SizedBox(height: 8),
-          TextButton(
-            onPressed: _loadBass,
-            child: const Text('Retry'),
-          ),
+          TextButton(onPressed: _loadBass, child: const Text('Retry')),
         ],
       );
     }
@@ -389,8 +387,10 @@ class _SpeakerSettingsPageState extends State<SpeakerSettingsPage> {
     final bass = _currentBass;
     if (bass == null) return const SizedBox.shrink();
 
-    final sliderValue = (_pendingBass ?? bass.actualBass.toDouble())
-        .clamp(caps.bassMin.toDouble(), caps.bassMax.toDouble());
+    final sliderValue = (_pendingBass ?? bass.actualBass.toDouble()).clamp(
+      caps.bassMin.toDouble(),
+      caps.bassMax.toDouble(),
+    );
     final busy = _pendingBass != null;
 
     return Column(
@@ -489,8 +489,9 @@ class _SpeakerSettingsPageState extends State<SpeakerSettingsPage> {
                     value: config.userEnable,
                     onChanged: busy
                         ? null
-                        : (value) =>
-                            _applyClockConfig(config.copyWith(userEnable: value)),
+                        : (value) => _applyClockConfig(
+                            config.copyWith(userEnable: value),
+                          ),
                   ),
               ],
             ),
@@ -522,10 +523,7 @@ class _SpeakerSettingsPageState extends State<SpeakerSettingsPage> {
             ),
           ),
           const SizedBox(height: 8),
-          TextButton(
-            onPressed: _loadClock,
-            child: const Text('Retry'),
-          ),
+          TextButton(onPressed: _loadClock, child: const Text('Retry')),
         ],
       );
     }
@@ -543,25 +541,24 @@ class _SpeakerSettingsPageState extends State<SpeakerSettingsPage> {
     if (config == null) return const SizedBox.shrink();
 
     final busy = _applyingClock || _pendingBrightness != null;
-    final brightness =
-        (_pendingBrightness ?? config.brightnessLevel).clamp(0, 100);
+    final brightness = (_pendingBrightness ?? config.brightnessLevel).clamp(
+      0,
+      100,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Text(
-              'Time format',
-              style: theme.textTheme.bodyMedium,
-            ),
+            Text('Time format', style: theme.textTheme.bodyMedium),
             const SizedBox(width: 16),
             OutlinedButton(
               onPressed: busy || !config.is24Hour
                   ? null
                   : () => _applyClockConfig(
-                        config.copyWith(timeFormat: ClockConfig.format12h),
-                      ),
+                      config.copyWith(timeFormat: ClockConfig.format12h),
+                    ),
               style: OutlinedButton.styleFrom(
                 backgroundColor: !config.is24Hour
                     ? theme.colorScheme.primaryContainer
@@ -574,8 +571,8 @@ class _SpeakerSettingsPageState extends State<SpeakerSettingsPage> {
               onPressed: busy || config.is24Hour
                   ? null
                   : () => _applyClockConfig(
-                        config.copyWith(timeFormat: ClockConfig.format24h),
-                      ),
+                      config.copyWith(timeFormat: ClockConfig.format24h),
+                    ),
               style: OutlinedButton.styleFrom(
                 backgroundColor: config.is24Hour
                     ? theme.colorScheme.primaryContainer
@@ -599,10 +596,7 @@ class _SpeakerSettingsPageState extends State<SpeakerSettingsPage> {
           ],
         ),
         const SizedBox(height: 16),
-        Text(
-          'Brightness',
-          style: theme.textTheme.bodyMedium,
-        ),
+        Text('Brightness', style: theme.textTheme.bodyMedium),
         const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,

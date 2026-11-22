@@ -59,7 +59,8 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
   @override
   void initState() {
     super.initState();
-    _service = widget.setupService ??
+    _service =
+        widget.setupService ??
         SpeakerSetupService(envswitchDelay: Duration.zero);
     _apiService = widget.apiService ?? SpeakerApiService();
     _loadConfig();
@@ -70,8 +71,7 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_accountIdController.text.isEmpty) {
-      _accountIdController.text =
-          context.read<MyAppState>().config.accountId;
+      _accountIdController.text = context.read<MyAppState>().config.accountId;
     }
     if (_authTokenController.text.isEmpty) {
       _authTokenController.text = 'auth123';
@@ -91,8 +91,9 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
       _error = null;
     });
     try {
-      final raw =
-          await _service.getSystemConfiguration(widget.speaker.ipAddress);
+      final raw = await _service.getSystemConfiguration(
+        widget.speaker.ipAddress,
+      );
       if (!mounted) return;
       setState(() {
         _config = SpeakerSetupService.parseSystemConfiguration(raw);
@@ -184,9 +185,9 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
     try {
       await _service.rebootSpeaker(widget.speaker.ipAddress);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Speaker is rebooting…')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Speaker is rebooting…')));
     } catch (e) {
       if (!mounted) return;
       showDialog<void>(
@@ -212,12 +213,14 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
     final authToken = _authTokenController.text.trim();
     if (accountId.isEmpty || authToken.isEmpty) {
       setState(
-          () => _margeAccountError = 'Account ID and auth token are required.');
+        () => _margeAccountError = 'Account ID and auth token are required.',
+      );
       return;
     }
     if (accountId.length < 3) {
-      setState(() =>
-          _margeAccountError = 'Account ID must be at least 3 characters.');
+      setState(
+        () => _margeAccountError = 'Account ID must be at least 3 characters.',
+      );
       return;
     }
     setState(() {
@@ -226,7 +229,10 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
     });
     try {
       await _service.setMargeAccount(
-          widget.speaker.ipAddress, accountId, authToken);
+        widget.speaker.ipAddress,
+        accountId,
+        authToken,
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Marge account linked successfully.')),
@@ -246,12 +252,14 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
     final apiUrl = context.watch<MyAppState>().config.apiUrl;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Doctor — ${widget.speaker.name}'),
-      ),
+      appBar: AppBar(title: Text('Doctor — ${widget.speaker.name}')),
       body: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(
-            16, 16, 16, 16 + MediaQuery.of(context).padding.bottom),
+          16,
+          16,
+          16,
+          16 + MediaQuery.of(context).padding.bottom,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -294,11 +302,15 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Failed to load device info:',
-              style: TextStyle(color: theme.colorScheme.error)),
+          Text(
+            'Failed to load device info:',
+            style: TextStyle(color: theme.colorScheme.error),
+          ),
           const SizedBox(height: 4),
-          Text(_infoError!,
-              style: TextStyle(color: theme.colorScheme.error, fontSize: 12)),
+          Text(
+            _infoError!,
+            style: TextStyle(color: theme.colorScheme.error, fontSize: 12),
+          ),
           const SizedBox(height: 8),
           OutlinedButton.icon(
             onPressed: _loadInfo,
@@ -326,10 +338,7 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
         color: theme.colorScheme.outlineVariant,
         borderRadius: BorderRadius.circular(4),
       ),
-      columnWidths: const {
-        0: IntrinsicColumnWidth(),
-        1: FlexColumnWidth(),
-      },
+      columnWidths: const {0: IntrinsicColumnWidth(), 1: FlexColumnWidth()},
       children: rows.map((row) {
         final isAccountIdRow = row.$1 == 'Marge Account ID';
         final warn = isAccountIdRow && accountIdEmpty;
@@ -400,11 +409,15 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Failed to load configuration:',
-              style: TextStyle(color: theme.colorScheme.error)),
+          Text(
+            'Failed to load configuration:',
+            style: TextStyle(color: theme.colorScheme.error),
+          ),
           const SizedBox(height: 4),
-          Text(_error!,
-              style: TextStyle(color: theme.colorScheme.error, fontSize: 12)),
+          Text(
+            _error!,
+            style: TextStyle(color: theme.colorScheme.error, fontSize: 12),
+          ),
           const SizedBox(height: 8),
           OutlinedButton.icon(
             onPressed: _loadConfig,
@@ -433,16 +446,12 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
         color: theme.colorScheme.outlineVariant,
         borderRadius: BorderRadius.circular(4),
       ),
-      columnWidths: const {
-        0: IntrinsicColumnWidth(),
-        1: FlexColumnWidth(),
-      },
+      columnWidths: const {0: IntrinsicColumnWidth(), 1: FlexColumnWidth()},
       children: _config!.entries.map((entry) {
         final isReconfigured = _reconfiguredKeys.contains(entry.key);
         final expected = expectedValues[entry.key];
-        final isWrong = isReconfigured &&
-            expected != null &&
-            entry.value != expected;
+        final isWrong =
+            isReconfigured && expected != null && entry.value != expected;
         final rowColor = isWrong ? theme.colorScheme.errorContainer : null;
 
         return TableRow(
@@ -474,7 +483,10 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
   }
 
   Widget _buildConnectCard(
-      BuildContext context, ThemeData theme, String apiUrl) {
+    BuildContext context,
+    ThemeData theme,
+    String apiUrl,
+  ) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -492,8 +504,10 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.warning_amber_rounded,
-                      color: theme.colorScheme.onErrorContainer),
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    color: theme.colorScheme.onErrorContainer,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Column(
@@ -503,9 +517,10 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
                           Text(
                             'No API URL configured.',
                             style: TextStyle(
-                                color: theme.colorScheme.onErrorContainer,
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold),
+                              color: theme.colorScheme.onErrorContainer,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 4),
                           TextButton(
@@ -519,8 +534,9 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
                             onPressed: () => Navigator.push(
                               context,
                               MaterialPageRoute<void>(
-                                  builder: (context) =>
-                                      const UeberboesApiSetupPage()),
+                                builder: (context) =>
+                                    const UeberboesApiSetupPage(),
+                              ),
                             ),
                             child: const Text('Open Settings to configure it'),
                           ),
@@ -528,14 +544,16 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
                           RichText(
                             text: TextSpan(
                               style: TextStyle(
-                                  color: theme.colorScheme.onErrorContainer,
-                                  fontSize: 13),
+                                color: theme.colorScheme.onErrorContainer,
+                                fontSize: 13,
+                              ),
                               children: [
                                 const TextSpan(text: 'Target API: '),
                                 TextSpan(
                                   text: apiUrl,
                                   style: const TextStyle(
-                                      fontWeight: FontWeight.bold),
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ],
                             ),
@@ -544,15 +562,17 @@ class _SpeakerDoctorPageState extends State<SpeakerDoctorPage> {
                           Text(
                             'Wrong URL? Change it in Settings first.',
                             style: TextStyle(
-                                color: theme.colorScheme.onErrorContainer,
-                                fontSize: 12),
+                              color: theme.colorScheme.onErrorContainer,
+                              fontSize: 12,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             'Overwrites all server URLs on the speaker and triggers a reboot.',
                             style: TextStyle(
-                                color: theme.colorScheme.onErrorContainer,
-                                fontSize: 13),
+                              color: theme.colorScheme.onErrorContainer,
+                              fontSize: 13,
+                            ),
                           ),
                         ],
                       ],

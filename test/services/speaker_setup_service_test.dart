@@ -59,9 +59,11 @@ void main() {
         expect(networks[1].securityType, 'none');
       });
 
-      test('drops hidden networks, merges duplicates and sorts by signal',
-          () async {
-        const xmlResponse = '''<PerformWirelessSiteSurveyResponse error="none">
+      test(
+        'drops hidden networks, merges duplicates and sorts by signal',
+        () async {
+          const xmlResponse =
+              '''<PerformWirelessSiteSurveyResponse error="none">
   <items>
     <item ssid="weak" signalStrength="-80" secure="false"><securityTypes><type>none</type></securityTypes></item>
     <item ssid="" signalStrength="-30" secure="false"><securityTypes><type>none</type></securityTypes></item>
@@ -69,36 +71,40 @@ void main() {
     <item ssid="mesh" signalStrength="-50" secure="true"><securityTypes><type>wpa2aes</type></securityTypes></item>
   </items>
 </PerformWirelessSiteSurveyResponse>''';
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200),
-        );
+          when(
+            mockClient.get(any),
+          ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
-        final networks = await service.performWirelessSiteSurvey();
+          final networks = await service.performWirelessSiteSurvey();
 
-        expect(networks.map((n) => n.ssid), ['mesh', 'weak']);
-        expect(networks.first.signalStrength, -50);
-      });
+          expect(networks.map((n) => n.ssid), ['mesh', 'weak']);
+          expect(networks.first.signalStrength, -50);
+        },
+      );
 
       test('uses the given speaker IP', () async {
         when(mockClient.get(any)).thenAnswer(
           (_) async => http.Response(
-              '<PerformWirelessSiteSurveyResponse error="none"><items></items></PerformWirelessSiteSurveyResponse>',
-              200),
+            '<PerformWirelessSiteSurveyResponse error="none"><items></items></PerformWirelessSiteSurveyResponse>',
+            200,
+          ),
         );
 
         await service.performWirelessSiteSurvey(speakerIp: '192.168.1.5');
 
         final captured = verify(mockClient.get(captureAny)).captured;
-        expect(captured.first.toString(),
-            'http://192.168.1.5:8090/performWirelessSiteSurvey');
+        expect(
+          captured.first.toString(),
+          'http://192.168.1.5:8090/performWirelessSiteSurvey',
+        );
       });
 
       test('requests the correct URL', () async {
         const xmlResponse =
             '<PerformWirelessSiteSurveyResponse error="none"><items></items></PerformWirelessSiteSurveyResponse>';
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response(xmlResponse, 200),
-        );
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response(xmlResponse, 200));
 
         await service.performWirelessSiteSurvey();
 
@@ -110,9 +116,9 @@ void main() {
       });
 
       test('throws on non-200 status', () async {
-        when(mockClient.get(any)).thenAnswer(
-          (_) async => http.Response('error', 500),
-        );
+        when(
+          mockClient.get(any),
+        ).thenAnswer((_) async => http.Response('error', 500));
 
         await expectLater(
           service.performWirelessSiteSurvey(),
@@ -123,33 +129,52 @@ void main() {
 
     group('addWirelessProfile', () {
       test('uses the given speaker IP', () async {
-        when(mockClient.post(any,
-                headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer((_) async => http.Response('', 200));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response('', 200));
 
-        await service.addWirelessProfile('net', 'pw', 'wpa_or_wpa2',
-            speakerIp: '192.168.1.5');
+        await service.addWirelessProfile(
+          'net',
+          'pw',
+          'wpa_or_wpa2',
+          speakerIp: '192.168.1.5',
+        );
 
-        final captured = verify(mockClient.post(captureAny,
-                headers: anyNamed('headers'), body: anyNamed('body')))
-            .captured;
-        expect(captured.first.toString(),
-            'http://192.168.1.5:8090/addWirelessProfile');
+        final captured = verify(
+          mockClient.post(
+            captureAny,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).captured;
+        expect(
+          captured.first.toString(),
+          'http://192.168.1.5:8090/addWirelessProfile',
+        );
       });
 
       test('sends correct POST request', () async {
-        when(mockClient.post(any,
-                headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer((_) async => http.Response('', 200));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response('', 200));
 
-        await service.addWirelessProfile(
-            'MySSID', 'mypassword', 'wpa_or_wpa2');
+        await service.addWirelessProfile('MySSID', 'mypassword', 'wpa_or_wpa2');
 
-        final captured = verify(mockClient.post(
-          captureAny,
-          headers: captureAnyNamed('headers'),
-          body: captureAnyNamed('body'),
-        )).captured;
+        final captured = verify(
+          mockClient.post(
+            captureAny,
+            headers: captureAnyNamed('headers'),
+            body: captureAnyNamed('body'),
+          ),
+        ).captured;
 
         expect(
           captured[0].toString(),
@@ -161,27 +186,40 @@ void main() {
       });
 
       test('escapes XML special characters in ssid and password', () async {
-        when(mockClient.post(any,
-                headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer((_) async => http.Response('', 200));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response('', 200));
 
         await service.addWirelessProfile(
-            'My&SSID', 'pass<word>', 'wpa_or_wpa2');
+          'My&SSID',
+          'pass<word>',
+          'wpa_or_wpa2',
+        );
 
-        final captured = verify(mockClient.post(
-          captureAny,
-          headers: captureAnyNamed('headers'),
-          body: captureAnyNamed('body'),
-        )).captured;
+        final captured = verify(
+          mockClient.post(
+            captureAny,
+            headers: captureAnyNamed('headers'),
+            body: captureAnyNamed('body'),
+          ),
+        ).captured;
 
         expect(captured[2], contains('ssid="My&amp;SSID"'));
         expect(captured[2], contains('password="pass&lt;word&gt;"'));
       });
 
       test('throws on non-200 status', () async {
-        when(mockClient.post(any,
-                headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer((_) async => http.Response('error', 400));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response('error', 400));
 
         await expectLater(
           service.addWirelessProfile('net', 'pw', 'wpa_or_wpa2'),
@@ -192,32 +230,43 @@ void main() {
 
     group('setMargeAccount', () {
       test('sends correct POST request', () async {
-        when(mockClient.post(any,
-                headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer((_) async => http.Response('', 200));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response('', 200));
 
-        await service.setMargeAccount(
-            '192.168.1.50', '12345678', 'test123');
+        await service.setMargeAccount('192.168.1.50', '12345678', 'test123');
 
-        final captured = verify(mockClient.post(
-          captureAny,
-          headers: captureAnyNamed('headers'),
-          body: captureAnyNamed('body'),
-        )).captured;
+        final captured = verify(
+          mockClient.post(
+            captureAny,
+            headers: captureAnyNamed('headers'),
+            body: captureAnyNamed('body'),
+          ),
+        ).captured;
 
         expect(
           captured[0].toString(),
           'http://192.168.1.50:8090/setMargeAccount',
         );
         expect(captured[2], contains('<accountId>12345678</accountId>'));
-        expect(captured[2],
-            contains('<userAuthToken>Bearer test123</userAuthToken>'));
+        expect(
+          captured[2],
+          contains('<userAuthToken>Bearer test123</userAuthToken>'),
+        );
       });
 
       test('throws on non-200 status', () async {
-        when(mockClient.post(any,
-                headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer((_) async => http.Response('error', 401));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response('error', 401));
 
         await expectLater(
           service.setMargeAccount('192.168.1.50', 'acc', 'tok'),
@@ -228,34 +277,38 @@ void main() {
 
     group('leaveSetupMode', () {
       test('sends correct POST request', () async {
-        when(mockClient.post(any,
-                headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer((_) async => http.Response('', 200));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response('', 200));
 
         await service.leaveSetupMode();
 
-        final captured = verify(mockClient.post(
-          captureAny,
-          headers: captureAnyNamed('headers'),
-          body: captureAnyNamed('body'),
-        )).captured;
+        final captured = verify(
+          mockClient.post(
+            captureAny,
+            headers: captureAnyNamed('headers'),
+            body: captureAnyNamed('body'),
+          ),
+        ).captured;
 
-        expect(
-          captured[0].toString(),
-          'http://192.0.2.1:8090/setup',
-        );
+        expect(captured[0].toString(), 'http://192.0.2.1:8090/setup');
         expect(captured[2], contains('SETUP_WIFI_LEAVE'));
       });
 
       test('throws on non-200 status', () async {
-        when(mockClient.post(any,
-                headers: anyNamed('headers'), body: anyNamed('body')))
-            .thenAnswer((_) async => http.Response('error', 500));
+        when(
+          mockClient.post(
+            any,
+            headers: anyNamed('headers'),
+            body: anyNamed('body'),
+          ),
+        ).thenAnswer((_) async => http.Response('error', 500));
 
-        await expectLater(
-          service.leaveSetupMode(),
-          throwsA(isA<Exception>()),
-        );
+        await expectLater(service.leaveSetupMode(), throwsA(isA<Exception>()));
       });
     });
 
@@ -264,7 +317,9 @@ void main() {
       /// sends an initial "->" prompt on connect, then responds "ok\n->" to
       /// each command (so the service can correctly match responses to commands).
       _MockSocket buildEnvswitchSocket(
-          StreamController<Uint8List> ctrl, List<String> writtenLines) {
+        StreamController<Uint8List> ctrl,
+        List<String> writtenLines,
+      ) {
         return _MockSocket(
           stream: ctrl.stream,
           onWriteln: (line) {
@@ -296,8 +351,10 @@ void main() {
           },
         );
 
-        await svc.configureEnvswitch('https://api.example.com',
-            speakerIp: '10.0.0.42');
+        await svc.configureEnvswitch(
+          'https://api.example.com',
+          speakerIp: '10.0.0.42',
+        );
 
         expect(connectedHost, '10.0.0.42');
       });
@@ -322,14 +379,28 @@ void main() {
           },
         );
 
-        final log = await setupServiceWithSocket
-            .configureEnvswitch('https://api.example.com');
+        final log = await setupServiceWithSocket.configureEnvswitch(
+          'https://api.example.com',
+        );
 
         expect(connectedHost, '192.0.2.1');
         expect(connectedPort, 17000);
-        expect(writtenLines, contains('envswitch boseurls set https://api.example.com https://api.example.com/updates/soundtouch'));
-        expect(writtenLines, contains('sys configuration bmxRegistryUrl https://api.example.com/bmx/registry/v1/services'));
-        expect(writtenLines, contains('sys configuration statsServerUrl https://api.example.com'));
+        expect(
+          writtenLines,
+          contains(
+            'envswitch boseurls set https://api.example.com https://api.example.com/updates/soundtouch',
+          ),
+        );
+        expect(
+          writtenLines,
+          contains(
+            'sys configuration bmxRegistryUrl https://api.example.com/bmx/registry/v1/services',
+          ),
+        );
+        expect(
+          writtenLines,
+          contains('sys configuration statsServerUrl https://api.example.com'),
+        );
         expect(writtenLines, contains('getpdo CurrentSystemConfiguration'));
         expect(writtenLines, contains('sys reboot'));
         expect(writtenLines, isNot(contains('exit')));
@@ -349,8 +420,7 @@ void main() {
           onWriteln: (line) {
             writtenLines.add(line);
             // Send the response followed by the prompt so the idle timer fires.
-            responseController
-                .add(Uint8List.fromList('response\n'.codeUnits));
+            responseController.add(Uint8List.fromList('response\n'.codeUnits));
             responseController.close();
           },
           onFlush: () => Future<void>.value(),
@@ -431,17 +501,33 @@ margeServerUrl {
   group('WirelessNetwork', () {
     test('equality', () {
       const n1 = WirelessNetwork(
-          ssid: 'net', signalStrength: -60, secure: true, securityType: 'wpa_or_wpa2');
+        ssid: 'net',
+        signalStrength: -60,
+        secure: true,
+        securityType: 'wpa_or_wpa2',
+      );
       const n2 = WirelessNetwork(
-          ssid: 'net', signalStrength: -60, secure: true, securityType: 'wpa_or_wpa2');
+        ssid: 'net',
+        signalStrength: -60,
+        secure: true,
+        securityType: 'wpa_or_wpa2',
+      );
       expect(n1, equals(n2));
     });
 
     test('inequality on different ssid', () {
       const n1 = WirelessNetwork(
-          ssid: 'net1', signalStrength: -60, secure: true, securityType: 'wpa_or_wpa2');
+        ssid: 'net1',
+        signalStrength: -60,
+        secure: true,
+        securityType: 'wpa_or_wpa2',
+      );
       const n2 = WirelessNetwork(
-          ssid: 'net2', signalStrength: -60, secure: true, securityType: 'wpa_or_wpa2');
+        ssid: 'net2',
+        signalStrength: -60,
+        secure: true,
+        securityType: 'wpa_or_wpa2',
+      );
       expect(n1, isNot(equals(n2)));
     });
   });
@@ -467,9 +553,12 @@ class _MockSocket extends Stream<Uint8List> implements Socket {
     Function? onError,
     void Function()? onDone,
     bool? cancelOnError,
-  }) =>
-      stream.listen(onData,
-          onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+  }) => stream.listen(
+    onData,
+    onError: onError,
+    onDone: onDone,
+    cancelOnError: cancelOnError,
+  );
 
   @override
   void writeln([Object? object = '']) {

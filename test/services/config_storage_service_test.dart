@@ -47,22 +47,21 @@ void main() {
       expect(config.accountId, '');
     });
 
-    test('loadConfig returns default config when saved data is empty string',
-        () async {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('app_config', '');
+    test(
+      'loadConfig returns default config when saved data is empty string',
+      () async {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('app_config', '');
 
-      final config = await service.loadConfig();
+        final config = await service.loadConfig();
 
-      expect(config.apiUrl, '');
-      expect(config.accountId, '');
-    });
+        expect(config.apiUrl, '');
+        expect(config.accountId, '');
+      },
+    );
 
     test('saveConfig and loadConfig handle empty values', () async {
-      const config = AppConfig(
-        apiUrl: '',
-        accountId: '',
-      );
+      const config = AppConfig(apiUrl: '', accountId: '');
 
       await service.saveConfig(config);
       final loadedConfig = await service.loadConfig();

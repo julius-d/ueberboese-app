@@ -19,30 +19,29 @@ class AppConfig {
     String? mgmtUsername,
     String? mgmtPassword,
     bool? showAlbumArtInList,
-  }) =>
-      AppConfig(
-        apiUrl: apiUrl ?? this.apiUrl,
-        accountId: accountId ?? this.accountId,
-        mgmtUsername: mgmtUsername ?? this.mgmtUsername,
-        mgmtPassword: mgmtPassword ?? this.mgmtPassword,
-        showAlbumArtInList: showAlbumArtInList ?? this.showAlbumArtInList,
-      );
+  }) => AppConfig(
+    apiUrl: apiUrl ?? this.apiUrl,
+    accountId: accountId ?? this.accountId,
+    mgmtUsername: mgmtUsername ?? this.mgmtUsername,
+    mgmtPassword: mgmtPassword ?? this.mgmtPassword,
+    showAlbumArtInList: showAlbumArtInList ?? this.showAlbumArtInList,
+  );
 
   Map<String, dynamic> toJson() => {
-        'apiUrl': apiUrl,
-        'accountId': accountId,
-        'mgmtUsername': mgmtUsername,
-        'mgmtPassword': mgmtPassword,
-        'showAlbumArtInList': showAlbumArtInList,
-      };
+    'apiUrl': apiUrl,
+    'accountId': accountId,
+    'mgmtUsername': mgmtUsername,
+    'mgmtPassword': mgmtPassword,
+    'showAlbumArtInList': showAlbumArtInList,
+  };
 
   factory AppConfig.fromJson(Map<String, dynamic> json) => AppConfig(
-        apiUrl: json['apiUrl'] as String? ?? '',
-        accountId: json['accountId'] as String? ?? '',
-        mgmtUsername: json['mgmtUsername'] as String? ?? 'admin',
-        mgmtPassword: json['mgmtPassword'] as String? ?? 'change_me!',
-        showAlbumArtInList: json['showAlbumArtInList'] as bool? ?? true,
-      );
+    apiUrl: json['apiUrl'] as String? ?? '',
+    accountId: json['accountId'] as String? ?? '',
+    mgmtUsername: json['mgmtUsername'] as String? ?? 'admin',
+    mgmtPassword: json['mgmtPassword'] as String? ?? 'change_me!',
+    showAlbumArtInList: json['showAlbumArtInList'] as bool? ?? true,
+  );
 
   @override
   bool operator ==(Object other) {

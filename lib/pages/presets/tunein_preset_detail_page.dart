@@ -50,7 +50,9 @@ class _TuneInPresetDetailPageState extends State<TuneInPresetDetailPage> {
     });
 
     try {
-      final detail = await _tuneInApiService.getStationDetails(widget.station.guideId);
+      final detail = await _tuneInApiService.getStationDetails(
+        widget.station.guideId,
+      );
 
       if (!mounted) return;
 
@@ -138,174 +140,181 @@ class _TuneInPresetDetailPageState extends State<TuneInPresetDetailPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Station Details'),
-      ),
+      appBar: AppBar(title: const Text('Station Details')),
       body: _isLoadingDetail
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
+          ? const Center(child: CircularProgressIndicator())
           : _detailFetchError != null
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.error_outline,
-                          size: 64,
-                          color: theme.colorScheme.error,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Failed to load station details',
-                          style: theme.textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _detailFetchError!,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: theme.colorScheme.error,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Failed to load station details',
+                      style: theme.textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _detailFetchError!,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: _fetchStationDetails,
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (_stationDetail!.logo != null &&
+                      _stationDetail!.logo!.isNotEmpty)
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            _stationDetail!.logo!,
+                            width: 200,
+                            height: 200,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                width: 200,
+                                height: 200,
+                                color:
+                                    theme.colorScheme.surfaceContainerHighest,
+                                child: Icon(
+                                  Icons.radio,
+                                  size: 100,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              );
+                            },
                           ),
-                          textAlign: TextAlign.center,
                         ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: _fetchStationDetails,
-                          child: const Text('Retry'),
+                      ),
+                    ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 88.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
+                          child: SelectableText(
+                            _stationDetail!.name,
+                            style: theme.textTheme.headlineMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
+                        if (_stationDetail!.slogan != null) ...[
+                          const SizedBox(height: 8),
+                          Center(
+                            child: Text(
+                              _stationDetail!.slogan!,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                color: theme.colorScheme.secondary,
+                                fontStyle: FontStyle.italic,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 24),
+                        if (_stationDetail!.description != null &&
+                            _stationDetail!.description!.isNotEmpty) ...[
+                          _buildDetailRow(
+                            context,
+                            'Description',
+                            _stationDetail!.description!,
+                            Icons.description,
+                          ),
+                        ],
+                        if ((_stationDetail!.location != null &&
+                                _stationDetail!.location!.isNotEmpty) ||
+                            (_stationDetail!.genreName != null &&
+                                _stationDetail!.genreName!.isNotEmpty)) ...[
+                          const Divider(height: 32),
+                          if (_stationDetail!.location != null &&
+                              _stationDetail!.location!.isNotEmpty)
+                            _buildDetailRow(
+                              context,
+                              'Location',
+                              _stationDetail!.location!,
+                              Icons.location_on,
+                            ),
+                          if (_stationDetail!.genreName != null &&
+                              _stationDetail!.genreName!.isNotEmpty)
+                            _buildDetailRow(
+                              context,
+                              'Genre',
+                              _stationDetail!.genreName!,
+                              Icons.music_note,
+                            ),
+                        ],
+                        if ((_stationDetail!.contentClassification != null &&
+                                _stationDetail!
+                                    .contentClassification!
+                                    .isNotEmpty) ||
+                            _stationDetail!.isFamilyContent != null ||
+                            _stationDetail!.isMatureContent != null) ...[
+                          const Divider(height: 32),
+                          if (_stationDetail!.contentClassification != null &&
+                              _stationDetail!.contentClassification!.isNotEmpty)
+                            _buildDetailRow(
+                              context,
+                              'Content Type',
+                              _stationDetail!.contentClassification!,
+                              Icons.category,
+                            ),
+                          if (_stationDetail!.isFamilyContent != null)
+                            _buildDetailRow(
+                              context,
+                              'Family Content',
+                              _stationDetail!.isFamilyContent! ? 'Yes' : 'No',
+                              Icons.family_restroom,
+                            ),
+                          if (_stationDetail!.isMatureContent != null)
+                            _buildDetailRow(
+                              context,
+                              'Mature Content',
+                              _stationDetail!.isMatureContent! ? 'Yes' : 'No',
+                              Icons.warning,
+                            ),
+                        ],
+                        if (_stationDetail!.url != null &&
+                            _stationDetail!.url!.isNotEmpty) ...[
+                          const Divider(height: 32),
+                          _buildDetailRow(
+                            context,
+                            'Website',
+                            _stationDetail!.url!,
+                            Icons.link,
+                          ),
+                        ],
                       ],
                     ),
                   ),
-                )
-              : SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (_stationDetail!.logo != null && _stationDetail!.logo!.isNotEmpty)
-                        Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.network(
-                                _stationDetail!.logo!,
-                                width: 200,
-                                height: 200,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    width: 200,
-                                    height: 200,
-                                    color: theme.colorScheme.surfaceContainerHighest,
-                                    child: Icon(
-                                      Icons.radio,
-                                      size: 100,
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 88.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Center(
-                              child: SelectableText(
-                                _stationDetail!.name,
-                                style: theme.textTheme.headlineMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                            if (_stationDetail!.slogan != null) ...[
-                              const SizedBox(height: 8),
-                              Center(
-                                child: Text(
-                                  _stationDetail!.slogan!,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    color: theme.colorScheme.secondary,
-                                    fontStyle: FontStyle.italic,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ],
-                            const SizedBox(height: 24),
-                            if (_stationDetail!.description != null &&
-                                _stationDetail!.description!.isNotEmpty) ...[
-                              _buildDetailRow(
-                                context,
-                                'Description',
-                                _stationDetail!.description!,
-                                Icons.description,
-                              ),
-                            ],
-                            if ((_stationDetail!.location != null && _stationDetail!.location!.isNotEmpty) ||
-                                (_stationDetail!.genreName != null && _stationDetail!.genreName!.isNotEmpty)) ...[
-                              const Divider(height: 32),
-                              if (_stationDetail!.location != null && _stationDetail!.location!.isNotEmpty)
-                                _buildDetailRow(
-                                  context,
-                                  'Location',
-                                  _stationDetail!.location!,
-                                  Icons.location_on,
-                                ),
-                              if (_stationDetail!.genreName != null && _stationDetail!.genreName!.isNotEmpty)
-                                _buildDetailRow(
-                                  context,
-                                  'Genre',
-                                  _stationDetail!.genreName!,
-                                  Icons.music_note,
-                                ),
-                            ],
-                            if ((_stationDetail!.contentClassification != null && _stationDetail!.contentClassification!.isNotEmpty) ||
-                                _stationDetail!.isFamilyContent != null ||
-                                _stationDetail!.isMatureContent != null) ...[
-                              const Divider(height: 32),
-                              if (_stationDetail!.contentClassification != null && _stationDetail!.contentClassification!.isNotEmpty)
-                                _buildDetailRow(
-                                  context,
-                                  'Content Type',
-                                  _stationDetail!.contentClassification!,
-                                  Icons.category,
-                                ),
-                              if (_stationDetail!.isFamilyContent != null)
-                                _buildDetailRow(
-                                  context,
-                                  'Family Content',
-                                  _stationDetail!.isFamilyContent! ? 'Yes' : 'No',
-                                  Icons.family_restroom,
-                                ),
-                              if (_stationDetail!.isMatureContent != null)
-                                _buildDetailRow(
-                                  context,
-                                  'Mature Content',
-                                  _stationDetail!.isMatureContent! ? 'Yes' : 'No',
-                                  Icons.warning,
-                                ),
-                            ],
-                            if (_stationDetail!.url != null && _stationDetail!.url!.isNotEmpty) ...[
-                              const Divider(height: 32),
-                              _buildDetailRow(
-                                context,
-                                'Website',
-                                _stationDetail!.url!,
-                                Icons.link,
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                ],
+              ),
+            ),
       floatingActionButton: _stationDetail != null && !_isSaving
           ? FloatingActionButton.extended(
               onPressed: _onSavePressed,
@@ -313,15 +322,15 @@ class _TuneInPresetDetailPageState extends State<TuneInPresetDetailPage> {
               label: const Text('Save'),
             )
           : _isSaving
-              ? const FloatingActionButton(
-                  onPressed: null,
-                  child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                )
-              : null,
+          ? const FloatingActionButton(
+              onPressed: null,
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            )
+          : null,
     );
   }
 
@@ -338,11 +347,7 @@ class _TuneInPresetDetailPageState extends State<TuneInPresetDetailPage> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            icon,
-            size: 24,
-            color: theme.colorScheme.primary,
-          ),
+          Icon(icon, size: 24, color: theme.colorScheme.primary),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -356,10 +361,7 @@ class _TuneInPresetDetailPageState extends State<TuneInPresetDetailPage> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                SelectableText(
-                  value,
-                  style: theme.textTheme.bodyLarge,
-                ),
+                SelectableText(value, style: theme.textTheme.bodyLarge),
               ],
             ),
           ),

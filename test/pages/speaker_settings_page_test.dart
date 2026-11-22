@@ -55,13 +55,16 @@ void main() {
       mockApiService = MockSpeakerApiService();
       // Default stubs — individual tests can override these.
       when(mockApiService.getLanguage(any)).thenAnswer((_) async => 3);
-      when(mockApiService.getBassCapabilities(any))
-          .thenAnswer((_) async => testBassCapabilities);
+      when(
+        mockApiService.getBassCapabilities(any),
+      ).thenAnswer((_) async => testBassCapabilities);
       when(mockApiService.getBass(any)).thenAnswer((_) async => testBass);
-      when(mockApiService.isClockDisplaySupported(any))
-          .thenAnswer((_) async => true);
-      when(mockApiService.getClockDisplay(any))
-          .thenAnswer((_) async => testClockConfig);
+      when(
+        mockApiService.isClockDisplaySupported(any),
+      ).thenAnswer((_) async => true);
+      when(
+        mockApiService.getClockDisplay(any),
+      ).thenAnswer((_) async => testClockConfig);
     });
 
     Widget buildWidget() {
@@ -73,12 +76,11 @@ void main() {
       );
     }
 
-    testWidgets('shows loading indicator while fetching language',
-        (WidgetTester tester) async {
+    testWidgets('shows loading indicator while fetching language', (
+      WidgetTester tester,
+    ) async {
       final completer = Completer<int>();
-      when(mockApiService.getLanguage(any)).thenAnswer(
-        (_) => completer.future,
-      );
+      when(mockApiService.getLanguage(any)).thenAnswer((_) => completer.future);
 
       await tester.pumpWidget(buildWidget());
       await tester.pump();
@@ -89,16 +91,18 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('displays current language after loading',
-        (WidgetTester tester) async {
+    testWidgets('displays current language after loading', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
 
       expect(find.text('English'), findsOneWidget);
     });
 
-    testWidgets('displays German when language code is 2',
-        (WidgetTester tester) async {
+    testWidgets('displays German when language code is 2', (
+      WidgetTester tester,
+    ) async {
       when(mockApiService.getLanguage(any)).thenAnswer((_) async => 2);
 
       await tester.pumpWidget(buildWidget());
@@ -107,10 +111,12 @@ void main() {
       expect(find.text('German'), findsOneWidget);
     });
 
-    testWidgets('shows error message when loading fails',
-        (WidgetTester tester) async {
-      when(mockApiService.getLanguage(any))
-          .thenThrow(Exception('Network error'));
+    testWidgets('shows error message when loading fails', (
+      WidgetTester tester,
+    ) async {
+      when(
+        mockApiService.getLanguage(any),
+      ).thenThrow(Exception('Network error'));
 
       await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
@@ -118,16 +124,18 @@ void main() {
       expect(find.text('Error loading language'), findsOneWidget);
     });
 
-    testWidgets('edit button is present after loading',
-        (WidgetTester tester) async {
+    testWidgets('edit button is present after loading', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.edit), findsOneWidget);
     });
 
-    testWidgets('shows language picker dialog when edit button is tapped',
-        (WidgetTester tester) async {
+    testWidgets('shows language picker dialog when edit button is tapped', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
 
@@ -139,8 +147,9 @@ void main() {
       expect(find.text('Save'), findsOneWidget);
     });
 
-    testWidgets('calls setLanguage and updates UI after saving',
-        (WidgetTester tester) async {
+    testWidgets('calls setLanguage and updates UI after saving', (
+      WidgetTester tester,
+    ) async {
       when(mockApiService.setLanguage(any, any)).thenAnswer((_) async {});
 
       await tester.pumpWidget(buildWidget());
@@ -152,10 +161,7 @@ void main() {
       await tester.tap(find.byType(DropdownButtonFormField<SpeakerLanguage>));
       await tester.pumpAndSettle();
 
-      await tester.tap(
-        find.text('German').last,
-        warnIfMissed: false,
-      );
+      await tester.tap(find.text('German').last, warnIfMissed: false);
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Save'));
@@ -165,10 +171,12 @@ void main() {
       expect(find.text('German'), findsOneWidget);
     });
 
-    testWidgets('shows snackbar when setLanguage fails',
-        (WidgetTester tester) async {
-      when(mockApiService.setLanguage(any, any))
-          .thenThrow(Exception('Network error'));
+    testWidgets('shows snackbar when setLanguage fails', (
+      WidgetTester tester,
+    ) async {
+      when(
+        mockApiService.setLanguage(any, any),
+      ).thenThrow(Exception('Network error'));
 
       await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
@@ -179,10 +187,7 @@ void main() {
       await tester.tap(find.byType(DropdownButtonFormField<SpeakerLanguage>));
       await tester.pumpAndSettle();
 
-      await tester.tap(
-        find.text('German').last,
-        warnIfMissed: false,
-      );
+      await tester.tap(find.text('German').last, warnIfMissed: false);
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Save'));
@@ -192,8 +197,9 @@ void main() {
       expect(find.textContaining('Failed to set language'), findsOneWidget);
     });
 
-    testWidgets('cancel button closes dialog without saving',
-        (WidgetTester tester) async {
+    testWidgets('cancel button closes dialog without saving', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
 
@@ -208,8 +214,9 @@ void main() {
     });
 
     group('bass card', () {
-      testWidgets('shows bass slider when supported',
-          (WidgetTester tester) async {
+      testWidgets('shows bass slider when supported', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
 
@@ -217,8 +224,9 @@ void main() {
         expect(find.byType(Slider), findsOneWidget);
       });
 
-      testWidgets('shows current bass value and min/max labels',
-          (WidgetTester tester) async {
+      testWidgets('shows current bass value and min/max labels', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
 
@@ -227,8 +235,9 @@ void main() {
         expect(find.text('0'), findsOneWidget);
       });
 
-      testWidgets('shows Down, Up, and Reset buttons',
-          (WidgetTester tester) async {
+      testWidgets('shows Down, Up, and Reset buttons', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
 
@@ -237,16 +246,18 @@ void main() {
         expect(find.textContaining('Reset to default'), findsOneWidget);
       });
 
-      testWidgets('Down button decrements bass by 1',
-          (WidgetTester tester) async {
+      testWidgets('Down button decrements bass by 1', (
+        WidgetTester tester,
+      ) async {
         // Load with actualBass = -5, then after Down it refetches as -6.
         when(mockApiService.setBass(any, any)).thenAnswer((_) async {});
 
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
 
-        when(mockApiService.getBass(any))
-            .thenAnswer((_) async => const Bass(targetBass: -6, actualBass: -6));
+        when(
+          mockApiService.getBass(any),
+        ).thenAnswer((_) async => const Bass(targetBass: -6, actualBass: -6));
 
         // Use first Down button (bass card; clock card Down is later in the tree)
         await tester.tap(find.text('Down').first);
@@ -255,15 +266,17 @@ void main() {
         verify(mockApiService.setBass('192.168.1.100', -6)).called(1);
       });
 
-      testWidgets('Up button increments bass by 1',
-          (WidgetTester tester) async {
+      testWidgets('Up button increments bass by 1', (
+        WidgetTester tester,
+      ) async {
         when(mockApiService.setBass(any, any)).thenAnswer((_) async {});
 
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
 
-        when(mockApiService.getBass(any))
-            .thenAnswer((_) async => const Bass(targetBass: -4, actualBass: -4));
+        when(
+          mockApiService.getBass(any),
+        ).thenAnswer((_) async => const Bass(targetBass: -4, actualBass: -4));
 
         // Use first Up button (bass card; clock card Up is later in the tree)
         await tester.tap(find.text('Up').first);
@@ -272,15 +285,17 @@ void main() {
         verify(mockApiService.setBass('192.168.1.100', -4)).called(1);
       });
 
-      testWidgets('Reset button calls setBass with default value',
-          (WidgetTester tester) async {
+      testWidgets('Reset button calls setBass with default value', (
+        WidgetTester tester,
+      ) async {
         when(mockApiService.setBass(any, any)).thenAnswer((_) async {});
 
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
 
-        when(mockApiService.getBass(any))
-            .thenAnswer((_) async => const Bass(targetBass: 0, actualBass: 0));
+        when(
+          mockApiService.getBass(any),
+        ).thenAnswer((_) async => const Bass(targetBass: 0, actualBass: 0));
 
         await tester.tap(find.textContaining('Reset to default'));
         await tester.pumpAndSettle();
@@ -288,23 +303,29 @@ void main() {
         verify(mockApiService.setBass('192.168.1.100', 0)).called(1);
       });
 
-      testWidgets('shows unsupported message when bass not available',
-          (WidgetTester tester) async {
-        when(mockApiService.getBassCapabilities(any))
-            .thenAnswer((_) async => unsupportedBassCapabilities);
+      testWidgets('shows unsupported message when bass not available', (
+        WidgetTester tester,
+      ) async {
+        when(
+          mockApiService.getBassCapabilities(any),
+        ).thenAnswer((_) async => unsupportedBassCapabilities);
 
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
 
-        expect(find.text('Bass control not supported on this device'),
-            findsOneWidget);
+        expect(
+          find.text('Bass control not supported on this device'),
+          findsOneWidget,
+        );
         expect(find.byType(Slider), findsNothing);
       });
 
-      testWidgets('shows error and retry button when bass loading fails',
-          (WidgetTester tester) async {
-        when(mockApiService.getBassCapabilities(any))
-            .thenThrow(Exception('Connection refused'));
+      testWidgets('shows error and retry button when bass loading fails', (
+        WidgetTester tester,
+      ) async {
+        when(
+          mockApiService.getBassCapabilities(any),
+        ).thenThrow(Exception('Connection refused'));
 
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
@@ -313,15 +334,19 @@ void main() {
         expect(find.text('Retry'), findsOneWidget);
       });
 
-      testWidgets('retry reloads bass after error', (WidgetTester tester) async {
-        when(mockApiService.getBassCapabilities(any))
-            .thenThrow(Exception('Connection refused'));
+      testWidgets('retry reloads bass after error', (
+        WidgetTester tester,
+      ) async {
+        when(
+          mockApiService.getBassCapabilities(any),
+        ).thenThrow(Exception('Connection refused'));
 
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
 
-        when(mockApiService.getBassCapabilities(any))
-            .thenAnswer((_) async => testBassCapabilities);
+        when(
+          mockApiService.getBassCapabilities(any),
+        ).thenAnswer((_) async => testBassCapabilities);
 
         await tester.tap(find.text('Retry'));
         await tester.pumpAndSettle();
@@ -329,12 +354,12 @@ void main() {
         expect(find.byType(Slider), findsOneWidget);
       });
 
-      testWidgets('calls setBass and getBass after slider change',
-          (WidgetTester tester) async {
+      testWidgets('calls setBass and getBass after slider change', (
+        WidgetTester tester,
+      ) async {
         when(mockApiService.setBass(any, any)).thenAnswer((_) async {});
         const updatedBass = Bass(targetBass: -3, actualBass: -3);
-        when(mockApiService.getBass(any))
-            .thenAnswer((_) async => updatedBass);
+        when(mockApiService.getBass(any)).thenAnswer((_) async => updatedBass);
 
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
@@ -347,10 +372,12 @@ void main() {
         verify(mockApiService.getBass('192.168.1.100')).called(greaterThan(1));
       });
 
-      testWidgets('shows snackbar when setBass fails',
-          (WidgetTester tester) async {
-        when(mockApiService.setBass(any, any))
-            .thenThrow(Exception('Network error'));
+      testWidgets('shows snackbar when setBass fails', (
+        WidgetTester tester,
+      ) async {
+        when(
+          mockApiService.setBass(any, any),
+        ).thenThrow(Exception('Network error'));
 
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
@@ -371,11 +398,13 @@ void main() {
         expect(find.text('Clock Display'), findsOneWidget);
       });
 
-      testWidgets('shows loading indicator while fetching clock config',
-          (WidgetTester tester) async {
+      testWidgets('shows loading indicator while fetching clock config', (
+        WidgetTester tester,
+      ) async {
         final completer = Completer<bool>();
-        when(mockApiService.isClockDisplaySupported(any))
-            .thenAnswer((_) => completer.future);
+        when(
+          mockApiService.isClockDisplaySupported(any),
+        ).thenAnswer((_) => completer.future);
 
         await tester.pumpWidget(buildWidget());
         await tester.pump();
@@ -386,8 +415,9 @@ void main() {
         await tester.pumpAndSettle();
       });
 
-      testWidgets('shows toggle switch when clock is supported',
-          (WidgetTester tester) async {
+      testWidgets('shows toggle switch when clock is supported', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
 
@@ -402,8 +432,9 @@ void main() {
         expect(find.text('24h'), findsOneWidget);
       });
 
-      testWidgets('shows brightness stepper with current value',
-          (WidgetTester tester) async {
+      testWidgets('shows brightness stepper with current value', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
 
@@ -411,8 +442,9 @@ void main() {
         expect(find.text('Brightness'), findsOneWidget);
       });
 
-      testWidgets('shows timezone as read-only text',
-          (WidgetTester tester) async {
+      testWidgets('shows timezone as read-only text', (
+        WidgetTester tester,
+      ) async {
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
 
@@ -420,42 +452,53 @@ void main() {
         expect(find.text('America/Chicago'), findsOneWidget);
       });
 
-      testWidgets('shows not-supported message when clock not available',
-          (WidgetTester tester) async {
-        when(mockApiService.isClockDisplaySupported(any))
-            .thenAnswer((_) async => false);
+      testWidgets('shows not-supported message when clock not available', (
+        WidgetTester tester,
+      ) async {
+        when(
+          mockApiService.isClockDisplaySupported(any),
+        ).thenAnswer((_) async => false);
 
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
 
         expect(
-            find.text('Clock display not supported on this device'),
-            findsOneWidget);
+          find.text('Clock display not supported on this device'),
+          findsOneWidget,
+        );
         expect(find.byType(Switch), findsNothing);
       });
 
-      testWidgets('shows error and retry button on load failure',
-          (WidgetTester tester) async {
-        when(mockApiService.getClockDisplay(any))
-            .thenThrow(Exception('Network error'));
+      testWidgets('shows error and retry button on load failure', (
+        WidgetTester tester,
+      ) async {
+        when(
+          mockApiService.getClockDisplay(any),
+        ).thenThrow(Exception('Network error'));
 
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
 
-        expect(find.textContaining('Error loading clock display'), findsOneWidget);
+        expect(
+          find.textContaining('Error loading clock display'),
+          findsOneWidget,
+        );
         expect(find.text('Retry'), findsOneWidget);
       });
 
-      testWidgets('retry reloads clock config after error',
-          (WidgetTester tester) async {
-        when(mockApiService.getClockDisplay(any))
-            .thenThrow(Exception('Network error'));
+      testWidgets('retry reloads clock config after error', (
+        WidgetTester tester,
+      ) async {
+        when(
+          mockApiService.getClockDisplay(any),
+        ).thenThrow(Exception('Network error'));
 
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
 
-        when(mockApiService.getClockDisplay(any))
-            .thenAnswer((_) async => testClockConfig);
+        when(
+          mockApiService.getClockDisplay(any),
+        ).thenAnswer((_) async => testClockConfig);
 
         final retryFinder = find.text('Retry');
         await tester.ensureVisible(retryFinder);
@@ -464,42 +507,44 @@ void main() {
         await tester.pumpAndSettle();
 
         // getClockDisplay called twice: initial load + retry
-        verify(mockApiService.getClockDisplay('192.168.1.100'))
-            .called(2);
+        verify(mockApiService.getClockDisplay('192.168.1.100')).called(2);
       });
 
-      testWidgets('toggle switch calls setClockDisplay and getClockDisplay',
-          (WidgetTester tester) async {
+      testWidgets('toggle switch calls setClockDisplay and getClockDisplay', (
+        WidgetTester tester,
+      ) async {
         // setUp loads with testClockConfig (userEnable: true).
         // After tap, setClockDisplay is called then getClockDisplay re-reads.
-        when(mockApiService.setClockDisplay(any, any))
-            .thenAnswer((_) async {});
+        when(mockApiService.setClockDisplay(any, any)).thenAnswer((_) async {});
 
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
 
         // Reconfigure getClockDisplay to return disabled after the POST.
-        when(mockApiService.getClockDisplay(any)).thenAnswer((_) async =>
-            testClockConfig.copyWith(userEnable: false));
+        when(
+          mockApiService.getClockDisplay(any),
+        ).thenAnswer((_) async => testClockConfig.copyWith(userEnable: false));
 
         await tester.ensureVisible(find.byType(Switch));
         await tester.tap(find.byType(Switch));
         await tester.pumpAndSettle();
 
-        final captured = verify(mockApiService.setClockDisplay(
-          '192.168.1.100',
-          captureAny,
-        )).captured;
+        final captured = verify(
+          mockApiService.setClockDisplay('192.168.1.100', captureAny),
+        ).captured;
         expect(captured.length, 1);
         expect((captured[0] as ClockConfig).userEnable, isFalse);
-        verify(mockApiService.getClockDisplay('192.168.1.100'))
-            .called(greaterThan(1));
+        verify(
+          mockApiService.getClockDisplay('192.168.1.100'),
+        ).called(greaterThan(1));
       });
 
-      testWidgets('shows snackbar when setClockDisplay fails',
-          (WidgetTester tester) async {
-        when(mockApiService.setClockDisplay(any, any))
-            .thenThrow(Exception('Network error'));
+      testWidgets('shows snackbar when setClockDisplay fails', (
+        WidgetTester tester,
+      ) async {
+        when(
+          mockApiService.setClockDisplay(any, any),
+        ).thenThrow(Exception('Network error'));
 
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
@@ -510,44 +555,48 @@ void main() {
 
         expect(find.byType(SnackBar), findsOneWidget);
         expect(
-            find.textContaining('Failed to set clock display'), findsOneWidget);
+          find.textContaining('Failed to set clock display'),
+          findsOneWidget,
+        );
       });
 
-      testWidgets('24h button calls setClockDisplay with 24h format',
-          (WidgetTester tester) async {
+      testWidgets('24h button calls setClockDisplay with 24h format', (
+        WidgetTester tester,
+      ) async {
         // setUp loads with format12h. After tap, format24h is sent.
-        when(mockApiService.setClockDisplay(any, any))
-            .thenAnswer((_) async {});
+        when(mockApiService.setClockDisplay(any, any)).thenAnswer((_) async {});
 
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
 
-        when(mockApiService.getClockDisplay(any)).thenAnswer((_) async =>
-            testClockConfig.copyWith(timeFormat: ClockConfig.format24h));
+        when(mockApiService.getClockDisplay(any)).thenAnswer(
+          (_) async =>
+              testClockConfig.copyWith(timeFormat: ClockConfig.format24h),
+        );
 
         await tester.ensureVisible(find.text('24h'));
         await tester.tap(find.text('24h'));
         await tester.pumpAndSettle();
 
-        final captured = verify(mockApiService.setClockDisplay(
-          '192.168.1.100',
-          captureAny,
-        )).captured;
+        final captured = verify(
+          mockApiService.setClockDisplay('192.168.1.100', captureAny),
+        ).captured;
         expect(captured.length, 1);
         expect((captured[0] as ClockConfig).timeFormat, ClockConfig.format24h);
       });
 
-      testWidgets('brightness Up button increments brightness by 1',
-          (WidgetTester tester) async {
+      testWidgets('brightness Up button increments brightness by 1', (
+        WidgetTester tester,
+      ) async {
         // setUp loads with brightness 70. After Up, 71 is sent.
-        when(mockApiService.setClockDisplay(any, any))
-            .thenAnswer((_) async {});
+        when(mockApiService.setClockDisplay(any, any)).thenAnswer((_) async {});
 
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
 
-        when(mockApiService.getClockDisplay(any)).thenAnswer((_) async =>
-            testClockConfig.copyWith(brightnessLevel: 71));
+        when(mockApiService.getClockDisplay(any)).thenAnswer(
+          (_) async => testClockConfig.copyWith(brightnessLevel: 71),
+        );
 
         // Scroll the clock card into view then tap the last Up button (brightness row)
         await tester.scrollUntilVisible(
@@ -559,25 +608,25 @@ void main() {
         await tester.tap(find.text('Up').last);
         await tester.pumpAndSettle();
 
-        final captured = verify(mockApiService.setClockDisplay(
-          '192.168.1.100',
-          captureAny,
-        )).captured;
+        final captured = verify(
+          mockApiService.setClockDisplay('192.168.1.100', captureAny),
+        ).captured;
         expect(captured.length, 1);
         expect((captured[0] as ClockConfig).brightnessLevel, 71);
       });
 
-      testWidgets('brightness Down button decrements brightness by 1',
-          (WidgetTester tester) async {
+      testWidgets('brightness Down button decrements brightness by 1', (
+        WidgetTester tester,
+      ) async {
         // setUp loads with brightness 70. After Down, 69 is sent.
-        when(mockApiService.setClockDisplay(any, any))
-            .thenAnswer((_) async {});
+        when(mockApiService.setClockDisplay(any, any)).thenAnswer((_) async {});
 
         await tester.pumpWidget(buildWidget());
         await tester.pumpAndSettle();
 
-        when(mockApiService.getClockDisplay(any)).thenAnswer((_) async =>
-            testClockConfig.copyWith(brightnessLevel: 69));
+        when(mockApiService.getClockDisplay(any)).thenAnswer(
+          (_) async => testClockConfig.copyWith(brightnessLevel: 69),
+        );
 
         // Scroll the clock card into view then tap the last Down button (brightness row)
         await tester.scrollUntilVisible(
@@ -589,10 +638,9 @@ void main() {
         await tester.tap(find.text('Down').last);
         await tester.pumpAndSettle();
 
-        final captured = verify(mockApiService.setClockDisplay(
-          '192.168.1.100',
-          captureAny,
-        )).captured;
+        final captured = verify(
+          mockApiService.setClockDisplay('192.168.1.100', captureAny),
+        ).captured;
         expect(captured.length, 1);
         expect((captured[0] as ClockConfig).brightnessLevel, 69);
       });
