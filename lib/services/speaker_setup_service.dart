@@ -134,7 +134,10 @@ class SpeakerSetupService {
   /// Turns the speaker's `<errors>` response into a readable message, e.g.
   /// `AUTHENTICATION_FAILED` becomes a hint to check the password.
   static String _describeProfileError(
-      String ssid, int statusCode, String responseBody) {
+    String ssid,
+    int statusCode,
+    String responseBody,
+  ) {
     String? detail;
     try {
       final error = XmlDocument.parse(responseBody).findAllElements('error');

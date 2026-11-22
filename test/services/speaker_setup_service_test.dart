@@ -247,10 +247,11 @@ void main() {
 
       test('explains authentication failures', () async {
         final error = await failWith(
-            '<errors deviceID="X"><error value="1035" '
-            'name="WIFI_PROFILE_SETUP_FAILED" severity="Unknown">'
-            'AUTHENTICATION_FAILED</error><ancillary>&lt;x/&gt;</ancillary>'
-            '</errors>');
+          '<errors deviceID="X"><error value="1035" '
+          'name="WIFI_PROFILE_SETUP_FAILED" severity="Unknown">'
+          'AUTHENTICATION_FAILED</error><ancillary>&lt;x/&gt;</ancillary>'
+          '</errors>',
+        );
 
         expect(error, isA<WirelessProfileException>());
         expect(error.toString(), contains('check the password'));
@@ -259,7 +260,8 @@ void main() {
 
       test('includes other error codes', () async {
         final error = await failWith(
-            '<errors><error name="X">NO_AP_FOUND</error></errors>');
+          '<errors><error name="X">NO_AP_FOUND</error></errors>',
+        );
 
         expect(error.toString(), contains('NO_AP_FOUND'));
       });
