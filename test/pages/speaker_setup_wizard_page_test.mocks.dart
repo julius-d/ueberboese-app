@@ -106,9 +106,13 @@ class MockSpeakerSetupService extends _i1.Mock
           as Duration);
 
   @override
-  _i9.Future<List<_i10.WirelessNetwork>> performWirelessSiteSurvey() =>
+  _i9.Future<List<_i10.WirelessNetwork>> performWirelessSiteSurvey({
+    String? speakerIp = '192.0.2.1',
+  }) =>
       (super.noSuchMethod(
-            Invocation.method(#performWirelessSiteSurvey, []),
+            Invocation.method(#performWirelessSiteSurvey, [], {
+              #speakerIp: speakerIp,
+            }),
             returnValue: _i9.Future<List<_i10.WirelessNetwork>>.value(
               <_i10.WirelessNetwork>[],
             ),
@@ -119,14 +123,15 @@ class MockSpeakerSetupService extends _i1.Mock
   _i9.Future<void> addWirelessProfile(
     String? ssid,
     String? password,
-    String? securityType,
-  ) =>
+    String? securityType, {
+    String? speakerIp = '192.0.2.1',
+  }) =>
       (super.noSuchMethod(
-            Invocation.method(#addWirelessProfile, [
-              ssid,
-              password,
-              securityType,
-            ]),
+            Invocation.method(
+              #addWirelessProfile,
+              [ssid, password, securityType],
+              {#speakerIp: speakerIp},
+            ),
             returnValue: _i9.Future<void>.value(),
             returnValueForMissingStub: _i9.Future<void>.value(),
           )

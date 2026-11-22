@@ -59,6 +59,40 @@ void main() {
         expect(networks[1].securityType, 'none');
       });
 
+      test('drops hidden networks, merges duplicates and sorts by signal',
+          () async {
+        const xmlResponse = '''<PerformWirelessSiteSurveyResponse error="none">
+  <items>
+    <item ssid="weak" signalStrength="-80" secure="false"><securityTypes><type>none</type></securityTypes></item>
+    <item ssid="" signalStrength="-30" secure="false"><securityTypes><type>none</type></securityTypes></item>
+    <item ssid="mesh" signalStrength="-70" secure="true"><securityTypes><type>wpa2aes</type></securityTypes></item>
+    <item ssid="mesh" signalStrength="-50" secure="true"><securityTypes><type>wpa2aes</type></securityTypes></item>
+  </items>
+</PerformWirelessSiteSurveyResponse>''';
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(xmlResponse, 200),
+        );
+
+        final networks = await service.performWirelessSiteSurvey();
+
+        expect(networks.map((n) => n.ssid), ['mesh', 'weak']);
+        expect(networks.first.signalStrength, -50);
+      });
+
+      test('uses the given speaker IP', () async {
+        when(mockClient.get(any)).thenAnswer(
+          (_) async => http.Response(
+              '<PerformWirelessSiteSurveyResponse error="none"><items></items></PerformWirelessSiteSurveyResponse>',
+              200),
+        );
+
+        await service.performWirelessSiteSurvey(speakerIp: '192.168.1.5');
+
+        final captured = verify(mockClient.get(captureAny)).captured;
+        expect(captured.first.toString(),
+            'http://192.168.1.5:8090/performWirelessSiteSurvey');
+      });
+
       test('requests the correct URL', () async {
         const xmlResponse =
             '<PerformWirelessSiteSurveyResponse error="none"><items></items></PerformWirelessSiteSurveyResponse>';
@@ -88,6 +122,21 @@ void main() {
     });
 
     group('addWirelessProfile', () {
+      test('uses the given speaker IP', () async {
+        when(mockClient.post(any,
+                headers: anyNamed('headers'), body: anyNamed('body')))
+            .thenAnswer((_) async => http.Response('', 200));
+
+        await service.addWirelessProfile('net', 'pw', 'wpa_or_wpa2',
+            speakerIp: '192.168.1.5');
+
+        final captured = verify(mockClient.post(captureAny,
+                headers: anyNamed('headers'), body: anyNamed('body')))
+            .captured;
+        expect(captured.first.toString(),
+            'http://192.168.1.5:8090/addWirelessProfile');
+      });
+
       test('sends correct POST request', () async {
         when(mockClient.post(any,
                 headers: anyNamed('headers'), body: anyNamed('body')))
