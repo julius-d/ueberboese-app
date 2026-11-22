@@ -17,10 +17,20 @@ jobs:
       new_build_number: ${{ steps.version_bump.outputs.new_build_number }}
 
     steps:
+      # GITHUB_TOKEN cannot bypass the branch ruleset on main (PR required).
+      # The release GitHub App is a bypass actor, so we push the version bump with its token.
+      - name: Generate release app token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
       - name: Checkout code
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Calculate semantic version
         id: semver
