@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A [FilledButton.icon] that swaps its icon for a [CircularProgressIndicator]
 /// and disables itself while [isLoading] is true.

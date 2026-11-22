@@ -5,7 +5,7 @@ version: 0.42.0+45
 
 environment:
   sdk: ^3.12.1
-  flutter: 3.47.9
+  flutter: 3.50.1
 
 dependencies:
   flutter:
@@ -20,6 +20,7 @@ dependencies:
   intl: ^0.20.2
   web_socket_channel: ^3.0.3
   font_awesome_flutter: ^11.0.0
+  material_ui: ^1.11.1
 
 dev_dependencies:
   flutter_test:

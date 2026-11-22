@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:ueberboese_app/models/bass.dart';
 import 'package:ueberboese_app/models/clock_display.dart';
 import 'package:ueberboese_app/models/speaker.dart';
