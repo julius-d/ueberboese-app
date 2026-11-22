@@ -13,6 +13,7 @@ import 'package:ueberboese_app/models/preset.dart' as _i11;
 import 'package:ueberboese_app/models/recent.dart' as _i12;
 import 'package:ueberboese_app/models/speaker.dart' as _i3;
 import 'package:ueberboese_app/models/speaker_info.dart' as _i2;
+import 'package:ueberboese_app/models/speaker_source.dart' as _i13;
 import 'package:ueberboese_app/models/volume.dart' as _i4;
 import 'package:ueberboese_app/models/zone.dart' as _i10;
 import 'package:ueberboese_app/services/speaker_api_service.dart' as _i8;
@@ -431,6 +432,28 @@ class MockSpeakerApiService extends _i1.Mock implements _i8.SpeakerApiService {
   ) =>
       (super.noSuchMethod(
             Invocation.method(#setClockDisplay, [ipAddress, config]),
+            returnValue: _i9.Future<void>.value(),
+            returnValueForMissingStub: _i9.Future<void>.value(),
+          )
+          as _i9.Future<void>);
+
+  @override
+  _i9.Future<List<_i13.SpeakerSource>> getSources(String? ipAddress) =>
+      (super.noSuchMethod(
+            Invocation.method(#getSources, [ipAddress]),
+            returnValue: _i9.Future<List<_i13.SpeakerSource>>.value(
+              <_i13.SpeakerSource>[],
+            ),
+          )
+          as _i9.Future<List<_i13.SpeakerSource>>);
+
+  @override
+  _i9.Future<void> selectSource(
+    String? ipAddress,
+    _i13.SpeakerSource? source,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#selectSource, [ipAddress, source]),
             returnValue: _i9.Future<void>.value(),
             returnValueForMissingStub: _i9.Future<void>.value(),
           )

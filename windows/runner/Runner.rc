@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "io.github.juliusd.ueberboese" "\0"
-            VALUE "FileDescription", "ueberboese_app" "\0"
+            VALUE "FileDescription", "Ueberboese" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "ueberboese_app" "\0"
+            VALUE "InternalName", "Ueberboese" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 io.github.juliusd.ueberboese. All rights reserved." "\0"
-            VALUE "OriginalFilename", "ueberboese_app.exe" "\0"
-            VALUE "ProductName", "ueberboese_app" "\0"
+            VALUE "OriginalFilename", "Ueberboese.exe" "\0"
+            VALUE "ProductName", "Ueberboese" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

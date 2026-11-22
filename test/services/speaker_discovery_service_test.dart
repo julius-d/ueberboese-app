@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ueberboese_app/services/speaker_discovery_service.dart';
 
@@ -47,6 +50,91 @@ void main() {
           '\r\n';
       final result = SpeakerDiscoveryService.parseResponse(response, '192.168.1.10');
       expect(result!.location, 'http://192.168.1.10:8090/info');
+    });
+  });
+
+  group('SpeakerDiscoveryService.discover', () {
+    const okResponse =
+        'HTTP/1.1 200 OK\r\n'
+        'LOCATION: http://127.0.0.1:8090/info\r\n'
+        '\r\n';
+
+    late RawDatagramSocket responder;
+    late int requests;
+
+    Future<void> startResponder(List<String> replies) async {
+      requests = 0;
+      responder = await RawDatagramSocket.bind(InternetAddress.loopbackIPv4, 0);
+      responder.listen((event) {
+        if (event != RawSocketEvent.read) return;
+        final datagram = responder.receive();
+        if (datagram == null) return;
+        requests++;
+        for (final reply in replies) {
+          responder.send(utf8.encode(reply), datagram.address, datagram.port);
+        }
+      });
+    }
+
+    tearDown(() => responder.close());
+
+    test('sends M-SEARCH and emits parsed speaker, deduplicated by IP', () async {
+      await startResponder([okResponse, okResponse]);
+
+      final speakers = await SpeakerDiscoveryService()
+          .discover(
+            timeout: const Duration(milliseconds: 500),
+            target: InternetAddress.loopbackIPv4,
+            targetPort: responder.port,
+          )
+          .toList();
+
+      expect(requests, 1);
+      expect(speakers, hasLength(1));
+      expect(speakers.single.ip, '127.0.0.1');
+      expect(speakers.single.location, 'http://127.0.0.1:8090/info');
+    });
+
+    test('ignores responses that are not valid speakers', () async {
+      await startResponder(['HTTP/1.1 404 Not Found\r\n\r\n']);
+
+      final speakers = await SpeakerDiscoveryService()
+          .discover(
+            timeout: const Duration(milliseconds: 300),
+            target: InternetAddress.loopbackIPv4,
+            targetPort: responder.port,
+          )
+          .toList();
+
+      expect(speakers, isEmpty);
+    });
+
+    test('completes after timeout when nobody answers', () async {
+      await startResponder([]);
+
+      final speakers = await SpeakerDiscoveryService()
+          .discover(
+            timeout: const Duration(milliseconds: 200),
+            target: InternetAddress.loopbackIPv4,
+            targetPort: responder.port,
+          )
+          .toList();
+
+      expect(speakers, isEmpty);
+    });
+
+    test('stops when the listener cancels', () async {
+      await startResponder([okResponse]);
+
+      final first = await SpeakerDiscoveryService()
+          .discover(
+            timeout: const Duration(seconds: 30),
+            target: InternetAddress.loopbackIPv4,
+            targetPort: responder.port,
+          )
+          .first;
+
+      expect(first.ip, '127.0.0.1');
     });
   });
 }

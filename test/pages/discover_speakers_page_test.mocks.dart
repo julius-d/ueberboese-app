@@ -4,19 +4,21 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i9;
+import 'dart:io' as _i11;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:ueberboese_app/models/bass.dart' as _i6;
 import 'package:ueberboese_app/models/clock_display.dart' as _i7;
 import 'package:ueberboese_app/models/now_playing.dart' as _i5;
 import 'package:ueberboese_app/models/possible_speaker.dart' as _i10;
-import 'package:ueberboese_app/models/preset.dart' as _i13;
-import 'package:ueberboese_app/models/recent.dart' as _i14;
+import 'package:ueberboese_app/models/preset.dart' as _i14;
+import 'package:ueberboese_app/models/recent.dart' as _i15;
 import 'package:ueberboese_app/models/speaker.dart' as _i3;
 import 'package:ueberboese_app/models/speaker_info.dart' as _i2;
+import 'package:ueberboese_app/models/speaker_source.dart' as _i16;
 import 'package:ueberboese_app/models/volume.dart' as _i4;
-import 'package:ueberboese_app/models/zone.dart' as _i12;
-import 'package:ueberboese_app/services/speaker_api_service.dart' as _i11;
+import 'package:ueberboese_app/models/zone.dart' as _i13;
+import 'package:ueberboese_app/services/speaker_api_service.dart' as _i12;
 import 'package:ueberboese_app/services/speaker_discovery_service.dart' as _i8;
 
 // ignore_for_file: type=lint
@@ -87,9 +89,15 @@ class MockSpeakerDiscoveryService extends _i1.Mock
   @override
   _i9.Stream<_i10.PossibleSpeaker> discover({
     Duration? timeout = const Duration(seconds: 10),
+    _i11.InternetAddress? target,
+    int? targetPort = 1900,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(#discover, [], {#timeout: timeout}),
+            Invocation.method(#discover, [], {
+              #timeout: timeout,
+              #target: target,
+              #targetPort: targetPort,
+            }),
             returnValue: _i9.Stream<_i10.PossibleSpeaker>.empty(),
           )
           as _i9.Stream<_i10.PossibleSpeaker>);
@@ -98,7 +106,7 @@ class MockSpeakerDiscoveryService extends _i1.Mock
 /// A class which mocks [SpeakerApiService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockSpeakerApiService extends _i1.Mock implements _i11.SpeakerApiService {
+class MockSpeakerApiService extends _i1.Mock implements _i12.SpeakerApiService {
   MockSpeakerApiService() {
     _i1.throwOnMissingStub(this);
   }
@@ -177,18 +185,18 @@ class MockSpeakerApiService extends _i1.Mock implements _i11.SpeakerApiService {
           as _i9.Future<_i5.NowPlaying>);
 
   @override
-  _i9.Future<_i12.Zone?> getZone(String? ipAddress) =>
+  _i9.Future<_i13.Zone?> getZone(String? ipAddress) =>
       (super.noSuchMethod(
             Invocation.method(#getZone, [ipAddress]),
-            returnValue: _i9.Future<_i12.Zone?>.value(),
+            returnValue: _i9.Future<_i13.Zone?>.value(),
           )
-          as _i9.Future<_i12.Zone?>);
+          as _i9.Future<_i13.Zone?>);
 
   @override
   _i9.Future<void> createZone(
     String? ipAddress,
     String? masterId,
-    List<_i12.ZoneMember>? members,
+    List<_i13.ZoneMember>? members,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#createZone, [ipAddress, masterId, members]),
@@ -201,7 +209,7 @@ class MockSpeakerApiService extends _i1.Mock implements _i11.SpeakerApiService {
   _i9.Future<void> addZoneMembers(
     String? ipAddress,
     String? masterId,
-    List<_i12.ZoneMember>? members,
+    List<_i13.ZoneMember>? members,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#addZoneMembers, [ipAddress, masterId, members]),
@@ -214,7 +222,7 @@ class MockSpeakerApiService extends _i1.Mock implements _i11.SpeakerApiService {
   _i9.Future<void> removeZoneMembers(
     String? ipAddress,
     String? masterId,
-    List<_i12.ZoneMember>? members,
+    List<_i13.ZoneMember>? members,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#removeZoneMembers, [
@@ -237,31 +245,31 @@ class MockSpeakerApiService extends _i1.Mock implements _i11.SpeakerApiService {
           as _i9.Future<void>);
 
   @override
-  _i9.Future<List<_i13.Preset>> getPresets(String? ipAddress) =>
+  _i9.Future<List<_i14.Preset>> getPresets(String? ipAddress) =>
       (super.noSuchMethod(
             Invocation.method(#getPresets, [ipAddress]),
-            returnValue: _i9.Future<List<_i13.Preset>>.value(<_i13.Preset>[]),
+            returnValue: _i9.Future<List<_i14.Preset>>.value(<_i14.Preset>[]),
           )
-          as _i9.Future<List<_i13.Preset>>);
+          as _i9.Future<List<_i14.Preset>>);
 
   @override
-  _i9.Future<List<_i14.Recent>> getRecents(String? ipAddress) =>
+  _i9.Future<List<_i15.Recent>> getRecents(String? ipAddress) =>
       (super.noSuchMethod(
             Invocation.method(#getRecents, [ipAddress]),
-            returnValue: _i9.Future<List<_i14.Recent>>.value(<_i14.Recent>[]),
+            returnValue: _i9.Future<List<_i15.Recent>>.value(<_i15.Recent>[]),
           )
-          as _i9.Future<List<_i14.Recent>>);
+          as _i9.Future<List<_i15.Recent>>);
 
   @override
-  _i9.Future<List<_i13.Preset>> removePreset(
+  _i9.Future<List<_i14.Preset>> removePreset(
     String? ipAddress,
     String? presetId,
   ) =>
       (super.noSuchMethod(
             Invocation.method(#removePreset, [ipAddress, presetId]),
-            returnValue: _i9.Future<List<_i13.Preset>>.value(<_i13.Preset>[]),
+            returnValue: _i9.Future<List<_i14.Preset>>.value(<_i14.Preset>[]),
           )
-          as _i9.Future<List<_i13.Preset>>);
+          as _i9.Future<List<_i14.Preset>>);
 
   @override
   _i9.Future<void> standby(String? ipAddress) =>
@@ -273,7 +281,7 @@ class MockSpeakerApiService extends _i1.Mock implements _i11.SpeakerApiService {
           as _i9.Future<void>);
 
   @override
-  _i9.Future<List<_i13.Preset>> storePreset(
+  _i9.Future<List<_i14.Preset>> storePreset(
     String? ipAddress,
     String? presetId,
     String? spotifyUri,
@@ -290,12 +298,12 @@ class MockSpeakerApiService extends _i1.Mock implements _i11.SpeakerApiService {
               itemName,
               containerArt,
             ]),
-            returnValue: _i9.Future<List<_i13.Preset>>.value(<_i13.Preset>[]),
+            returnValue: _i9.Future<List<_i14.Preset>>.value(<_i14.Preset>[]),
           )
-          as _i9.Future<List<_i13.Preset>>);
+          as _i9.Future<List<_i14.Preset>>);
 
   @override
-  _i9.Future<List<_i13.Preset>> storeTuneInPreset(
+  _i9.Future<List<_i14.Preset>> storeTuneInPreset(
     String? ipAddress,
     String? presetId,
     String? stationId,
@@ -310,12 +318,12 @@ class MockSpeakerApiService extends _i1.Mock implements _i11.SpeakerApiService {
               itemName,
               containerArt,
             ]),
-            returnValue: _i9.Future<List<_i13.Preset>>.value(<_i13.Preset>[]),
+            returnValue: _i9.Future<List<_i14.Preset>>.value(<_i14.Preset>[]),
           )
-          as _i9.Future<List<_i13.Preset>>);
+          as _i9.Future<List<_i14.Preset>>);
 
   @override
-  _i9.Future<List<_i13.Preset>> storeInternetRadioPreset(
+  _i9.Future<List<_i14.Preset>> storeInternetRadioPreset(
     String? ipAddress,
     String? presetId,
     String? url,
@@ -332,9 +340,9 @@ class MockSpeakerApiService extends _i1.Mock implements _i11.SpeakerApiService {
               containerArt,
               apiUrl,
             ]),
-            returnValue: _i9.Future<List<_i13.Preset>>.value(<_i13.Preset>[]),
+            returnValue: _i9.Future<List<_i14.Preset>>.value(<_i14.Preset>[]),
           )
-          as _i9.Future<List<_i13.Preset>>);
+          as _i9.Future<List<_i14.Preset>>);
 
   @override
   _i9.Future<void> sendKey(
@@ -359,7 +367,7 @@ class MockSpeakerApiService extends _i1.Mock implements _i11.SpeakerApiService {
           as _i9.Future<void>);
 
   @override
-  _i9.Future<void> selectContentItem(String? ipAddress, _i14.Recent? recent) =>
+  _i9.Future<void> selectContentItem(String? ipAddress, _i15.Recent? recent) =>
       (super.noSuchMethod(
             Invocation.method(#selectContentItem, [ipAddress, recent]),
             returnValue: _i9.Future<void>.value(),
@@ -368,7 +376,7 @@ class MockSpeakerApiService extends _i1.Mock implements _i11.SpeakerApiService {
           as _i9.Future<void>);
 
   @override
-  _i9.Future<void> selectPreset(String? ipAddress, _i13.Preset? preset) =>
+  _i9.Future<void> selectPreset(String? ipAddress, _i14.Preset? preset) =>
       (super.noSuchMethod(
             Invocation.method(#selectPreset, [ipAddress, preset]),
             returnValue: _i9.Future<void>.value(),
@@ -453,6 +461,28 @@ class MockSpeakerApiService extends _i1.Mock implements _i11.SpeakerApiService {
   ) =>
       (super.noSuchMethod(
             Invocation.method(#setClockDisplay, [ipAddress, config]),
+            returnValue: _i9.Future<void>.value(),
+            returnValueForMissingStub: _i9.Future<void>.value(),
+          )
+          as _i9.Future<void>);
+
+  @override
+  _i9.Future<List<_i16.SpeakerSource>> getSources(String? ipAddress) =>
+      (super.noSuchMethod(
+            Invocation.method(#getSources, [ipAddress]),
+            returnValue: _i9.Future<List<_i16.SpeakerSource>>.value(
+              <_i16.SpeakerSource>[],
+            ),
+          )
+          as _i9.Future<List<_i16.SpeakerSource>>);
+
+  @override
+  _i9.Future<void> selectSource(
+    String? ipAddress,
+    _i16.SpeakerSource? source,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#selectSource, [ipAddress, source]),
             returnValue: _i9.Future<void>.value(),
             returnValueForMissingStub: _i9.Future<void>.value(),
           )

@@ -13,12 +13,13 @@ import 'package:ueberboese_app/models/preset.dart' as _i12;
 import 'package:ueberboese_app/models/recent.dart' as _i13;
 import 'package:ueberboese_app/models/speaker.dart' as _i3;
 import 'package:ueberboese_app/models/speaker_info.dart' as _i2;
-import 'package:ueberboese_app/models/tunein_station.dart' as _i15;
+import 'package:ueberboese_app/models/speaker_source.dart' as _i14;
+import 'package:ueberboese_app/models/tunein_station.dart' as _i16;
 import 'package:ueberboese_app/models/tunein_station_detail.dart' as _i8;
 import 'package:ueberboese_app/models/volume.dart' as _i4;
 import 'package:ueberboese_app/models/zone.dart' as _i11;
 import 'package:ueberboese_app/services/speaker_api_service.dart' as _i9;
-import 'package:ueberboese_app/services/tunein_api_service.dart' as _i14;
+import 'package:ueberboese_app/services/tunein_api_service.dart' as _i15;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -444,12 +445,34 @@ class MockSpeakerApiService extends _i1.Mock implements _i9.SpeakerApiService {
             returnValueForMissingStub: _i10.Future<void>.value(),
           )
           as _i10.Future<void>);
+
+  @override
+  _i10.Future<List<_i14.SpeakerSource>> getSources(String? ipAddress) =>
+      (super.noSuchMethod(
+            Invocation.method(#getSources, [ipAddress]),
+            returnValue: _i10.Future<List<_i14.SpeakerSource>>.value(
+              <_i14.SpeakerSource>[],
+            ),
+          )
+          as _i10.Future<List<_i14.SpeakerSource>>);
+
+  @override
+  _i10.Future<void> selectSource(
+    String? ipAddress,
+    _i14.SpeakerSource? source,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#selectSource, [ipAddress, source]),
+            returnValue: _i10.Future<void>.value(),
+            returnValueForMissingStub: _i10.Future<void>.value(),
+          )
+          as _i10.Future<void>);
 }
 
 /// A class which mocks [TuneInApiService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockTuneInApiService extends _i1.Mock implements _i14.TuneInApiService {
+class MockTuneInApiService extends _i1.Mock implements _i15.TuneInApiService {
   MockTuneInApiService() {
     _i1.throwOnMissingStub(this);
   }
@@ -463,14 +486,14 @@ class MockTuneInApiService extends _i1.Mock implements _i14.TuneInApiService {
           as Duration);
 
   @override
-  _i10.Future<List<_i15.TuneInStation>> searchStations(String? query) =>
+  _i10.Future<List<_i16.TuneInStation>> searchStations(String? query) =>
       (super.noSuchMethod(
             Invocation.method(#searchStations, [query]),
-            returnValue: _i10.Future<List<_i15.TuneInStation>>.value(
-              <_i15.TuneInStation>[],
+            returnValue: _i10.Future<List<_i16.TuneInStation>>.value(
+              <_i16.TuneInStation>[],
             ),
           )
-          as _i10.Future<List<_i15.TuneInStation>>);
+          as _i10.Future<List<_i16.TuneInStation>>);
 
   @override
   _i10.Future<_i8.TuneInStationDetail> getStationDetails(String? stationId) =>
