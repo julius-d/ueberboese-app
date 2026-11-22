@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:ueberboese_app/pages/speaker_list_page.dart';
 import 'package:ueberboese_app/pages/spotify_accounts_page.dart';
 import 'package:ueberboese_app/pages/settings_page.dart';

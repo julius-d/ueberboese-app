@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Asks for the Wi-Fi password of [ssid]. Returns null if cancelled.
 Future<String?> showWifiPasswordDialog(BuildContext context, String ssid) {
