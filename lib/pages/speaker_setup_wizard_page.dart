@@ -5,6 +5,7 @@ import 'package:ueberboese_app/models/wireless_network.dart';
 import 'package:ueberboese_app/services/speaker_api_service.dart';
 import 'package:ueberboese_app/services/speaker_setup_service.dart';
 import 'package:ueberboese_app/widgets/envswitch_log_view.dart';
+import 'package:ueberboese_app/widgets/wifi_password_dialog.dart';
 
 class SpeakerSetupWizardPage extends StatefulWidget {
   final SpeakerSetupService? setupService;
@@ -133,7 +134,7 @@ class _SpeakerSetupWizardPageState extends State<SpeakerSetupWizardPage> {
   Future<void> _onNetworkSelected(WirelessNetwork network) async {
     String password = '';
     if (network.secure) {
-      final entered = await _showPasswordDialog(network.ssid);
+      final entered = await showWifiPasswordDialog(context, network.ssid);
       if (entered == null) return; // cancelled
       password = entered;
     }
@@ -174,44 +175,6 @@ class _SpeakerSetupWizardPageState extends State<SpeakerSetupWizardPage> {
       Navigator.pop(context); // close loading
       _showErrorDialog('Failed to configure Wi-Fi', e.toString());
     }
-  }
-
-  Future<String?> _showPasswordDialog(String ssid) async {
-    final controller = TextEditingController();
-    return showDialog<String>(
-      context: context,
-      builder: (context) {
-        var obscure = true;
-        return StatefulBuilder(
-          builder: (context, setState) => AlertDialog(
-            title: Text('Password for "$ssid"'),
-            content: TextField(
-              controller: controller,
-              obscureText: obscure,
-              decoration: InputDecoration(
-                labelText: 'Password',
-                suffixIcon: IconButton(
-                  icon: Icon(obscure ? Icons.visibility : Icons.visibility_off),
-                  onPressed: () => setState(() => obscure = !obscure),
-                ),
-              ),
-              autofocus: true,
-              onSubmitted: (_) => Navigator.pop(context, controller.text),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, controller.text),
-                child: const Text('Connect'),
-              ),
-            ],
-          ),
-        );
-      },
-    );
   }
 
   Future<void> _onEnvswitchConfirm() async {

@@ -5,6 +5,7 @@ import 'package:ueberboese_app/models/bass.dart';
 import 'package:ueberboese_app/models/clock_display.dart';
 import 'package:ueberboese_app/models/speaker_info.dart';
 import 'package:ueberboese_app/models/speaker.dart';
+import 'package:ueberboese_app/models/network_stats.dart';
 import 'package:ueberboese_app/models/volume.dart';
 import 'package:ueberboese_app/models/now_playing.dart';
 import 'package:ueberboese_app/models/zone.dart';
@@ -1104,6 +1105,53 @@ class SpeakerApiService {
         client.close();
       }
     }
+  }
+
+  Future<NetworkStats> getNetworkStats(String ipAddress) async {
+    final url = Uri.parse('http://$ipAddress:8090/netStats');
+    final client = httpClient ?? http.Client();
+
+    try {
+      final response = await client.get(url).timeout(timeout);
+
+      if (response.statusCode != 200) {
+        throw Exception(
+          'Failed to get network stats: HTTP ${response.statusCode}',
+        );
+      }
+
+      final bodyText = utf8.decode(response.bodyBytes);
+      final document = XmlDocument.parse(bodyText);
+      final interfaces = document.findAllElements('interface').toList();
+      if (interfaces.isEmpty) {
+        throw Exception('No network interface found in response');
+      }
+      // Prefer an interface that is running; fall back to the first one.
+      final iface = interfaces.firstWhere(
+        (e) => _childText(e, 'running') == 'true',
+        orElse: () => interfaces.first,
+      );
+      return NetworkStats(
+        ssid: _childText(iface, 'ssid'),
+        rssi: _childText(iface, 'rssi'),
+        frequencyKHz: int.tryParse(_childText(iface, 'frequencyKHz') ?? ''),
+        ipAddress: _childText(iface, 'ipv4address'),
+        macAddress: _childText(iface, 'mac-addr'),
+        kind: _childText(iface, 'kind') ?? 'Unknown',
+      );
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception('Failed to get network stats: $e');
+    } finally {
+      if (httpClient == null) client.close();
+    }
+  }
+
+  static String? _childText(XmlElement parent, String name) {
+    final elements = parent.findAllElements(name);
+    if (elements.isEmpty) return null;
+    final text = elements.first.innerText.trim();
+    return text.isEmpty ? null : text;
   }
 
   Future<int> getLanguage(String ipAddress) async {

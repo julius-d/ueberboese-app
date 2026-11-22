@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:udp/udp.dart';
 import 'package:ueberboese_app/models/possible_speaker.dart';
 
 class SpeakerDiscoveryService {
@@ -14,42 +13,75 @@ class SpeakerDiscoveryService {
       'MAN: "ssdp:discover"\r\n'
       'HOST: 239.255.255.250:1900\r\n\r\n';
 
+  /// Sends an SSDP M-SEARCH and streams the speakers that answer.
+  ///
+  /// [target] and [targetPort] default to the SSDP multicast group and are
+  /// only overridden in tests.
   Stream<PossibleSpeaker> discover({
     Duration timeout = const Duration(seconds: 10),
+    InternetAddress? target,
+    int targetPort = _multicastPort,
   }) async* {
     final seenIps = <String>{};
-    final controller = StreamController<PossibleSpeaker>();
 
-    final multicast = Endpoint.multicast(
-      InternetAddress(_multicastAddress),
-      port: const Port(_multicastPort),
-    );
+    // Bind to port 0 so the OS picks an ephemeral port.
+    // On Windows, port 1900 is held by the system SSDP service (ssdpsrv),
+    // which would block the bind or swallow responses. SSDP devices reply
+    // unicast to our source port, so an ephemeral port works fine and
+    // requires no firewall rule.
+    final socket = await RawDatagramSocket.bind(InternetAddress.anyIPv4, 0);
 
-    final receiver = await UDP.bind(multicast);
-    final data = utf8.encode(_discoverMessage);
-    await receiver.send(data, multicast);
+    StreamSubscription<RawSocketEvent>? sub;
+    Timer? timer;
+    late final StreamController<PossibleSpeaker> controller;
 
-    receiver
-        .asStream(timeout: timeout)
-        .listen(
-          (datagram) {
-            if (datagram == null) return;
-            final str = String.fromCharCodes(datagram.data);
-            final parsed = parseResponse(str, datagram.address.address);
-            if (parsed != null && seenIps.add(parsed.ip)) {
-              controller.add(parsed);
-            }
-          },
-          onError: (Object e) {
-            receiver.close();
-            controller.addError(e);
-            controller.close();
-          },
-          onDone: () {
-            receiver.close();
-            controller.close();
-          },
-        );
+    void cleanup() {
+      timer?.cancel();
+      sub?.cancel();
+      socket.close();
+    }
+
+    controller = StreamController<PossibleSpeaker>(onCancel: cleanup);
+
+    try {
+      final bytesSent = socket.send(
+        utf8.encode(_discoverMessage),
+        target ?? InternetAddress(_multicastAddress),
+        targetPort,
+      );
+      if (bytesSent == 0) {
+        throw const SocketException('Failed to send SSDP discovery request');
+      }
+    } catch (_) {
+      cleanup();
+      unawaited(controller.close());
+      rethrow;
+    }
+
+    sub = socket.listen((event) {
+      if (event != RawSocketEvent.read || controller.isClosed) return;
+      final datagram = socket.receive();
+      if (datagram == null) return;
+      final str = String.fromCharCodes(datagram.data);
+      final parsed = parseResponse(str, datagram.address.address);
+      if (parsed != null && seenIps.add(parsed.ip)) {
+        controller.add(parsed);
+      }
+    }, onError: (Object e) {
+      cleanup();
+      if (!controller.isClosed) {
+        controller.addError(e);
+        controller.close();
+      }
+    }, onDone: () {
+      cleanup();
+      if (!controller.isClosed) controller.close();
+    });
+
+    timer = Timer(timeout, () {
+      cleanup();
+      if (!controller.isClosed) controller.close();
+    });
 
     yield* controller.stream;
   }

@@ -3063,5 +3063,73 @@ void main() {
         );
       });
     });
+
+    group('getNetworkStats', () {
+      const wirelessXml = '''<network-data>
+  <devices>
+    <device deviceID="7C3866F83074">
+      <interfaces>
+        <interface>
+          <name>eth0</name>
+          <mac-addr>7C3866F83074</mac-addr>
+          <bindings><ipv4address>192.168.178.30</ipv4address></bindings>
+          <running>true</running>
+          <kind>Wireless</kind>
+          <ssid>YAWL6</ssid>
+          <rssi>Good</rssi>
+          <frequencyKHz>5180000</frequencyKHz>
+        </interface>
+      </interfaces>
+    </device>
+  </devices>
+</network-data>''';
+
+      test('parses a wireless interface', () async {
+        when(mockClient.get(any))
+            .thenAnswer((_) async => http.Response(wirelessXml, 200));
+
+        final stats = await apiService.getNetworkStats('192.168.178.30');
+
+        expect(stats.isWireless, true);
+        expect(stats.ssid, 'YAWL6');
+        expect(stats.rssi, 'Good');
+        expect(stats.band, '5 GHz');
+        expect(stats.ipAddress, '192.168.178.30');
+        expect(stats.macAddress, '7C3866F83074');
+        final captured = verify(mockClient.get(captureAny)).captured;
+        expect(captured.first.toString(),
+            'http://192.168.178.30:8090/netStats');
+      });
+
+      test('parses a wired interface without SSID', () async {
+        when(mockClient.get(any)).thenAnswer((_) async => http.Response(
+            '<network-data><devices><device><interfaces><interface>'
+            '<mac-addr>AA</mac-addr><running>true</running><kind>Wired</kind>'
+            '</interface></interfaces></device></devices></network-data>',
+            200));
+
+        final stats = await apiService.getNetworkStats('192.168.1.1');
+
+        expect(stats.isWireless, false);
+        expect(stats.ssid, isNull);
+        expect(stats.band, isNull);
+      });
+
+      test('throws on non-200 response', () async {
+        when(mockClient.get(any))
+            .thenAnswer((_) async => http.Response('', 500));
+
+        expect(() => apiService.getNetworkStats('192.168.1.1'),
+            throwsA(isA<Exception>()));
+      });
+
+      test('throws when no interface is present', () async {
+        when(mockClient.get(any)).thenAnswer(
+            (_) async => http.Response('<network-data/>', 200));
+
+        expect(() => apiService.getNetworkStats('192.168.1.1'),
+            throwsA(isA<Exception>()));
+      });
+    });
   });
 }

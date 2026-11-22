@@ -84,6 +84,8 @@ void main() {
       expect(find.text('Recent'), findsOneWidget);
       expect(find.text('Manage Presets'), findsOneWidget);
       expect(find.text('Settings'), findsOneWidget);
+      expect(find.text('Wi-Fi'), findsOneWidget);
+      expect(find.byIcon(Icons.wifi), findsOneWidget);
       expect(find.text('Send to standby'), findsOneWidget);
       expect(find.text('Delete speaker'), findsOneWidget);
       expect(find.byIcon(Icons.edit), findsOneWidget);

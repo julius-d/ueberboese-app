@@ -9,9 +9,12 @@ import 'package:ueberboese_app/pages/home_page.dart';
 import 'package:ueberboese_app/services/speaker_storage_service.dart';
 import 'package:ueberboese_app/services/config_storage_service.dart';
 import 'package:ueberboese_app/services/speaker_api_service.dart';
+import 'package:ueberboese_app/utils/windows_url_scheme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  registerWindowsUrlSchemeInBackground('ueberboese-login');
 
   final appState = MyAppState();
   await appState.initialize();

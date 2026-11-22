@@ -22,6 +22,7 @@ import 'package:ueberboese_app/pages/device_events_page.dart';
 import 'package:ueberboese_app/utils/url_utils.dart';
 import 'package:ueberboese_app/pages/presets/presets_page.dart';
 import 'package:ueberboese_app/pages/speaker_settings_page.dart';
+import 'package:ueberboese_app/pages/speaker_wifi_page.dart';
 import 'package:ueberboese_app/pages/speaker_doctor_page.dart';
 import 'package:ueberboese_app/widgets/speaker_warning_banner.dart';
 
@@ -1221,6 +1222,13 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
                   SpeakerSettingsPage(speaker: widget.speaker),
             ),
           );
+        } else if (value == 'wifi') {
+          Navigator.push(
+            context,
+            MaterialPageRoute<void>(
+              builder: (context) => SpeakerWifiPage(speaker: widget.speaker),
+            ),
+          );
         } else if (value == 'doctor') {
           _navigateToDoctor(context);
         } else if (value == 'standby') {
@@ -1288,6 +1296,16 @@ class _SpeakerDetailPageState extends State<SpeakerDetailPage> {
               Icon(Icons.settings),
               SizedBox(width: 8),
               Text('Settings'),
+            ],
+          ),
+        ),
+        const PopupMenuItem<String>(
+          value: 'wifi',
+          child: Row(
+            children: [
+              Icon(Icons.wifi),
+              SizedBox(width: 8),
+              Text('Wi-Fi'),
             ],
           ),
         ),

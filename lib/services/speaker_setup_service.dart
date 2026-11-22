@@ -28,9 +28,10 @@ class SpeakerSetupService {
 
   bool _ownClient() => httpClient == null;
 
-  Future<List<WirelessNetwork>> performWirelessSiteSurvey() async {
-    final url = Uri.parse(
-        'http://$kSetupSpeakerIp:8090/performWirelessSiteSurvey');
+  Future<List<WirelessNetwork>> performWirelessSiteSurvey(
+      {String speakerIp = kSetupSpeakerIp}) async {
+    final url =
+        Uri.parse('http://$speakerIp:8090/performWirelessSiteSurvey');
     final client = _client();
     try {
       final response = await client.get(url).timeout(timeout);
@@ -41,7 +42,7 @@ class SpeakerSetupService {
       final bodyText = utf8.decode(response.bodyBytes);
       final document = XmlDocument.parse(bodyText);
       final items = document.findAllElements('item');
-      return items.map((item) {
+      final networks = items.map((item) {
         final ssid = item.getAttribute('ssid') ?? '';
         final signalStrength =
             int.tryParse(item.getAttribute('signalStrength') ?? '0') ?? 0;
@@ -56,6 +57,7 @@ class SpeakerSetupService {
           securityType: securityType,
         );
       }).toList();
+      return _cleanUpNetworks(networks);
     } catch (e) {
       if (e is Exception) rethrow;
       throw Exception('Failed to perform site survey: $e');
@@ -64,10 +66,27 @@ class SpeakerSetupService {
     }
   }
 
+  /// Drops hidden (empty) SSIDs, merges duplicates keeping the strongest
+  /// signal and sorts the result strongest first.
+  static List<WirelessNetwork> _cleanUpNetworks(
+      List<WirelessNetwork> networks) {
+    final bySsid = <String, WirelessNetwork>{};
+    for (final network in networks) {
+      if (network.ssid.isEmpty) continue;
+      final existing = bySsid[network.ssid];
+      if (existing == null ||
+          network.signalStrength > existing.signalStrength) {
+        bySsid[network.ssid] = network;
+      }
+    }
+    return bySsid.values.toList()
+      ..sort((a, b) => b.signalStrength.compareTo(a.signalStrength));
+  }
+
   Future<void> addWirelessProfile(
-      String ssid, String password, String securityType) async {
-    final url =
-        Uri.parse('http://$kSetupSpeakerIp:8090/addWirelessProfile');
+      String ssid, String password, String securityType,
+      {String speakerIp = kSetupSpeakerIp}) async {
+    final url = Uri.parse('http://$speakerIp:8090/addWirelessProfile');
     final client = _client();
     final body =
         '<AddWirelessProfile>'
